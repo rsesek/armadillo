@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-  fmt.Print("Hello world")
+  fmt.Print("Hello world\n")
   server.RunFrontEnd()
 }
 

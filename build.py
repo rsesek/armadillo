@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 
-ROOT     = '.'
+ROOT     = os.path.dirname(os.path.realpath(__file__))
 SRC_PATH = os.path.join(ROOT, 'src')
 PROD_PATH = os.path.join(ROOT, 'out')
 
@@ -23,17 +23,19 @@ def _ObjFileName(gofile):
 
 def Main():
   print '=== Starting Build ==='
+  os.chdir(PROD_PATH)
+  
   # Compile.
   for gofile in SOURCES:
     gofile = os.path.join(SRC_PATH, gofile)
-    args = [ COMPILER, '-I', PROD_PATH, '-I', SRC_PATH, '-o',  _ObjFileName(gofile), gofile ]
+    args = [ COMPILER, gofile ]
     print '  ' + ' '.join(args)
     handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
     handle.wait()
   
   # Link
   objects = map(_ObjFileName, SOURCES)
-  args = [ LINKER, '-o', os.path.join(PROD_PATH, PRODUCT_NAME) ] + objects
+  args = [ LINKER, '-o', os.path.join(PROD_PATH, PRODUCT_NAME), 'main.8' ]
   print '  ' + ' ' .join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()
