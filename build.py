@@ -1,11 +1,13 @@
 #!/usr/bin/env python2.5
 import os
+import shutil
 import subprocess
 import sys
 
-ROOT     = os.path.dirname(os.path.realpath(__file__))
-SRC_PATH = os.path.join(ROOT, 'src')
+ROOT      = os.path.dirname(os.path.realpath(__file__))
+SRC_PATH  = os.path.join(ROOT, 'src')
 PROD_PATH = os.path.join(ROOT, 'out')
+FE_PATH   = os.path.join(ROOT, 'web_frontend')
 
 SOURCES = [
   'server.go',
@@ -39,6 +41,13 @@ def Main():
   print '  ' + ' ' .join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()
+  
+  # Copy
+  fe_resources = os.path.join(PROD_PATH, 'fe')
+  handle = subprocess.Popen([ 'rm', '-rf', fe_resources ])
+  handle.wait()
+  shutil.copytree(FE_PATH, fe_resources)
+  
 
 if __name__ == '__main__':
   Main()
