@@ -8,7 +8,7 @@ import (
   "path"
 )
 
-const kFrontEndFiles = "/Users/rsesek/Projects/armadillo/out/fe"
+const kFrontEndFiles = "/Users/rsesek/Projects/armadillo/out/fe/"
 
 func testHandler(connection *http.Conn, request *http.Request) {
   fmt.Print("Got a request");
