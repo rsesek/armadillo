@@ -10,4 +10,3 @@ func main() {
   fmt.Print("Hello world\n")
   server.RunFrontEnd()
 }
-
