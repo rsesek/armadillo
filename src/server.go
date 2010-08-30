@@ -7,6 +7,7 @@ import (
   "json"
   "os"
   "path"
+  "./paths"
 )
 
 const kFrontEndFiles = "/Users/rsesek/Projects/armadillo/out/fe/"
@@ -28,7 +29,12 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
   
   switch request.FormValue("action") {
     case "list":
-      okResponse(connection, "Request received")
+      files, err := paths.List("./")
+      if err != nil {
+        errorResponse(connection, err.String())
+      } else {
+        okResponse(connection, files)        
+      }
       return
   }
   

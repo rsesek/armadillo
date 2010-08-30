@@ -16,6 +16,7 @@ CLOSURE_COMPILER = os.path.join(ROOT, 'closure-compiler.jar')
 CLOSURE_CALCDEPS = os.path.join(CLOSURE_DEST, 'closure', 'bin', 'calcdeps.py')
 
 SOURCES = [
+  'paths.go',
   'server.go',
   'main.go'
 ]
