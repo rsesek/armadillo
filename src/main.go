@@ -2,11 +2,15 @@
 package main
 
 import (
-  "./server"
+  "flag"
   "fmt"
+  "./paths"
+  "./server"
 )
 
 func main() {
-  fmt.Print("Hello world\n")
+  flag.StringVar(&paths.JailRoot, "jail", "/", "Restrict file operations to this directory root")
+  flag.Parse()
+  fmt.Printf("Starting Armadillo with root:\n  %v\n", paths.JailRoot)
   server.RunFrontEnd()
 }

@@ -6,10 +6,10 @@ import (
   "path"
 )
 
-const kJailRoot = "/Users/rsesek/Downloads"
+var JailRoot string;
 
 func canonicalizePath(raw_path string) string {
-  raw_path = path.Join(kJailRoot, raw_path)
+  raw_path = path.Join(JailRoot, raw_path)
   return path.Clean(raw_path)
 }
 
