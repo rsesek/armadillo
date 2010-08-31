@@ -34,7 +34,11 @@ func List(the_path string) (files vector.StringVector, err os.Error) {
   }
   
   for _, info := range fileinfos {
-    files.Push(info.Name)
+    name := info.Name
+    if info.IsDirectory() {
+      name += "/"
+    }
+    files.Push(name)
   }
   return files, nil
 }
