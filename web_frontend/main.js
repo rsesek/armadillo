@@ -36,7 +36,7 @@ armadillo.prototype.sendRequest_ = function(action, extra_data, callback) {
 armadillo.prototype.list = function(path) {
   var callback = function(e) {
     var data = e.target.getResponseJson();
-    if (data['status']) {
+    if (data['error']) {
       return;  // Error.
     }
     // Unlisten all current listeners.
