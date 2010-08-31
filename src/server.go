@@ -29,7 +29,7 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
   
   switch request.FormValue("action") {
     case "list":
-      files, err := paths.List("./")
+      files, err := paths.List(request.FormValue("path"))
       if err != nil {
         errorResponse(connection, err.String())
       } else {

@@ -7,6 +7,7 @@ goog.require('goog.Uri.QueryData');
 
 armadillo = function() {
   this.list('/');
+  this.currentPath_ = '/';
   this.listeners_ = new Array();
 }
 
@@ -40,6 +41,7 @@ armadillo.prototype.list = function(path) {
 
     // Update the listing.
     goog.dom.setTextContent(goog.dom.getElement('pwd'), path);
+    app.currentPath_ = path;
     var list = goog.dom.getElement('ls');
     goog.dom.removeChildren(list);
 
@@ -61,7 +63,7 @@ armadillo.prototype.list = function(path) {
  */
 armadillo.prototype.clickHandler_ = function(e) {
   if (this.isDirectory_(goog.dom.getTextContent(e.target))) {
-    alert('this is a dir');
+    this.list(this.currentPath_ + goog.dom.getTextContent(e.target));
   }
 };
 
