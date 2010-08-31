@@ -51,6 +51,10 @@ armadillo.prototype.list = function(path) {
     var list = goog.dom.getElement('ls');
     goog.dom.removeChildren(list);
 
+    // Add a previous directory entry.
+    if (path != '/' && path != '')
+      goog.array.insertAt(data, '../', 0);
+
     // Add items for each entry.
     goog.array.forEach(data, function(file) {
       var elm = goog.dom.createElement('li');
@@ -68,8 +72,11 @@ armadillo.prototype.list = function(path) {
  * @param  {Event}  e
  */
 armadillo.prototype.clickHandler_ = function(e) {
-  if (this.isDirectory_(goog.dom.getTextContent(e.target))) {
-    this.list(this.currentPath_ + goog.dom.getTextContent(e.target));
+  var target = goog.dom.getTextContent(e.target);
+  if (target == '../') {
+    this.list(this.stripLastPathComponent_(this.currentPath_));
+  } else if (this.isDirectory_(target)) {
+    this.list(this.currentPath_ + target);
   }
 };
 
@@ -89,4 +96,20 @@ armadillo.prototype.hashChanged_ = function(e) {
  */
 armadillo.prototype.isDirectory_ = function(path) {
   return path[path.length - 1] == '/';
+};
+
+/**
+ * Strips the last path component from a path.
+ * @param  {string}  path
+ * @returns string
+ */
+armadillo.prototype.stripLastPathComponent_ = function(path) {
+  for (var i = path.length - 1; i >= 0; --i) {
+    if (path[i] == '/') {
+      if (i != path.length - 1) {
+        return path.substring(0, i + 1);
+      }
+    }
+  }
+  return '/';
 };
