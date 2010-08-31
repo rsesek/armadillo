@@ -6,9 +6,14 @@ goog.require('goog.net.XhrIo');
 goog.require('goog.Uri.QueryData');
 
 armadillo = function() {
-  this.list('/');
-  this.currentPath_ = '/';
+  var start_path = '/';
+  if (window.location.hash) {
+    start_path = window.location.hash.substr(1);
+  }
+  this.list(start_path);
   this.listeners_ = new Array();
+  goog.events.listen(window, goog.events.EventType.HASHCHANGE,
+      this.hashChanged_, false, this);
 }
 
 /**
@@ -42,6 +47,7 @@ armadillo.prototype.list = function(path) {
     // Update the listing.
     goog.dom.setTextContent(goog.dom.getElement('pwd'), path);
     app.currentPath_ = path;
+    window.location.hash = path;
     var list = goog.dom.getElement('ls');
     goog.dom.removeChildren(list);
 
@@ -65,6 +71,15 @@ armadillo.prototype.clickHandler_ = function(e) {
   if (this.isDirectory_(goog.dom.getTextContent(e.target))) {
     this.list(this.currentPath_ + goog.dom.getTextContent(e.target));
   }
+};
+
+/**
+ * Event for when the hash changes.
+ * @param  {Event}  e
+ */
+armadillo.prototype.hashChanged_ = function(e) {
+  if (window.location.hash.length)
+    this.list(window.location.hash.substr(1));
 };
 
 /**
