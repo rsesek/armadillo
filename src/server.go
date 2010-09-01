@@ -10,7 +10,8 @@ import (
   "./paths"
 )
 
-const kFrontEndFiles = "/Users/rsesek/Projects/armadillo/out/fe/"
+var dir, file = path.Split(path.Clean(os.Getenv("_")))
+var kFrontEndFiles string = path.Join(dir, "fe")
 
 func indexHandler(connection *http.Conn, request *http.Request) {
   fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"), os.O_RDONLY, 0)
