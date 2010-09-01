@@ -32,7 +32,9 @@ SOURCES_FE = [
   'main.js'
 ]
 RESOURCES_FE = [
-  'index.html'
+  'index.html',
+  'screen.css',
+  'reset.css'
 ]
 PRODUCT_NAME = 'armadillo'
 
@@ -80,10 +82,12 @@ def Main():
   _PullDeps()
     
   # Copy
+  print '=== Copying Resources ==='
   fe_resources = os.path.join(PROD_PATH, 'fe')
   subprocess.Popen([ 'rm', '-rf', fe_resources ]).wait()
   os.mkdir(fe_resources)
   for resource in RESOURCES_FE:
+    print '  COPY ' + resource
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
   
   # Compile JS.
