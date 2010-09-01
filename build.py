@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.5
 #
 # Armadillo File Manager
 # Copyright (c) 2010, Robert Sesek <http://www.bluestatic.org>
@@ -6,7 +7,6 @@
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation, either version 3 of the License, or any later version.
 #
-#!/usr/bin/env python2.5
 import os
 import shutil
 import subprocess
