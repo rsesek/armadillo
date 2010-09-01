@@ -33,7 +33,7 @@ armadillo = function() {
  */
 armadillo.prototype.sendRequest_ = function(action, extra_data, callback) {
   var data = new goog.Uri.QueryData();
-  data.set('action', 'list');
+  data.set('action', action);
   data.extend(extra_data);
   goog.net.XhrIo.send('/service', callback, 'POST', data);
 };

@@ -45,10 +45,9 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
       } else {
         okResponse(connection, files)        
       }
-      return
-  }
-  
-  errorResponse(connection, "Unhandled action")
+    default:
+      errorResponse(connection, "Unhandled action")
+  }  
 }
 
 func errorResponse(connection *http.Conn, message string) {
