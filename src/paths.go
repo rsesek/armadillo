@@ -13,6 +13,7 @@ import (
   "container/vector"
   "os"
   "path"
+  "strings"
 )
 
 var JailRoot string;
@@ -22,7 +23,16 @@ func canonicalizePath(raw_path string) string {
   return path.Clean(raw_path)
 }
 
-func checkInJail(path string) bool {
+func checkInJail(the_path string) bool {
+  if len(the_path) < len(JailRoot) {
+    return false
+  }
+  if the_path[0:len(JailRoot)] != JailRoot {
+    return false
+  }
+  if strings.Index(the_path, "../") != -1 {
+    return false
+  }
   return true
 }
 
