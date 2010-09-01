@@ -11,6 +11,7 @@ goog.provide('armadillo');
 
 goog.require('goog.array');
 goog.require('goog.dom');
+goog.require('goog.fx.dom.FadeInAndShow');
 goog.require('goog.net.XhrIo');
 goog.require('goog.Uri.QueryData');
 
@@ -44,8 +45,10 @@ armadillo.prototype.sendRequest_ = function(action, extra_data, callback) {
  */
 armadillo.prototype.list = function(path) {
   var callback = function(e) {
+    app.clearError_();
     var data = e.target.getResponseJson();
     if (data['error']) {
+      app.showError_(data['message']);
       return;  // Error.
     }
     // Unlisten all current listeners.
@@ -121,4 +124,24 @@ armadillo.prototype.stripLastPathComponent_ = function(path) {
     }
   }
   return '/';
+};
+
+/**
+ * Clears the error message.
+ */
+armadillo.prototype.clearError_ = function() {
+  var elm = goog.dom.getElement('error');
+  goog.dom.setTextContent(elm, '');
+  goog.dom.setProperties(elm, {'display':'none'});
+};
+
+/**
+ * Shows an error message.
+ * @param  {string}  message
+ */
+armadillo.prototype.showError_ = function(message) {
+  this.clearError_();
+  var elm = goog.dom.getElement('error');
+  goog.dom.setTextContent(elm, message);
+  goog.fx.dom.FadeInAndShow(elm, 10.0);
 };
