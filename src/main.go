@@ -18,7 +18,8 @@ import (
 
 func main() {
   flag.StringVar(&paths.JailRoot, "jail", "/", "Restrict file operations to this directory root")
+  var port *int = flag.Int("port", 8080, "Port to run the server on")
   flag.Parse()
-  fmt.Printf("Starting Armadillo with root:\n  %v\n", paths.JailRoot)
-  server.RunFrontEnd()
+  fmt.Printf("Starting Armadillo on port %d with root:\n  %v\n", *port, paths.JailRoot)
+  server.RunFrontEnd(*port)
 }
