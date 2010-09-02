@@ -39,7 +39,7 @@ func checkInJail(the_path string) bool {
 func List(the_path string) (files vector.StringVector, err os.Error) {
   full_path := canonicalizePath(the_path)
   if !checkInJail(full_path) {
-    return nil, os.NewError("path outside of jail")
+    return nil, os.NewError("Path outside of jail")
   }
   
   fd, file_error := os.Open(full_path, os.O_RDONLY, 0)
@@ -60,4 +60,12 @@ func List(the_path string) (files vector.StringVector, err os.Error) {
     files.Push(name)
   }
   return files, nil
+}
+
+func Remove(the_path string) os.Error {
+  full_path := canonicalizePath(the_path)
+  if !checkInJail(full_path) {
+    return os.NewError("Path outside of jail")
+  }
+  return os.RemoveAll(full_path)
 }

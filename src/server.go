@@ -46,6 +46,16 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
       } else {
         okResponse(connection, files)        
       }
+    case "remove":
+      err := paths.Remove(request.FormValue("path"))
+      if err != nil {
+        errorResponse(connection, err.String())
+      } else {
+        response := map[string] int {
+          "error" : 0,
+        }
+        okResponse(connection, response)
+      }
     default:
       errorResponse(connection, "Unhandled action")
   }  
@@ -54,8 +64,8 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
 func errorResponse(connection *http.Conn, message string) {
   message = strings.Replace(message, paths.JailRoot, "/", -1)
   response := map[string] string {
-    "error": "-1",
-    "message": message,
+    "error"   : "-1",
+    "message" : message,
   }
   json_data, err := json.Marshal(response)
 
