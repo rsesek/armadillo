@@ -22,6 +22,9 @@ armadillo = function() {
   }
   this.list(start_path);
   this.listeners_ = new Array();
+  this.errorEffect_ =
+      new goog.fx.dom.FadeInAndShow(goog.dom.getElement('error'), 2.0);
+  this.errorEffect_.hide();
   goog.events.listen(window, goog.events.EventType.HASHCHANGE,
       this.hashChanged_, false, this);
 }
@@ -45,12 +48,14 @@ armadillo.prototype.sendRequest_ = function(action, extra_data, callback) {
  */
 armadillo.prototype.list = function(path) {
   var callback = function(e) {
-    app.clearError_();
     var data = e.target.getResponseJson();
     if (data['error']) {
       app.showError_(data['message']);
       return;  // Error.
+    } else {
+      app.clearError_();
     }
+
     // Unlisten all current listeners.
     goog.array.forEach(app.listeners_, function(e) {
       goog.events.unlistenByKey(e);
@@ -130,9 +135,8 @@ armadillo.prototype.stripLastPathComponent_ = function(path) {
  * Clears the error message.
  */
 armadillo.prototype.clearError_ = function() {
-  var elm = goog.dom.getElement('error');
-  goog.dom.setTextContent(elm, '');
-  goog.dom.setProperties(elm, {'display':'none'});
+  this.errorEffect_.hide();
+  goog.dom.setTextContent(this.errorEffect_.element, '');
 };
 
 /**
@@ -140,8 +144,6 @@ armadillo.prototype.clearError_ = function() {
  * @param  {string}  message
  */
 armadillo.prototype.showError_ = function(message) {
-  this.clearError_();
-  var elm = goog.dom.getElement('error');
-  goog.dom.setTextContent(elm, message);
-  goog.fx.dom.FadeInAndShow(elm, 10.0);
+  goog.dom.setTextContent(this.errorEffect_.element, message);
+  this.errorEffect_.show();
 };
