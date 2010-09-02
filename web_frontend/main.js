@@ -8,14 +8,16 @@
 //
 
 goog.provide('armadillo');
+goog.provide('armadillo.App');
 
+goog.require('armadillo.File');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.fx.dom.FadeInAndShow');
 goog.require('goog.net.XhrIo');
 goog.require('goog.Uri.QueryData');
 
-armadillo = function() {
+armadillo.App = function() {
   var start_path = '/';
   if (window.location.hash) {
     start_path = window.location.hash.substr(1);
@@ -35,7 +37,7 @@ armadillo = function() {
  * @param  {Object}  extra_data  Extra data to add.
  * @param  {Function}  callback  XHR callback.
  */
-armadillo.prototype.sendRequest_ = function(action, extra_data, callback) {
+armadillo.App.prototype.sendRequest_ = function(action, extra_data, callback) {
   var data = new goog.Uri.QueryData();
   data.set('action', action);
   data.extend(extra_data);
@@ -46,7 +48,7 @@ armadillo.prototype.sendRequest_ = function(action, extra_data, callback) {
  * Updates the directory listing for a given path.
  * @param  {string}  path  Path to list; relative to jail.
  */
-armadillo.prototype.list = function(path) {
+armadillo.App.prototype.list = function(path) {
   var callback = function(e) {
     var data = e.target.getResponseJson();
     if (data['error']) {
@@ -74,11 +76,8 @@ armadillo.prototype.list = function(path) {
 
     // Add items for each entry.
     goog.array.forEach(data, function(file) {
-      var elm = goog.dom.createElement('li');
-      goog.dom.setTextContent(elm, file);
-      goog.dom.appendChild(list, elm);
-      app.listeners_.push(goog.events.listen(elm,
-          goog.events.EventType.CLICK, app.clickHandler_, false, app));
+      var fileObject = new armadillo.File(file);
+      goog.dom.appendChild(list, fileObject.draw());
     });
   }
   this.sendRequest_('list', {'path':path}, callback);
@@ -88,7 +87,7 @@ armadillo.prototype.list = function(path) {
  * Click handler for elements.
  * @param  {Event}  e
  */
-armadillo.prototype.clickHandler_ = function(e) {
+armadillo.App.prototype.clickHandler_ = function(e) {
   var target = goog.dom.getTextContent(e.target);
   if (target == '../') {
     this.list(this.stripLastPathComponent_(this.currentPath_));
@@ -101,7 +100,7 @@ armadillo.prototype.clickHandler_ = function(e) {
  * Event for when the hash changes.
  * @param  {Event}  e
  */
-armadillo.prototype.hashChanged_ = function(e) {
+armadillo.App.prototype.hashChanged_ = function(e) {
   if (window.location.hash.length)
     this.list(window.location.hash.substr(1));
 };
@@ -111,7 +110,7 @@ armadillo.prototype.hashChanged_ = function(e) {
  * @param  {string}  path
  * @returns boolean
  */
-armadillo.prototype.isDirectory_ = function(path) {
+armadillo.App.prototype.isDirectory_ = function(path) {
   return path[path.length - 1] == '/';
 };
 
@@ -120,7 +119,7 @@ armadillo.prototype.isDirectory_ = function(path) {
  * @param  {string}  path
  * @returns string
  */
-armadillo.prototype.stripLastPathComponent_ = function(path) {
+armadillo.App.prototype.stripLastPathComponent_ = function(path) {
   for (var i = path.length - 1; i >= 0; --i) {
     if (path[i] == '/') {
       if (i != path.length - 1) {
@@ -134,7 +133,7 @@ armadillo.prototype.stripLastPathComponent_ = function(path) {
 /**
  * Clears the error message.
  */
-armadillo.prototype.clearError_ = function() {
+armadillo.App.prototype.clearError_ = function() {
   this.errorEffect_.hide();
   goog.dom.setTextContent(this.errorEffect_.element, '');
 };
@@ -143,7 +142,7 @@ armadillo.prototype.clearError_ = function() {
  * Shows an error message.
  * @param  {string}  message
  */
-armadillo.prototype.showError_ = function(message) {
+armadillo.App.prototype.showError_ = function(message) {
   goog.dom.setTextContent(this.errorEffect_.element, message);
   this.errorEffect_.show();
 };

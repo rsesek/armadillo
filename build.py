@@ -29,7 +29,8 @@ SOURCES = [
   'main.go'
 ]
 SOURCES_FE = [
-  'main.js'
+  'file.js',
+  'main.js',
 ]
 RESOURCES_FE = [
   'index.html',
@@ -93,10 +94,12 @@ def Main():
   # Compile JS.
   print '=== Compiling Front End ==='
   outfile = os.path.join(PROD_PATH, 'fe', PRODUCT_NAME + '.js')
-  fe_sources = map(lambda f: os.path.join(FE_PATH, f), SOURCES_FE)
+  fe_sources = map(lambda f: '-i' + os.path.join(FE_PATH, f), SOURCES_FE)
   closure_sources = os.path.join(CLOSURE_DEST, 'closure', 'goog')
-  args = [ CLOSURE_CALCDEPS, '-i', ' '.join(fe_sources), '-p', closure_sources,
-           '-o', 'compiled', '-c', CLOSURE_COMPILER, '--output_file', outfile ]
+  args = [ CLOSURE_CALCDEPS ]
+  args.extend(fe_sources)
+  args.extend([ '-p', closure_sources, '-o', 'compiled', '-c', CLOSURE_COMPILER,
+      '--output_file', outfile ])
   print '  ' + ' '.join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()
