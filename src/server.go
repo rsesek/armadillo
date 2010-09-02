@@ -16,6 +16,7 @@ import (
   "json"
   "os"
   "path"
+  "strings"
   "./paths"
 )
 
@@ -51,6 +52,7 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
 }
 
 func errorResponse(connection *http.Conn, message string) {
+  message = strings.Replace(message, paths.JailRoot, "/", -1)
   response := map[string] string {
     "error": "-1",
     "message": message,
