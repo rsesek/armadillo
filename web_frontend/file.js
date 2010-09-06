@@ -49,10 +49,12 @@ armadillo.File.prototype.draw = function() {
     this.element_.representedObject = this;
     this.clickListener_ = goog.events.listen(this.element_,
         goog.events.EventType.CLICK, this.clickHandler_, false, this);
-    this.mouseOverListener_ = goog.events.listen(this.element_,
-        goog.events.EventType.MOUSEOVER, this.hoverHandler_, false, this);
-    this.mouseOutListener_ = goog.events.listen(this.element_,
-        goog.events.EventType.MOUSEOUT, this.hoverHandler_, false, this);
+    if (!this.isSpecial_()) {
+      this.mouseOverListener_ = goog.events.listen(this.element_,
+          goog.events.EventType.MOUSEOVER, this.hoverHandler_, false, this);
+      this.mouseOutListener_ = goog.events.listen(this.element_,
+          goog.events.EventType.MOUSEOUT, this.hoverHandler_, false, this);
+    }
   }
   goog.dom.removeChildren(this.element_);
 
@@ -60,13 +62,14 @@ armadillo.File.prototype.draw = function() {
   goog.dom.setTextContent(this.element_, this.name_);
 
   // Create the edit button.
-  this.button_ = goog.dom.createElement('button');
-  goog.dom.setTextContent(this.button_, 'Edit');
-  goog.dom.appendChild(this.element_, this.button_);
-  this.button_.style.display = 'none';
-
-  this.buttonListener_ = goog.events.listen(this.button_,
-      goog.events.EventType.CLICK, this.buttonClickHandler_, false, this);
+  if (!this.isSpecial_()) {
+    this.button_ = goog.dom.createElement('button');
+    goog.dom.setTextContent(this.button_, 'Edit');
+    goog.dom.appendChild(this.element_, this.button_);
+    this.button_.style.display = 'none';
+    this.buttonListener_ = goog.events.listen(this.button_,
+        goog.events.EventType.CLICK, this.buttonClickHandler_, false, this);
+  }
 
   return this.element_;
 };
@@ -98,4 +101,12 @@ armadillo.File.prototype.hoverHandler_ = function(e) {
 armadillo.File.prototype.buttonClickHandler_ = function(e) {
   e.stopPropagation();
   alert('choose your bidding');
+};
+
+/**
+ * Returns TRUE if this File is not a real file, but a special kind.
+ * @returns boolean
+ */
+armadillo.File.prototype.isSpecial_ = function() {
+  return this.name_ == '../';
 };
