@@ -9,6 +9,7 @@
 
 goog.provide('armadillo.File');
 
+goog.require('armadillo.Actor');
 goog.require('goog.Disposable');
 goog.require('goog.dom');
 
@@ -79,6 +80,9 @@ armadillo.File.prototype.draw = function() {
  * @param  {Event}  e
  */
 armadillo.File.prototype.clickHandler_ = function(e) {
+  if (armadillo.Actor.isModal()) {
+    return;
+  }
   if (this.isDirectory_) {
     app.navigate(this.name_);
   }
@@ -90,6 +94,8 @@ armadillo.File.prototype.clickHandler_ = function(e) {
  * @param  {Event} e
  */
 armadillo.File.prototype.hoverHandler_ = function(e) {
+  if (armadillo.Actor.isModal())
+    return;
   var display = (e.type == goog.events.EventType.MOUSEOVER);
   this.button_.style.display = (display ? '' : 'none');
 };
@@ -99,8 +105,11 @@ armadillo.File.prototype.hoverHandler_ = function(e) {
  * @param  {Event}  e
  */
 armadillo.File.prototype.buttonClickHandler_ = function(e) {
+  if (armadillo.Actor.isModal())
+    return;
   e.stopPropagation();
-  alert('choose your bidding');
+  var actor = new armadillo.Actor();
+  actor.show(e.clientX, e.clientY);
 };
 
 /**

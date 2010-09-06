@@ -29,6 +29,7 @@ SOURCES = [
   'main.go'
 ]
 SOURCES_FE = [
+  'actor.js',
   'file.js',
   'main.js',
 ]

@@ -45,3 +45,11 @@ h1 {
   background-color: rgba(167, 40, 26, 0.1);
 	color: rgb(0, 30, 30);
 }
+
+.actor {
+  width: 3em;
+  height: 3em;
+  position: absolute;
+  background-color: red;
+  visibility: hidden;
+}
