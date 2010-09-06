@@ -23,7 +23,6 @@ armadillo.App = function() {
     start_path = window.location.hash.substr(1);
   }
   this.list(start_path);
-  this.listeners_ = new Array();
   this.errorEffect_ =
       new goog.fx.dom.FadeInAndShow(goog.dom.getElement('error'), 2.0);
   this.errorEffect_.hide();
@@ -58,11 +57,6 @@ armadillo.App.prototype.list = function(path) {
       app.clearError_();
     }
 
-    // Unlisten all current listeners.
-    goog.array.forEach(app.listeners_, function(e) {
-      goog.events.unlistenByKey(e);
-    });
-
     // Update the listing.
     goog.dom.setTextContent(goog.dom.getElement('pwd'), path);
     app.currentPath_ = path;
@@ -84,14 +78,13 @@ armadillo.App.prototype.list = function(path) {
 };
 
 /**
- * Click handler for elements.
- * @param  {Event}  e
+ * Navigates to a subpath.  Can only handle directories.
+ * @param  {string}  target  Relative path to |currentPath_|.
  */
-armadillo.App.prototype.clickHandler_ = function(e) {
-  var target = goog.dom.getTextContent(e.target);
+armadillo.App.prototype.navigate = function(target) {
   if (target == '../') {
     this.list(this.stripLastPathComponent_(this.currentPath_));
-  } else if (this.isDirectory_(target)) {
+  } else {
     this.list(this.currentPath_ + target);
   }
 };
@@ -110,7 +103,7 @@ armadillo.App.prototype.hashChanged_ = function(e) {
  * @param  {string}  path
  * @returns boolean
  */
-armadillo.App.prototype.isDirectory_ = function(path) {
+armadillo.App.prototype.isDirectory = function(path) {
   return path[path.length - 1] == '/';
 };
 

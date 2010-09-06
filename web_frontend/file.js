@@ -20,7 +20,7 @@ goog.require('goog.dom');
 armadillo.File = function(name) {
   goog.Disposable.call(this);
   this.name_ = name;
-  this.isDirectory_ = app.isDirectory_(name);
+  this.isDirectory_ = app.isDirectory(name);
 };
 goog.inherits(armadillo.File, goog.Disposable);
 
@@ -31,6 +31,7 @@ goog.inherits(armadillo.File, goog.Disposable);
 goog.Disposable.prototype.disposeInternal = function() {
   armadillo.File.superClass_.disposeInternal.call(this);
   this.element_ = null;
+  goog.events.unlistenByKey(this.clickListener_);
 };
 
 /**
@@ -41,10 +42,20 @@ armadillo.File.prototype.draw = function() {
   if (!this.element_) {
     this.element_ = goog.dom.createElement('li');
     this.element_.representedObject = this;
+    this.clickListener_ = goog.events.listen(this.element_,
+        goog.events.EventType.CLICK, this.clickHandler_, false, this);
   }
   goog.dom.removeChildren(this.element_);
   goog.dom.setTextContent(this.element_, this.name_);
-  app.listeners_.push(goog.events.listen(this.element_,
-      goog.events.EventType.CLICK, app.clickHandler_, false, app));
   return this.element_;
+};
+
+/**
+ * Click handler for the ist element.
+ * @param  {Event}  e
+ */
+armadillo.File.prototype.clickHandler_ = function(e) {
+  if (this.isDirectory_) {
+    app.navigate(this.name_);
+  }
 };
