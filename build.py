@@ -7,6 +7,7 @@
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation, either version 3 of the License, or any later version.
 #
+import optparse
 import os
 import shutil
 import subprocess
@@ -63,6 +64,11 @@ def _PullDeps():
     subprocess.Popen([ 'svn', 'checkout', '-r', CLOSURE_REV, CLOSURE_SVN, CLOSURE_DEST ]).wait()
 
 def Main():
+  parser = optparse.OptionParser()
+  parser.add_option('-c', '--closure_fe', action="store_true", dest="compile_fe",
+                    help="Run the Front End inputs through the Closure Compiler")
+  (options, args) = parser.parse_args()
+
   print '=== Starting Build ==='
   os.chdir(PROD_PATH)
   
@@ -99,7 +105,10 @@ def Main():
   closure_sources = os.path.join(CLOSURE_DEST, 'closure', 'goog')
   args = [ CLOSURE_CALCDEPS ]
   args.extend(fe_sources)
-  args.extend([ '-p', closure_sources, '-o', 'compiled', '-c', CLOSURE_COMPILER,
+  output = "script"
+  if options.compile_fe:
+    output = "compiled"
+  args.extend([ '-p', closure_sources, '-o', output, '-c', CLOSURE_COMPILER,
       '--output_file', outfile ])
   print '  ' + ' '.join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
