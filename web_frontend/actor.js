@@ -72,10 +72,22 @@ armadillo.Actor.isModal = function() {
  */
 armadillo.Actor.prototype.disposeInternal = function() {
   armadillo.Actor.superClass_.disposeInternal.call(this);
+
+  // Unlisten the tiles.
+  var tiles = goog.dom.getElementsByClassName('tile', this.element_);
+  goog.array.forEach(tiles, function (tile) {
+    goog.events.unlistenByKey(tile.actorListener);
+  });
+
+  // Remove the actor display element.
   goog.dom.removeNode(this.element_);
   this.element_ = null;
+
+  // Kill the popup.
   this.popup_.dispose();
   this.popup_ = null;
+
+  // Remove the actor from the list.
   goog.array.remove(armadillo.Actor.actors_, this);
 };
 
