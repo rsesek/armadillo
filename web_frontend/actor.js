@@ -11,6 +11,7 @@ goog.provide('armadillo.Actor');
 
 goog.require('goog.array');
 goog.require('goog.dom');
+goog.require('goog.events');
 goog.require('goog.positioning.ClientPosition');
 goog.require('goog.positioning.Corner');
 goog.require('goog.ui.Popup');
@@ -32,6 +33,26 @@ goog.inherits(armadillo.Actor, goog.Disposable);
  * An array of all the Actors that have been created.
  */
 armadillo.Actor.actors_ = new Array();
+
+/**
+ * The different options that the Actor can perform.
+ */
+armadillo.Actor.options_ = {
+  OPEN : 'open',
+  MOVE : 'move',
+  RENAME : 'rename',
+  DELETE : 'delete'
+};
+
+/**
+ * String values for the options.
+ */
+armadillo.Actor.optionStrings_ = {
+  'open' : 'Open',
+  'move' : 'Move',
+  'rename' : 'Rename',
+  'delete' : 'Delete'  
+};
 
 /**
  * A global property that should be checked to see if an actor is present,
@@ -70,6 +91,7 @@ armadillo.Actor.prototype.show = function(x, y) {
   goog.dom.insertSiblingBefore(this.element_, firstBodyElement);
   this.popup_.setPinnedCorner(goog.positioning.Corner.TOP_LEFT);
   this.popup_.setPosition(new goog.positioning.ClientPosition(x, y));
+  this.popup_.setHideOnEscape(true);
   this.popup_.setVisible(true);
 };
 
@@ -86,6 +108,27 @@ armadillo.Actor.prototype.hide = function() {
  */
 armadillo.Actor.prototype.createElement_ = function() {
   var root = goog.dom.createDom('div', 'actor');
-  goog.dom.setTextContent(root, 'foo bar');
+  for (var option in armadillo.Actor.options_) {
+    var tile = goog.dom.createDom('div', 'tile');
+    var value = armadillo.Actor.options_[option];
+    var title = goog.dom.createDom('span', 'title',
+        armadillo.Actor.optionStrings_[value]);
+    goog.dom.appendChild(tile, title);
+    goog.dom.appendChild(root, tile);
+    tile.actorOption = value;
+    tile.actorListener = goog.events.listen(tile, goog.events.EventType.CLICK,
+        this.tileClickHandler_, false, this);
+  }
   return root;
+};
+
+/**
+ * Click handler for individual tiles.
+ * @param  {Event}  e
+ */
+armadillo.Actor.prototype.tileClickHandler_ = function(e) {
+  if (e.target.actorOption == armadillo.Actor.options_.DELETE) {
+    console.log("DELETE DELETE DELETE");
+  }
+  console.log('You clicked ' + e.target.actorOption);
 };
