@@ -32,6 +32,10 @@ goog.Disposable.prototype.disposeInternal = function() {
   armadillo.File.superClass_.disposeInternal.call(this);
   this.element_ = null;
   goog.events.unlistenByKey(this.clickListener_);
+  goog.events.unlistenByKey(this.mouseOverListener_);
+  goog.events.unlistenByKey(this.mouseOutListener_);
+  this.button_ = null;
+  goog.events.unlistenByKey(this.buttonListener_);
 };
 
 /**
@@ -39,23 +43,59 @@ goog.Disposable.prototype.disposeInternal = function() {
  * @returns  {Element}  An element ready for insertion into DOM.
  */
 armadillo.File.prototype.draw = function() {
+  // Create the element if it does not exist.  If it does, remove all children.
   if (!this.element_) {
     this.element_ = goog.dom.createElement('li');
     this.element_.representedObject = this;
     this.clickListener_ = goog.events.listen(this.element_,
         goog.events.EventType.CLICK, this.clickHandler_, false, this);
+    this.mouseOverListener_ = goog.events.listen(this.element_,
+        goog.events.EventType.MOUSEOVER, this.hoverHandler_, false, this);
+    this.mouseOutListener_ = goog.events.listen(this.element_,
+        goog.events.EventType.MOUSEOUT, this.hoverHandler_, false, this);
   }
   goog.dom.removeChildren(this.element_);
+
+  // Set the name of the entry.
   goog.dom.setTextContent(this.element_, this.name_);
+
+  // Create the edit button.
+  this.button_ = goog.dom.createElement('button');
+  goog.dom.setTextContent(this.button_, 'Edit');
+  goog.dom.appendChild(this.element_, this.button_);
+  this.button_.style.display = 'none';
+
+  this.buttonListener_ = goog.events.listen(this.button_,
+      goog.events.EventType.CLICK, this.buttonClickHandler_, false, this);
+
   return this.element_;
 };
 
 /**
- * Click handler for the ist element.
+ * Click handler for the list element.
  * @param  {Event}  e
  */
 armadillo.File.prototype.clickHandler_ = function(e) {
   if (this.isDirectory_) {
     app.navigate(this.name_);
   }
+};
+
+/**
+ * Hover event handler for the list element.  This can handle both mouseover
+ * and mouseout events.
+ * @param  {Event} e
+ */
+armadillo.File.prototype.hoverHandler_ = function(e) {
+  var display = (e.type == goog.events.EventType.MOUSEOVER);
+  this.button_.style.display = (display ? '' : 'none');
+};
+
+/**
+ * Click handler for the button element.
+ * @param  {Event}  e
+ */
+armadillo.File.prototype.buttonClickHandler_ = function(e) {
+  e.stopPropagation();
+  alert('choose your bidding');
 };
