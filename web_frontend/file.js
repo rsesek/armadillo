@@ -29,7 +29,7 @@ goog.inherits(armadillo.File, goog.Disposable);
  * Disposer
  * @protected
  */
-goog.Disposable.prototype.disposeInternal = function() {
+armadillo.File.prototype.disposeInternal = function() {
   armadillo.File.superClass_.disposeInternal.call(this);
   this.element_ = null;
   goog.events.unlistenByKey(this.clickListener_);
@@ -37,6 +37,14 @@ goog.Disposable.prototype.disposeInternal = function() {
   goog.events.unlistenByKey(this.mouseOutListener_);
   this.button_ = null;
   goog.events.unlistenByKey(this.buttonListener_);
+};
+
+/**
+ * Returns the name of the file.
+ * @returns string
+ */
+armadillo.File.prototype.getName = function() {
+  return this.name_;
 };
 
 /**
@@ -108,7 +116,7 @@ armadillo.File.prototype.buttonClickHandler_ = function(e) {
   if (armadillo.Actor.isModal())
     return;
   e.stopPropagation();
-  var actor = new armadillo.Actor();
+  var actor = new armadillo.Actor(this);
   actor.show(e.clientX, e.clientY);
 };
 

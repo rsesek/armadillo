@@ -19,10 +19,12 @@ goog.require('goog.ui.Popup');
 /**
  * The Actor is a popup that displays the various actions that can be performed
  * on a given File.
+ * @param  {armadillo.File}  file  The file to act on.
  * @constructor
  */
-armadillo.Actor = function() {
+armadillo.Actor = function(file) {
   goog.Disposable.call(this);
+  this.file_ = file;
   this.element_ = this.createElement_();
   this.popup_ = new goog.ui.Popup(this.element_);
   armadillo.Actor.actors_.push(this);
@@ -89,6 +91,8 @@ armadillo.Actor.prototype.disposeInternal = function() {
 
   // Remove the actor from the list.
   goog.array.remove(armadillo.Actor.actors_, this);
+
+  this.file_ = null;
 };
 
 /**
@@ -140,7 +144,7 @@ armadillo.Actor.prototype.createElement_ = function() {
  */
 armadillo.Actor.prototype.tileClickHandler_ = function(e) {
   if (e.target.actorOption == armadillo.Actor.options_.DELETE) {
-    console.log("DELETE DELETE DELETE");
+    console.log("DELETE DELETE DELETE " + this.file_.getName());
   }
   console.log('You clicked ' + e.target.actorOption);
 };
