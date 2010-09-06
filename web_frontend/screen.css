@@ -11,14 +11,28 @@ body {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
   padding: 1.5em;
   font-size: 1em;
+  background-color: rgb(245, 245, 245);
 }
 
 h1 {
-  font-size: 3em;
+  font-size: 2em;
 }
 
 #ls {
-  margin-left: 1.5em;
+  list-style: none;
+}
+
+#ls li {
+  padding: .3em;
+  height: 1.5em;
+  line-height: 1.5em;
+}
+
+#ls li:nth-child(odd) {
+  background-color: rgb(223, 235, 246);
+}
+#ls li:nth-child(even) {
+  background-color: rgb(255, 255, 255);
 }
 
 #error {
