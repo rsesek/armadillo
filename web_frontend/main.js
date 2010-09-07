@@ -36,7 +36,7 @@ armadillo.App = function() {
  * @param  {Object}  extra_data  Extra data to add.
  * @param  {Function}  callback  XHR callback.
  */
-armadillo.App.prototype.sendRequest_ = function(action, extra_data, callback) {
+armadillo.App.prototype.sendRequest = function(action, extra_data, callback) {
   var data = new goog.Uri.QueryData();
   data.set('action', action);
   data.extend(extra_data);
@@ -51,10 +51,10 @@ armadillo.App.prototype.list = function(path) {
   var callback = function(e) {
     var data = e.target.getResponseJson();
     if (data['error']) {
-      app.showError_(data['message']);
+      app.showError(data['message']);
       return;  // Error.
     } else {
-      app.clearError_();
+      app.clearError();
     }
 
     // Update the listing.
@@ -70,11 +70,11 @@ armadillo.App.prototype.list = function(path) {
 
     // Add items for each entry.
     goog.array.forEach(data, function(file) {
-      var fileObject = new armadillo.File(file);
+      var fileObject = new armadillo.File(file, path);
       goog.dom.appendChild(list, fileObject.draw());
     });
   }
-  this.sendRequest_('list', {'path':path}, callback);
+  this.sendRequest('list', {'path':path}, callback);
 };
 
 /**
@@ -108,6 +108,14 @@ armadillo.App.prototype.isDirectory = function(path) {
 };
 
 /**
+ * Gets the current path of the directory being displayed, absolute to root.
+ * @returns string
+ */
+armadillo.App.prototype.getCurrentPath = function() {
+  return this.currentPath_;
+};
+
+/**
  * Strips the last path component from a path.
  * @param  {string}  path
  * @returns string
@@ -126,7 +134,7 @@ armadillo.App.prototype.stripLastPathComponent_ = function(path) {
 /**
  * Clears the error message.
  */
-armadillo.App.prototype.clearError_ = function() {
+armadillo.App.prototype.clearError = function() {
   this.errorEffect_.hide();
   goog.dom.setTextContent(this.errorEffect_.element, '');
 };
@@ -135,7 +143,7 @@ armadillo.App.prototype.clearError_ = function() {
  * Shows an error message.
  * @param  {string}  message
  */
-armadillo.App.prototype.showError_ = function(message) {
+armadillo.App.prototype.showError = function(message) {
   goog.dom.setTextContent(this.errorEffect_.element, message);
   this.errorEffect_.show();
 };

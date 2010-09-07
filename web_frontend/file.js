@@ -16,11 +16,14 @@ goog.require('goog.dom');
 /**
  * A file in a directory listing.
  * @param  {string}  File name.
+ * @param  {string}  The path the file resides at.
  * @constructor
  */
-armadillo.File = function(name) {
+armadillo.File = function(name, path) {
   goog.Disposable.call(this);
   this.name_ = name;
+  this.path_ = path;
+  console.log('creating file ' + path + name);
   this.isDirectory_ = app.isDirectory(name);
 };
 goog.inherits(armadillo.File, goog.Disposable);
@@ -81,6 +84,24 @@ armadillo.File.prototype.draw = function() {
   }
 
   return this.element_;
+};
+
+/**
+ * Deletes the given file in the backend by sending a request.  On return, it
+ * will re-query the directory.
+ */
+armadillo.File.prototype.delete = function() {
+  var file = this;
+  var callback = function(data) {
+    if (data['error']) {
+      app.showError(data['message']);
+      return;
+    } else {
+      app.clearError();
+    }
+    app.list(file.path_);
+  };
+  app.sendRequest('delete', {'path':this.path_ + this.name_}, callback);
 };
 
 /**

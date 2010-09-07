@@ -14,6 +14,7 @@ goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.positioning.ClientPosition');
 goog.require('goog.positioning.Corner');
+goog.require('goog.ui.Dialog');
 goog.require('goog.ui.Popup');
 
 /**
@@ -144,7 +145,31 @@ armadillo.Actor.prototype.createElement_ = function() {
  */
 armadillo.Actor.prototype.tileClickHandler_ = function(e) {
   if (e.target.actorOption == armadillo.Actor.options_.DELETE) {
-    console.log("DELETE DELETE DELETE " + this.file_.getName());
+    var confirm = new goog.ui.Dialog();
+    confirm.setDisposeOnHide(true);
+    confirm.setEscapeToCancel(true);
+    confirm.setModal(true);
+    confirm.setDraggable(false);
+    confirm.setHasTitleCloseButton(false);
+    confirm.setTitle('Confirm Delete');
+
+    var container = confirm.getContentElement();
+    var content = goog.dom.createDom('span', null,
+        'Are you sure you want to delete:',
+        goog.dom.createElement('br'),
+        goog.dom.createDom('strong', null, this.file_.getName()));
+    goog.dom.appendChild(container, content);
+
+    var closeCallback = function(e) {
+      if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
+        this.file_.delete();
+      }
+    };
+    // Will be removed when the event source closes.
+    goog.events.listen(confirm, goog.ui.Dialog.SELECT_EVENT,
+        closeCallback, false, this);
+
+    confirm.setVisible(true);
   }
   console.log('You clicked ' + e.target.actorOption);
 };
