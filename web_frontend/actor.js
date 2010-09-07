@@ -128,6 +128,10 @@ armadillo.Actor.prototype.createElement_ = function() {
   for (var option in armadillo.Actor.options_) {
     var tile = goog.dom.createDom('div', 'tile');
     var value = armadillo.Actor.options_[option];
+    // Cannot open non-directory files.
+    if (value == armadillo.Actor.options_.OPEN && !this.file_.isDirectory()) {
+      continue;
+    }
     var title = goog.dom.createDom('span', 'title',
         armadillo.Actor.optionStrings_[value]);
     goog.dom.appendChild(tile, title);

@@ -50,6 +50,14 @@ armadillo.File.prototype.getName = function() {
 };
 
 /**
+ * Returns whether or not this is a directory.
+ * @returns boolean
+ */
+armadillo.File.prototype.isDirectory = function() {
+  return this.isDirectory_;
+};
+
+/**
  * Constructs the Elements that make up the UI.
  * @returns  {Element}  An element ready for insertion into DOM.
  */
