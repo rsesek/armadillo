@@ -171,5 +171,4 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
 
     confirm.setVisible(true);
   }
-  console.log('You clicked ' + e.target.actorOption);
 };

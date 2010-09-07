@@ -23,7 +23,6 @@ armadillo.File = function(name, path) {
   goog.Disposable.call(this);
   this.name_ = name;
   this.path_ = path;
-  console.log('creating file ' + path + name);
   this.isDirectory_ = app.isDirectory(name);
 };
 goog.inherits(armadillo.File, goog.Disposable);
@@ -101,7 +100,7 @@ armadillo.File.prototype.delete = function() {
     }
     app.list(file.path_);
   };
-  app.sendRequest('delete', {'path':this.path_ + this.name_}, callback);
+  app.sendRequest('remove', {'path':this.path_ + this.name_}, callback);
 };
 
 /**
