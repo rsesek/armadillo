@@ -50,6 +50,15 @@ armadillo.File.prototype.getName = function() {
 };
 
 /**
+ * Returns the path the file without the name. This is equivalent to calling
+ * dirname on the absolute path.
+ * @returns string
+ */
+armadillo.File.prototype.getParentPath = function() {
+  return this.path_;
+};
+
+/**
  * Gets the fully qualified path of the file, from the root of the jail to the
  * name of the file.
  * @returns string

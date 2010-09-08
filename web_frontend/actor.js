@@ -148,13 +148,40 @@ armadillo.Actor.prototype.createElement_ = function() {
  * @param  {Event}  e
  */
 armadillo.Actor.prototype.tileClickHandler_ = function(e) {
-  if (e.target.actorOption == armadillo.Actor.options_.OPEN) {
+  var option = e.target.actorOption;
+  if (option == armadillo.Actor.options_.OPEN) {
     // TODO: assert that this.file_.isDirectory().
     app.navigate(this.file_.getName());
     this.hide();
-  } else if (e.target.actorOption == armadillo.Actor.options_.DELETE) {
+  } else if (option == armadillo.Actor.options_.MOVE) {
+    this.performMove_();
+  } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
   }
+};
+
+/**
+ * Subroutine to handle bringing up the move confirmation UI.
+ * @private
+ */
+armadillo.Actor.prototype.performMove_ = function() {
+  var dialog = this.createActionDialog_();
+  dialog.setTitle('Move File');
+
+  var container = dialog.getContentElement();
+  goog.dom.appendChild(container,
+      goog.dom.createDom('p', null,
+          'Enter a new, absolute path for this file.'));
+  var field = goog.dom.createElement('input');
+  field.type = 'text';
+  goog.dom.setTextContent(field, this.file_.getParentPath());
+  goog.dom.appendChild(container, field)
+  // TODO: Suck less.
+  goog.dom.appendChild(container,
+      goog.dom.createDom('p', 'smallfont',
+          '(Please pardon this interface. Armadillo is a work-in-progress.)'));
+
+  dialog.setVisible(true);
 };
 
 /**
@@ -162,12 +189,7 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
  * @private
  */
 armadillo.Actor.prototype.performDelete_ = function() {
-  var confirm = new goog.ui.Dialog();
-  confirm.setDisposeOnHide(true);
-  confirm.setEscapeToCancel(true);
-  confirm.setModal(true);
-  confirm.setDraggable(false);
-  confirm.setHasTitleCloseButton(false);
+  var confirm = this.createActionDialog_();
   confirm.setTitle('Confirm Delete');
 
   var container = confirm.getContentElement();
@@ -187,4 +209,19 @@ armadillo.Actor.prototype.performDelete_ = function() {
       closeCallback, false, this);
 
   confirm.setVisible(true);
+};
+
+/**
+ * Creates a new instance of a Dialog that has some basic properties set that
+ * are common to performing actions.
+ * @private
+ */
+armadillo.Actor.prototype.createActionDialog_ = function() {
+  var confirm = new goog.ui.Dialog();
+  confirm.setDisposeOnHide(true);
+  confirm.setEscapeToCancel(true);
+  confirm.setModal(true);
+  confirm.setDraggable(false);
+  confirm.setHasTitleCloseButton(false);
+  return confirm;
 };
