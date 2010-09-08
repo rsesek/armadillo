@@ -50,6 +50,15 @@ armadillo.File.prototype.getName = function() {
 };
 
 /**
+ * Gets the fully qualified path of the file, from the root of the jail to the
+ * name of the file.
+ * @returns string
+ */
+armadillo.File.prototype.getFullPath = function() {
+  return this.path_ + this.name_;
+};
+
+/**
  * Returns whether or not this is a directory.
  * @returns boolean
  */

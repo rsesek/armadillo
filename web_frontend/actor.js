@@ -148,31 +148,43 @@ armadillo.Actor.prototype.createElement_ = function() {
  * @param  {Event}  e
  */
 armadillo.Actor.prototype.tileClickHandler_ = function(e) {
-  if (e.target.actorOption == armadillo.Actor.options_.DELETE) {
-    var confirm = new goog.ui.Dialog();
-    confirm.setDisposeOnHide(true);
-    confirm.setEscapeToCancel(true);
-    confirm.setModal(true);
-    confirm.setDraggable(false);
-    confirm.setHasTitleCloseButton(false);
-    confirm.setTitle('Confirm Delete');
-
-    var container = confirm.getContentElement();
-    var content = goog.dom.createDom('span', null,
-        'Are you sure you want to delete:',
-        goog.dom.createElement('br'),
-        goog.dom.createDom('strong', null, this.file_.getName()));
-    goog.dom.appendChild(container, content);
-
-    var closeCallback = function(e) {
-      if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
-        this.file_.delete();
-      }
-    };
-    // Will be removed when the event source closes.
-    goog.events.listen(confirm, goog.ui.Dialog.SELECT_EVENT,
-        closeCallback, false, this);
-
-    confirm.setVisible(true);
+  if (e.target.actorOption == armadillo.Actor.options_.OPEN) {
+    // TODO: assert that this.file_.isDirectory().
+    app.navigate(this.file_.getName());
+    this.hide();
+  } else if (e.target.actorOption == armadillo.Actor.options_.DELETE) {
+    this.performDelete_();
   }
+};
+
+/**
+ * Subroutine to handle bringing up the delete confirmation UI.
+ * @private
+ */
+armadillo.Actor.prototype.performDelete_ = function() {
+  var confirm = new goog.ui.Dialog();
+  confirm.setDisposeOnHide(true);
+  confirm.setEscapeToCancel(true);
+  confirm.setModal(true);
+  confirm.setDraggable(false);
+  confirm.setHasTitleCloseButton(false);
+  confirm.setTitle('Confirm Delete');
+
+  var container = confirm.getContentElement();
+  var content = goog.dom.createDom('span', null,
+      'Are you sure you want to delete:',
+      goog.dom.createElement('br'),
+      goog.dom.createDom('strong', null, this.file_.getName()));
+  goog.dom.appendChild(container, content);
+
+  var closeCallback = function(e) {
+    if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
+      this.file_.delete();
+    }
+  };
+  // Will be removed when the event source closes.
+  goog.events.listen(confirm, goog.ui.Dialog.SELECT_EVENT,
+      closeCallback, false, this);
+
+  confirm.setVisible(true);
 };
