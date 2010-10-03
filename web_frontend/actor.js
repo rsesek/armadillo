@@ -174,7 +174,7 @@ armadillo.Actor.prototype.performMove_ = function() {
           'Enter a new, absolute path for this file.'));
   var field = goog.dom.createElement('input');
   field.type = 'text';
-  goog.dom.setTextContent(field, this.file_.getParentPath());
+  field.value = this.file_.getFullPath();
   goog.dom.appendChild(container, field)
   // TODO: Suck less.
   goog.dom.appendChild(container,
@@ -182,6 +182,7 @@ armadillo.Actor.prototype.performMove_ = function() {
           '(Please pardon this interface. Armadillo is a work-in-progress.)'));
 
   dialog.setVisible(true);
+  field.focus();
 };
 
 /**
