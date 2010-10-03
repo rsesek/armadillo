@@ -106,7 +106,7 @@ def Main():
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
   
   # Version
-  print '=== Marking Version ==='
+  print '=== Version Stamp ==='
   if os.path.exists(VERSION_FILE):
     gitcrement = subprocess.Popen([ 'gitcrement', 'next' ], stdout = subprocess.PIPE, cwd = ROOT)
     gitcrement.wait()
@@ -125,8 +125,15 @@ def Main():
     fd.close()
     print '  BUILD ' + build_stamp + ' @ ' + time_stamp
     if options.compile_fe:
-      shutil.copy(VERSION_FILE, string.replace(VERSION_FILE, '.proto', ''))
+      mfiles = subprocess.Popen([ 'git', 'ls-files', '-m' ], stdout = subprocess.PIPE, cwd = ROOT)
+      mfiles.wait()
+      versioned_stamp_file = string.replace(VERSION_FILE, '.proto', '')
+      shutil.copy(VERSION_FILE, versioned_stamp_file)
       print '  COPY version.js.proto -> version.js'
+      if not len(mfiles.stdout.readlines()):
+        subprocess.Popen([ 'git', 'commit', '--author=Armadillo Build Script <armadillo@bluestatic.org>',
+            '-m', 'Stamp version.js @ ' + build_stamp + '.', versioned_stamp_file ], stdout = sys.stdout,
+                stderr = sys.stderr).wait()
   
   # Compile JS.
   print '=== Compiling Front End ==='
