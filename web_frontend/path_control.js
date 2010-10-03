@@ -103,6 +103,8 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
   this.fetchMenuContents_(path, name, menu);
 
   var button = new goog.ui.MenuButton(name, menu, null, this.dom_);
+  button.setFocusablePopupMenu(true);
+  button.setScrollOnOverflow(true);
   button.setVisible(true);
   return button;
 };
