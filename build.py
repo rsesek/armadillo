@@ -35,10 +35,10 @@ SOURCES = [
   'main.go'
 ]
 SOURCES_FE = [
+  'version.js',
   'actor.js',
   'file.js',
   'main.js',
-  'version.js',
 ]
 RESOURCES_FE = [
   'index.html',

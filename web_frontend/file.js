@@ -115,7 +115,7 @@ armadillo.File.prototype.draw = function() {
  * Deletes the given file in the backend by sending a request.  On return, it
  * will re-query the directory.
  */
-armadillo.File.prototype.delete = function() {
+armadillo.File.prototype.remove = function() {
   var file = this;
   var callback = function(data) {
     if (data['error']) {

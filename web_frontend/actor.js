@@ -202,7 +202,7 @@ armadillo.Actor.prototype.performDelete_ = function() {
 
   var closeCallback = function(e) {
     if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
-      this.file_.delete();
+      this.file_.remove();
     }
   };
   // Will be removed when the event source closes.
