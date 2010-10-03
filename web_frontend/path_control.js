@@ -11,6 +11,7 @@ goog.provide('armadillo.PathControl');
 
 goog.require('goog.ui.Component');
 goog.require('goog.ui.FilteredMenu');
+goog.require('goog.ui.LabelInput');
 goog.require('goog.ui.MenuButton');
 goog.require('goog.ui.MenuItem');
 
@@ -77,8 +78,15 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
   delete components[0];  // Don't create an empty item.
 
   var path = '';
-  goog.array.forEach(components, function (part) {
-    this.addChild(this.createComponentNode_('/' + path, part), true);
+  goog.array.forEach(components, function (part, i) {
+    if (i != components.length - 1) {
+      this.addChild(this.createComponentNode_('/' + path, part), true);
+    } else {
+      var input = new goog.ui.LabelInput(part, this.dom_);
+      this.addChild(input, true);
+      input.setEnabled(this.editableLastComponent_);
+      input.setValue(part);
+    }
     path += '/' + part;
   }, this);
 };

@@ -171,7 +171,7 @@ armadillo.Actor.prototype.performMove_ = function() {
 
   var container = dialog.getContentElement();
 
-  var editor = new armadillo.PathControl(this.file_.getFullPath());
+  var editor = new armadillo.PathControl(this.file_.getFullPath(), false);
   editor.render(container);
 
 /*
