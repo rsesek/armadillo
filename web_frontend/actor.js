@@ -169,26 +169,9 @@ armadillo.Actor.prototype.performMove_ = function() {
   var dialog = this.createActionDialog_();
   dialog.setTitle('Move File');
 
-  var container = dialog.getContentElement();
-
   var editor = new armadillo.PathControl(this.file_.getFullPath(), false);
-  editor.render(container);
+  dialog.addChild(editor, true);
 
-/*
-  goog.dom.appendChild(container,
-      goog.dom.createDom('p', null,
-          'Enter a new, absolute path for this file.'));
-  var field = goog.dom.createElement('input');
-  field.type = 'text';
-  field.value = this.file_.getFullPath();
-  goog.dom.appendChild(container, field)
-  // TODO: Suck less.
-  goog.dom.appendChild(container,
-      goog.dom.createDom('p', 'smallfont',
-          '(Please pardon this interface. Armadillo is a work-in-progress.)'));
-
-  field.focus();
-*/
   dialog.setVisible(true);
 };
 
