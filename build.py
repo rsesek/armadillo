@@ -9,9 +9,12 @@
 #
 import optparse
 import os
+import re
 import shutil
+import string
 import subprocess
 import sys
+import time
 
 ROOT      = os.path.dirname(os.path.realpath(__file__))
 SRC_PATH  = os.path.join(ROOT, 'src')
@@ -23,6 +26,8 @@ CLOSURE_REV      = '235'
 CLOSURE_DEST     = os.path.join(ROOT, 'closure')
 CLOSURE_COMPILER = os.path.join(ROOT, 'closure-compiler.jar')
 CLOSURE_CALCDEPS = os.path.join(CLOSURE_DEST, 'closure', 'bin', 'calcdeps.py')
+
+VERSION_FILE = os.path.join(FE_PATH, 'version.js.proto')
 
 SOURCES = [
   'paths.go',
@@ -88,7 +93,7 @@ def Main():
   handle.wait()
   
   _PullDeps()
-    
+  
   # Copy
   print '=== Copying Resources ==='
   fe_resources = os.path.join(PROD_PATH, 'fe')
@@ -97,6 +102,29 @@ def Main():
   for resource in RESOURCES_FE:
     print '  COPY ' + resource
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
+  
+  # Version
+  print '=== Marking Version ==='
+  if os.path.exists(VERSION_FILE):
+    gitcrement = subprocess.Popen([ 'gitcrement', 'next' ], stdout = subprocess.PIPE, cwd = ROOT)
+    gitcrement.wait()
+    build_stamp = gitcrement.stdout.read().strip()
+    time_stamp = str(int(time.time()))
+    
+    fd = open(VERSION_FILE, 'a+')
+    fd.seek(0)
+    lines = fd.readlines()
+    fd.seek(0)
+    fd.truncate()
+    for line in lines:
+      line = re.sub(r'(BUILD =) ([0-9]+)', r'\1 ' + build_stamp, line)
+      line = re.sub(r'(STAMP =) ([0-9]+)', r'\1 ' + time_stamp, line)
+      fd.write(line)
+    fd.close()
+    print '  BUILD ' + build_stamp + ' @ ' + time_stamp
+    if options.compile_fe:
+      shutil.copy(VERSION_FILE, string.replace(VERSION_FILE, '.proto', ''))
+      print '  COPY version.js.proto -> version.js'
   
   # Compile JS.
   print '=== Compiling Front End ==='
