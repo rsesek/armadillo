@@ -18,6 +18,12 @@ h1 {
   font-size: 2em;
 }
 
+#footer {
+  margin-top: 0.6em;
+  font-size: 0.6em;
+  text-align: right;
+}
+
 .smallfont {
   font-size: 0.7em;
 }

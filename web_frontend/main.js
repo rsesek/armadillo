@@ -11,10 +11,12 @@ goog.provide('armadillo');
 goog.provide('armadillo.App');
 
 goog.require('armadillo.File');
+goog.require('armadillo.Version');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.fx.dom.FadeInAndShow');
 goog.require('goog.net.XhrIo');
+goog.require('goog.string.format');
 goog.require('goog.Uri.QueryData');
 
 armadillo.App = function() {
@@ -28,6 +30,11 @@ armadillo.App = function() {
   this.errorEffect_.hide();
   goog.events.listen(window, goog.events.EventType.HASHCHANGE,
       this.hashChanged_, false, this);
+
+  var version = goog.string.format('Armadillo %d.%d (%d)',
+      armadillo.Version.MAJOR, armadillo.Version.MINOR,
+      armadillo.Version.BUILD);
+  goog.dom.setTextContent(goog.dom.getElement('footer'), version)
 }
 
 /**
