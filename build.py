@@ -36,6 +36,7 @@ SOURCES = [
 ]
 SOURCES_FE = [
   'version.js',
+  'path_control.js',
   'actor.js',
   'file.js',
   'main.js',

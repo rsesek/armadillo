@@ -9,6 +9,7 @@
 
 goog.provide('armadillo.Actor');
 
+goog.require('armadillo.PathControl');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
@@ -169,6 +170,11 @@ armadillo.Actor.prototype.performMove_ = function() {
   dialog.setTitle('Move File');
 
   var container = dialog.getContentElement();
+
+  var editor = new armadillo.PathControl(this.file_.getFullPath());
+  editor.render(container);
+
+/*
   goog.dom.appendChild(container,
       goog.dom.createDom('p', null,
           'Enter a new, absolute path for this file.'));
@@ -181,8 +187,9 @@ armadillo.Actor.prototype.performMove_ = function() {
       goog.dom.createDom('p', 'smallfont',
           '(Please pardon this interface. Armadillo is a work-in-progress.)'));
 
-  dialog.setVisible(true);
   field.focus();
+*/
+  dialog.setVisible(true);
 };
 
 /**
