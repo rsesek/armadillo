@@ -45,6 +45,8 @@ armadillo.Actor = function(file) {
    * @type  {goog.ui.Popup}
    */
   this.popup_ = new goog.ui.Popup(this.element_);
+  goog.events.listenOnce(this.popup_, goog.ui.PopupBase.EventType.HIDE,
+      this.onPopupClosed_, false, this);
 
   /**
    * The UI element used for a specific action.
@@ -101,7 +103,7 @@ armadillo.Actor.prototype.disposeInternal = function() {
   armadillo.Actor.superClass_.disposeInternal.call(this);
 
   // Unlisten the tiles.
-  var tiles = goog.dom.getElementsByClassName('tile', this.element_);
+  var tiles = goog.dom.getElementsByClass('tile', this.element_);
   goog.array.forEach(tiles, function (tile) {
     goog.events.unlistenByKey(tile.actorListener);
   });
@@ -223,7 +225,7 @@ armadillo.Actor.prototype.performMove_ = function() {
  */
 armadillo.Actor.prototype.performDelete_ = function() {
   this.actionObject_ = this.createActionDialog_();
-  confirm.setTitle('Confirm Delete');
+  this.actionObject_.setTitle('Confirm Delete');
 
   var container = this.actionObject_.getContentElement();
   var content = goog.dom.createDom('span', null,
@@ -258,4 +260,16 @@ armadillo.Actor.prototype.createActionDialog_ = function() {
   confirm.setDraggable(false);
   confirm.setHasTitleCloseButton(false);
   return confirm;
+};
+
+/**
+ * Event handler for when this.popup_ closes.
+ * @param  {Event}  e
+ */
+armadillo.Actor.prototype.onPopupClosed_ = function(e) {
+  // If an action is not being performed, then dispose the Actor. Otherwise,
+  // this will get cleaned up after the actionObject_ closes.
+  if (!this.actionObject_) {
+    this.dispose();
+  }
 };
