@@ -120,6 +120,24 @@ armadillo.File.prototype.remove = function() {
 };
 
 /**
+ * Moves a file from one absolute path to another. On success, it will navigate
+ * to the new path.
+ * @param  {string}  dest  The destination path.
+ */
+armadillo.File.prototype.move = function(dest) {
+  var file = this;
+  var callback = function(data) {
+    if (data['error']) {
+      app.showError(data['message']);
+    } else {
+      app.clearError();
+      app.list(app.stripLastPathComponent(dest));
+    }
+  };
+  app.sendRequest('move', {'source':this.getFullPath(), 'target':dest}, callback);
+};
+
+/**
  * Click handler for the list element.
  * @param  {Event}  e
  */

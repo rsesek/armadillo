@@ -74,6 +74,14 @@ armadillo.PathControl.prototype.setPath = function(path) {
 };
 
 /**
+ * Gets the new path.
+ * @returns  {string}
+ */
+armadillo.PathControl.prototype.getPath = function() {
+  return app.joinPath(this.path_, this.name_);
+};
+
+/**
  * Creates a new path control object.
  */
 armadillo.PathControl.prototype.createDom = function() {

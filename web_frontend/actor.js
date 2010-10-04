@@ -174,6 +174,18 @@ armadillo.Actor.prototype.performMove_ = function() {
   var editor = new armadillo.PathControl(this.file_.getFullPath(), true);
   dialog.addChild(editor, true);
 
+  var closeCallback = function(e) {
+    if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
+      var newPath = editor.getPath();
+      this.file_.move(newPath);
+    }
+    dialog.dispose();
+    this.dispose();
+  };
+  // Will be removed when the event source closes.
+  goog.events.listen(dialog, goog.ui.Dialog.SELECT_EVENT,
+      closeCallback, false, this);
+
   dialog.setVisible(true);
   var position = goog.style.getPosition(dialog.getElement());
   goog.style.setPosition(dialog.getElement(), position.x, '10%');
@@ -197,6 +209,8 @@ armadillo.Actor.prototype.performDelete_ = function() {
   var closeCallback = function(e) {
     if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
       this.file_.remove();
+      confirm.dispose();
+      this.dispose();
     }
   };
   // Will be removed when the event source closes.
