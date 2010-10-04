@@ -139,6 +139,24 @@ armadillo.App.prototype.stripLastPathComponent = function(path) {
 };
 
 /**
+ * Joins all the arguments together as a path.
+ * @param  {string...}  varargs  Components to join
+ */
+armadillo.App.prototype.joinPath = function() {
+  var path = '';
+  var sep = '/';
+  var last = arguments.length - 1;
+  goog.array.forEach(arguments, function (c, i) {
+    if (c == sep && i != 0)
+      return;
+    path += c;
+    if (c[c.length - 1] != sep && i != last)
+      path += sep;
+  });
+  return path;
+};
+
+/**
  * Clears the error message.
  */
 armadillo.App.prototype.clearError = function() {

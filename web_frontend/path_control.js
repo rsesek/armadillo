@@ -95,15 +95,9 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
   this.element_ = element;
   var components = this.path_.split('/');
 
-  if (components.length == 2) {
-    // If this is an item that lives at the root, generate a special node for
-    // moving between items at the top level.
-    components[0] = '/';
-  } else {
-    // Otherwise, just remove it as the first node will list all items at the
-    // root.
-    goog.array.removeAt(components, 0);
-  }
+  // If this is an item that lives at the root, generate a special node for
+  // moving between items at the top level.
+  components[0] = '/';
 
   // If the last component is emtpy, do not use it because it means a directory
   // is being moved.
@@ -111,10 +105,10 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
     goog.array.removeAt(components, components.length - 1);
   }
 
-  var path = '/';
+  var path = '';
   goog.array.forEach(components, function (part, i) {
     this.addChild(this.createComponentNode_(path, part), true);
-    path += part + '/';
+    path = app.joinPath(path, part);
   }, this);
 
   if (this.editableLastComponent_) {
@@ -174,14 +168,14 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
         return;
       }
       var item = new goog.ui.MenuItem(caption);
-      item.setValue(path + caption);
+      item.setValue(app.joinPath(path, name, caption));
       menu.addItem(item);
       if (caption == name) {
         menu.setHighlighted(item);
       }
     });
   };
-  app.sendRequest('list', {'path':path}, callback);
+  app.sendRequest('list', {'path' : app.joinPath(path, name)}, callback);
 };
 
 /**
