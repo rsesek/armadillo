@@ -11,5 +11,5 @@ goog.provide('armadillo.Version');
 
 armadillo.Version.MAJOR = 0;
 armadillo.Version.MINOR = 2;
-armadillo.Version.BUILD = 75;
-armadillo.Version.STAMP = 1286157422;
+armadillo.Version.BUILD = 94;
+armadillo.Version.STAMP = 1286159450;
