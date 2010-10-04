@@ -69,3 +69,15 @@ func Remove(the_path string) os.Error {
   }
   return os.RemoveAll(full_path)
 }
+
+func Move(source string, target string) os.Error {
+  source = canonicalizePath(source)
+  target = canonicalizePath(target)
+  if !checkInJail(source) {
+    return os.NewError("Source outside of jail")
+  }
+  if !checkInJail(target) {
+    return os.NewError("Target outside of jail")
+  }
+  return os.Rename(source, target)
+}

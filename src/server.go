@@ -56,6 +56,18 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
         }
         okResponse(connection, response)
       }
+    case "move":
+      source := request.FormValue("source")
+      target := request.FormValue("target")
+      err := paths.Move(source, target)
+      if err != nil {
+        errorResponse(connection, err.String())
+      } else {
+        response := map[string] string {
+          "path" : target,
+        }
+        okResponse(connection, response)
+      }
     default:
       errorResponse(connection, "Unhandled action")
   }  
