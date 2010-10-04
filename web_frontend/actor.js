@@ -27,9 +27,31 @@ goog.require('goog.ui.Popup');
  */
 armadillo.Actor = function(file) {
   goog.Disposable.call(this);
+
+  /**
+   * The file object on which this acts.
+   * @type  {armadillo.File}
+   */
   this.file_ = file;
+
+  /**
+   * The HTML element that draws the actor buttons
+   * @type  {Element}
+   */
   this.element_ = this.createElement_();
+
+  /**
+   * The Container that holds the display element.
+   * @type  {goog.ui.Popup}
+   */
   this.popup_ = new goog.ui.Popup(this.element_);
+
+  /**
+   * The UI element used for a specific action.
+   * @type  {goog.Disposable}
+   */
+  this.actionObject_ = null;
+
   armadillo.Actor.actors_.push(this);
 }
 goog.inherits(armadillo.Actor, goog.Disposable);
@@ -91,6 +113,11 @@ armadillo.Actor.prototype.disposeInternal = function() {
   // Kill the popup.
   this.popup_.dispose();
   this.popup_ = null;
+
+  if (this.actionObject_) {
+    this.actionObject_.dispose();
+    this.actionObject_ = null;
+  }
 
   // Remove the actor from the list.
   goog.array.remove(armadillo.Actor.actors_, this);
@@ -168,27 +195,26 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
  * @private
  */
 armadillo.Actor.prototype.performMove_ = function() {
-  var dialog = this.createActionDialog_();
-  dialog.setTitle('Move File');
+  this.actionObject_ = this.createActionDialog_();
+  this.actionObject_.setTitle('Move File');
 
   var editor = new armadillo.PathControl(this.file_.getFullPath(), true);
-  dialog.addChild(editor, true);
+  this.actionObject_.addChild(editor, true);
 
   var closeCallback = function(e) {
     if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
       var newPath = editor.getPath();
       this.file_.move(newPath);
     }
-    dialog.dispose();
     this.dispose();
   };
   // Will be removed when the event source closes.
-  goog.events.listen(dialog, goog.ui.Dialog.SELECT_EVENT,
+  goog.events.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
       closeCallback, false, this);
 
-  dialog.setVisible(true);
-  var position = goog.style.getPosition(dialog.getElement());
-  goog.style.setPosition(dialog.getElement(), position.x, '10%');
+  this.actionObject_.setVisible(true);
+  var position = goog.style.getPosition(this.actionObject_.getElement());
+  goog.style.setPosition(this.actionObject_.getElement(), position.x, '10%');
 };
 
 /**
@@ -196,10 +222,10 @@ armadillo.Actor.prototype.performMove_ = function() {
  * @private
  */
 armadillo.Actor.prototype.performDelete_ = function() {
-  var confirm = this.createActionDialog_();
+  this.actionObject_ = this.createActionDialog_();
   confirm.setTitle('Confirm Delete');
 
-  var container = confirm.getContentElement();
+  var container = this.actionObject_.getContentElement();
   var content = goog.dom.createDom('span', null,
       'Are you sure you want to delete:',
       goog.dom.createElement('br'),
@@ -209,15 +235,14 @@ armadillo.Actor.prototype.performDelete_ = function() {
   var closeCallback = function(e) {
     if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
       this.file_.remove();
-      confirm.dispose();
-      this.dispose();
     }
+    this.dispose();
   };
   // Will be removed when the event source closes.
-  goog.events.listen(confirm, goog.ui.Dialog.SELECT_EVENT,
+  goog.events.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
       closeCallback, false, this);
 
-  confirm.setVisible(true);
+  this.actionObject_.setVisible(true);
 };
 
 /**
