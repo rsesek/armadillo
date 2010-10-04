@@ -23,9 +23,16 @@ armadillo.File = function(name, path) {
   goog.Disposable.call(this);
   this.name_ = name;
   this.path_ = path;
+  this.highlight_ = '';
   this.isDirectory_ = app.isDirectory(name);
 };
 goog.inherits(armadillo.File, goog.Disposable);
+
+armadillo.File.Highlight = {
+  NONE : '',
+  SELECTED : 'file-selected',
+  ACTIVE   : 'file-active'
+};
 
 /**
  * Disposer
@@ -71,6 +78,13 @@ armadillo.File.prototype.getFullPath = function() {
  */
 armadillo.File.prototype.isDirectory = function() {
   return this.isDirectory_;
+};
+
+/**
+ * Sets the highlight state.
+ */
+armadillo.File.prototype.setHighlight = function(h) {
+  goog.dom.classes.addRemove(this.element_, this.highlight_, h);
 };
 
 /**

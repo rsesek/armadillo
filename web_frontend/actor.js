@@ -140,6 +140,7 @@ armadillo.Actor.prototype.show = function(x, y) {
   this.popup_.setHideOnEscape(true);
   this.render();
   this.popup_.setVisible(true);
+  this.file_.setHighlight(armadillo.File.Highlight.ACTIVE);
 };
 
 /**
@@ -301,6 +302,7 @@ armadillo.Actor.prototype.onPopupClosed_ = function(e) {
   // If an action is not being performed, then dispose the Actor. Otherwise,
   // this will get cleaned up after the actionObject_ closes.
   if (!this.actionObject_) {
+    this.file_.setHighlight(armadillo.File.Highlight.SELECTED);
     this.dispose();
   }
 };

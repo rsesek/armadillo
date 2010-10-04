@@ -45,6 +45,14 @@ h1 {
   background-color: rgb(255, 255, 255);
 }
 
+#ls li.file-selected {
+  background-color: green;
+}
+
+#ls li.file-active {
+  background-color: rgb(255, 162, 74);
+}
+
 #ls li a {
   text-decoration: underline;
 }
@@ -61,15 +69,17 @@ h1 {
 }
 
 .actor {
-  width: 8.3em;
-  height: 8.3em;
+  width: 8.5em;
+  height: 8.5em;
   position: absolute;
   visibility: hidden;
 
   background-color: rgb(77, 79, 83);
 
-  border-width: .3em;
-  border-color: rgb(77, 79, 83);
+  padding: .1em;
+
+  border-width: .1em;
+  border-color: rgb(0, 0, 0);
   border-style: solid;
 }
 
@@ -91,6 +101,13 @@ h1 {
       rgb(224,225,221) 100%,
       rgb(173,175,175) 0%
   );
+
+  border-color-top: black;
+  border-color-left: black;
+  border-color-right: red;
+  border-color-bottom: rgb(200, 200, 200);
+  border-style: solid;
+  border-width: .1em;
 
   text-align: center;
 }
