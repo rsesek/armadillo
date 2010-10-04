@@ -47,6 +47,13 @@ RESOURCES_FE = [
   'screen.css',
   'reset.css'
 ]
+RESOURCES_CLOSURE = [
+  'common.css',
+  'dialog.css',
+  'menu.css',
+  'menuitem.css',
+  'menubutton.css',
+]
 PRODUCT_NAME = 'armadillo'
 
 COMPILER = '8g'
@@ -105,6 +112,14 @@ def Main():
   for resource in RESOURCES_FE:
     print '  COPY ' + resource
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
+  fd = open(os.path.join(fe_resources, 'closure.css'), 'w+')
+  for resource in RESOURCES_CLOSURE:
+    dest_name = 'closure_' + resource
+    print '  COPY ' + dest_name
+    shutil.copy(os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource),
+        os.path.join(fe_resources, dest_name))
+    fd.write('@import url(/fe/' + dest_name + ');\n')
+  fd.close()
   
   # Version
   print '=== Version Stamp ==='
