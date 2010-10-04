@@ -37,7 +37,6 @@ armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
    * @type  {string}
    */
   this.name_ = null;
-
   this.setPath(path);
 
   /**
@@ -47,10 +46,10 @@ armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
   this.editableLastComponent_ = editLastComponent;
 
   /**
-   * List of path components
-   * @type  {Array}
+   * Event Handler
+   * @type  {goog.events.EventHandler}
    */
-  this.components_ = new Array();
+  this.eh_ = new goog.events.EventHandler();
 };
 goog.inherits(armadillo.PathControl, goog.ui.Component);
 
@@ -60,7 +59,8 @@ goog.inherits(armadillo.PathControl, goog.ui.Component);
  */
 armadillo.PathControl.prototype.disposeInternal = function() {
   armadillo.PathControl.superClass_.disposeInternal.call(this);
-  this.components_ = null;
+  this.eh_.dispose();
+  this.eh_ = null;
 };
 
 /**
@@ -129,10 +129,13 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
     nameComponent = new goog.ui.Control(this.dom_.createDom('input', attrs));
     nameComponent.setAllowTextSelection(true);
     nameComponent.setHandleMouseEvents(true);
+    this.addChild(nameComponent, true);
+    this.eh_.listen(nameComponent.getElement(), goog.events.EventType.CHANGE,
+        this.nameChanged_, false, this);
   } else {
     nameComponent = new goog.ui.Control(this.name_);
+    this.addChild(nameComponent, true);
   }
-  this.addChild(nameComponent, true);
   goog.dom.classes.add(nameComponent.getElement(), 'goog-inline-block');
 };
 
@@ -201,4 +204,14 @@ armadillo.PathControl.prototype.componentChanged_ = function(e) {
   this.path_ = e.target.getValue();
   this.removeChildren(true);
   this.decorateInternal(this.element_);
+};
+
+/**
+ * Handler for changing the editable name component.
+ * @param  {Event} e
+ */
+armadillo.PathControl.prototype.nameChanged_ = function(e) {
+  // TODO: assert(this.editableLastComponent_)
+  console.log('new name = ' + e.target.value);
+  this.name_ = e.target.value;
 };
