@@ -9,6 +9,7 @@
 
 goog.provide('armadillo.Actor');
 
+goog.require('armadillo.ModalDialog');
 goog.require('armadillo.PathControl');
 goog.require('goog.array');
 goog.require('goog.dom');
@@ -158,6 +159,10 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
     this.performMove_();
   } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
+  } else if (option == armadillo.Actor.options_.RENAME) {
+    var dialog = new armadillo.ModalDialog();
+    dialog.render();
+    dialog.setVisible(true);
   }
 };
 

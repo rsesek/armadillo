@@ -37,6 +37,7 @@ SOURCES = [
 SOURCES_FE = [
   'version.js',
   'path_control.js',
+  'modal_dialog.js',
   'actor.js',
   'file.js',
   'main.js',
