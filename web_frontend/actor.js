@@ -9,7 +9,6 @@
 
 goog.provide('armadillo.Actor');
 
-goog.require('armadillo.ModalDialog');
 goog.require('armadillo.PathControl');
 goog.require('goog.array');
 goog.require('goog.dom');
@@ -156,14 +155,11 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
     // TODO: assert that this.file_.isDirectory().
     app.navigate(this.file_.getName());
     this.hide();
-  } else if (option == armadillo.Actor.options_.MOVE) {
+  } else if (option == armadillo.Actor.options_.MOVE ||
+             option == armadillo.Actor.options_.RENAME) {
     this.performMove_();
   } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
-  } else if (option == armadillo.Actor.options_.RENAME) {
-    var dialog = new armadillo.ModalDialog();
-    dialog.render();
-    dialog.setVisible(true);
   }
 };
 
@@ -175,7 +171,7 @@ armadillo.Actor.prototype.performMove_ = function() {
   var dialog = this.createActionDialog_();
   dialog.setTitle('Move File');
 
-  var editor = new armadillo.PathControl(this.file_.getFullPath(), false);
+  var editor = new armadillo.PathControl(this.file_.getFullPath(), true);
   dialog.addChild(editor, true);
 
   dialog.setVisible(true);
