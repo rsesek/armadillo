@@ -93,7 +93,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
     goog.array.removeAt(components, components.length - 1);
   }
 
-  var path = '';
+  var path = '/';
   goog.array.forEach(components, function (part, i) {
     if (i != components.length - 1) {
       this.addChild(this.createComponentNode_(path, part), true);
@@ -117,6 +117,8 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
   menu.setFilterLabel(name);
   menu.setAllowMultiple(false);
   menu.setOpenFollowsHighlight(true);
+  goog.events.listen(menu, goog.ui.Component.EventType.ACTION,
+      this.componentChanged_, false, this);
   this.fetchMenuContents_(path, name, menu);
 
   var button = new goog.ui.MenuButton(name, menu, null, this.dom_);
@@ -151,6 +153,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
         return;
       }
       var item = new goog.ui.MenuItem(caption);
+      item.setValue(path + caption);
       menu.addItem(item);
       if (caption == name) {
         menu.setHighlighted(item);
@@ -158,4 +161,12 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
     });
   };
   app.sendRequest('list', {'path':path}, callback);
+};
+
+/**
+ * Handler for changing a component of the control.
+ * @param  {Event}  e
+ */
+armadillo.PathControl.prototype.componentChanged_ = function(e) {
+  console.log(e.target.getValue());
 };
