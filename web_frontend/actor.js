@@ -8,14 +8,17 @@
 //
 
 goog.provide('armadillo.Actor');
+goog.provide('armadillo.Actor.TileControlRenderer_');
 
 goog.require('armadillo.PathControl');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
+goog.require('goog.events.EventHandler');
 goog.require('goog.positioning.ClientPosition');
 goog.require('goog.positioning.Corner');
 goog.require('goog.style');
+goog.require('goog.ui.Container');
 goog.require('goog.ui.Dialog');
 goog.require('goog.ui.Popup');
 
@@ -23,10 +26,11 @@ goog.require('goog.ui.Popup');
  * The Actor is a popup that displays the various actions that can be performed
  * on a given File.
  * @param  {armadillo.File}  file  The file to act on.
+ * @param  {goog.dom.DomHelper}  opt_domHelper
  * @constructor
  */
-armadillo.Actor = function(file) {
-  goog.Disposable.call(this);
+armadillo.Actor = function(file, opt_domHelper) {
+  goog.ui.Container.call(this, null, null, opt_domHelper);
 
   /**
    * The file object on which this acts.
@@ -35,17 +39,17 @@ armadillo.Actor = function(file) {
   this.file_ = file;
 
   /**
-   * The HTML element that draws the actor buttons
-   * @type  {Element}
+   * Registrar for all the Actor's events.
+   * @type  {goog.events.EventHandler}
    */
-  this.element_ = this.createElement_();
+  this.eh_ = new goog.events.EventHandler();
 
   /**
    * The Container that holds the display element.
    * @type  {goog.ui.Popup}
    */
   this.popup_ = new goog.ui.Popup(this.element_);
-  goog.events.listenOnce(this.popup_, goog.ui.PopupBase.EventType.HIDE,
+  this.eh_.listenOnce(this.popup_, goog.ui.PopupBase.EventType.HIDE,
       this.onPopupClosed_, false, this);
 
   /**
@@ -56,7 +60,7 @@ armadillo.Actor = function(file) {
 
   armadillo.Actor.actors_.push(this);
 }
-goog.inherits(armadillo.Actor, goog.Disposable);
+goog.inherits(armadillo.Actor, goog.ui.Container);
 
 /**
  * An array of all the Actors that have been created.
@@ -102,11 +106,7 @@ armadillo.Actor.isModal = function() {
 armadillo.Actor.prototype.disposeInternal = function() {
   armadillo.Actor.superClass_.disposeInternal.call(this);
 
-  // Unlisten the tiles.
-  var tiles = goog.dom.getElementsByClass('tile', this.element_);
-  goog.array.forEach(tiles, function (tile) {
-    goog.events.unlistenByKey(tile.actorListener);
-  });
+  this.eh_.dispose();
 
   // Remove the actor display element.
   goog.dom.removeNode(this.element_);
@@ -135,11 +135,10 @@ armadillo.Actor.prototype.disposeInternal = function() {
 armadillo.Actor.prototype.show = function(x, y) {
   if (armadillo.Actor.isModal())
     return;
-  var firstBodyElement = goog.dom.getFirstElementChild(document.body);
-  goog.dom.insertSiblingBefore(this.element_, firstBodyElement);
   this.popup_.setPinnedCorner(goog.positioning.Corner.TOP_LEFT);
   this.popup_.setPosition(new goog.positioning.ClientPosition(x, y));
   this.popup_.setHideOnEscape(true);
+  this.render();
   this.popup_.setVisible(true);
 };
 
@@ -150,28 +149,60 @@ armadillo.Actor.prototype.hide = function() {
   this.popup_.setVisible(false);
 };
 
+
+/**
+ * Creates a new path control object.
+ */
+armadillo.Actor.prototype.createDom = function() {
+  this.decorateInternal(this.dom_.createDom('div', 'actor'));
+  this.popup_.setElement(this.element_);
+};
+
+/**
+ * @inheritDoc
+ */
+armadillo.Actor.prototype.canDecorate = function() {
+  return false;
+};
+
+/**
+ * Decorates the given element into a path control.
+ * @param  {Element}  element
+ */
+armadillo.Actor.prototype.decorateInternal = function(element) {
+  this.element_ = element;
+  this.dom_.removeChildren(this.element_);
+  for (var option in armadillo.Actor.options_) {
+    var tile = this.createTile_(option);
+    if (tile) {
+      this.addChild(tile, true);
+    }
+  }
+};
+
 /**
  * Creates the DOM Element that is inserted into the popup.
- * @returns  Element
+ * @param  {armadillo.Actor.options_}  Key of the option to create
+ * @returns  {goog.ui.Control}
  */
-armadillo.Actor.prototype.createElement_ = function() {
-  var root = goog.dom.createDom('div', 'actor');
-  for (var option in armadillo.Actor.options_) {
-    var tile = goog.dom.createDom('div', 'tile');
-    var value = armadillo.Actor.options_[option];
-    // Cannot open non-directory files.
-    if (value == armadillo.Actor.options_.OPEN && !this.file_.isDirectory()) {
-      continue;
-    }
-    var title = goog.dom.createDom('span', 'title',
-        armadillo.Actor.optionStrings_[value]);
-    goog.dom.appendChild(tile, title);
-    goog.dom.appendChild(root, tile);
-    tile.actorOption = value;
-    tile.actorListener = goog.events.listen(tile, goog.events.EventType.CLICK,
-        this.tileClickHandler_, false, this);
+armadillo.Actor.prototype.createTile_ = function(option) {
+  var value = armadillo.Actor.options_[option];
+
+  // Create the title element.
+  var title = this.dom_.createDom('span', 'title',
+      armadillo.Actor.optionStrings_[value]);
+
+  var tile = new goog.ui.Control(title, new armadillo.Actor.TileControlRenderer_());
+  tile.actorOption = value;
+
+  // Cannot open non-directory files.
+  if (value == armadillo.Actor.options_.OPEN && !this.file_.isDirectory()) {
+    return null;
   }
-  return root;
+
+  this.eh_.listen(tile, goog.ui.Component.EventType.ACTION,
+      this.tileClickHandler_, false, this);
+  return tile;
 };
 
 /**
@@ -211,7 +242,7 @@ armadillo.Actor.prototype.performMove_ = function() {
     this.dispose();
   };
   // Will be removed when the event source closes.
-  goog.events.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
+  this.eh_.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
       closeCallback, false, this);
 
   this.actionObject_.setVisible(true);
@@ -241,7 +272,7 @@ armadillo.Actor.prototype.performDelete_ = function() {
     this.dispose();
   };
   // Will be removed when the event source closes.
-  goog.events.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
+  this.eh_.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
       closeCallback, false, this);
 
   this.actionObject_.setVisible(true);
@@ -272,4 +303,24 @@ armadillo.Actor.prototype.onPopupClosed_ = function(e) {
   if (!this.actionObject_) {
     this.dispose();
   }
+};
+
+/**
+ * Tile Control Renderer
+ * @constructor
+ */
+armadillo.Actor.TileControlRenderer_ = function() {
+  goog.ui.ControlRenderer.call(this);
+};
+goog.inherits(armadillo.Actor.TileControlRenderer_, goog.ui.ControlRenderer);
+
+/**
+ * Returns the control's contents wrapped in a DIV, with the renderer's own
+ * CSS class and additional state-specific classes applied to it.
+ * @param {goog.ui.Control} control Control to render.
+ * @return {Element} Root element for the control.
+ */
+goog.ui.ControlRenderer.prototype.createDom = function(control) {
+  // Create and return DIV wrapping contents.
+  return control.getDomHelper().createDom('div', 'tile', control.getContent());
 };
