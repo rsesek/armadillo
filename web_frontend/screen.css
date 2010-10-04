@@ -93,19 +93,19 @@ h1 {
       linear,
       left bottom,
       left top,
-      color-stop(1, rgb(224,225,221)),
+      color-stop(1, rgb(255,255,255)),
       color-stop(0, rgb(173,175,175))
   );
   background: -moz-linear-gradient(
       center bottom,
-      rgb(224,225,221) 100%,
+      rgb(255,255,255) 100%,
       rgb(173,175,175) 0%
   );
 
-  border-color-top: black;
-  border-color-left: black;
-  border-color-right: red;
-  border-color-bottom: rgb(200, 200, 200);
+  border-top-color: black;
+  border-left-color: black;
+  border-right-color: rgb(100, 100, 100);
+  border-bottom-color: rgb(100, 100, 100);
   border-style: solid;
   border-width: .1em;
 
@@ -114,6 +114,21 @@ h1 {
 
 .actor .tile .title {
   font-size: 0.7em;
+}
+
+.actor .tile:active {
+  background: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0, rgb(255,255,255)),
+      color-stop(1, rgb(173,175,175))
+  );
+  background: -moz-linear-gradient(
+      center bottom,
+      rgb(255,255,255) 0%,
+      rgb(173,175,175) 100%
+  );
 }
 
 .modalDialog {
