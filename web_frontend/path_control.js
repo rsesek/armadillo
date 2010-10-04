@@ -9,6 +9,7 @@
 
 goog.provide('armadillo.PathControl');
 
+goog.require('goog.array');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.FilteredMenu');
 goog.require('goog.ui.LabelInput');
@@ -75,19 +76,34 @@ armadillo.PathControl.prototype.canDecorate = function() {
 armadillo.PathControl.prototype.decorateInternal = function(element) {
   this.element_ = element;
   var components = this.path_.split('/');
-  delete components[0];  // Don't create an empty item.
+
+  if (components.length == 2) {
+    // If this is an item that lives at the root, generate a special node for
+    // moving between items at the top level.
+    components[0] = '/';
+  } else {
+    // Otherwise, just remove it as the first node will list all items at the
+    // root.
+    goog.array.removeAt(components, 0);
+  }
+
+  // If the last component is emtpy, do not use it because it means a directory
+  // is being moved.
+  if (components[components.length - 1] == '') {
+    goog.array.removeAt(components, components.length - 1);
+  }
 
   var path = '';
   goog.array.forEach(components, function (part, i) {
     if (i != components.length - 1) {
-      this.addChild(this.createComponentNode_('/' + path, part), true);
+      this.addChild(this.createComponentNode_(path, part), true);
     } else {
       var input = new goog.ui.LabelInput(part, this.dom_);
       this.addChild(input, true);
       input.setEnabled(this.editableLastComponent_);
       input.setValue(part);
     }
-    path += '/' + part;
+    path += part + '/';
   }, this);
 };
 
@@ -100,6 +116,7 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
   var menu = new goog.ui.FilteredMenu();
   menu.setFilterLabel(name);
   menu.setAllowMultiple(false);
+  menu.setOpenFollowsHighlight(true);
   this.fetchMenuContents_(path, name, menu);
 
   var button = new goog.ui.MenuButton(name, menu, null, this.dom_);
@@ -123,7 +140,16 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
       app.showError(data['message']);
       return;
     }
+    if (path == '') {
+      // If this is the root path element, make sure the root is accessible for
+      // moving items.
+      goog.array.insertAt(data, '/', 0);
+    }
     goog.array.forEach(data, function (caption) {
+      // It only makes sense to be able to move into directories.
+      if (!app.isDirectory(caption)) {
+        return;
+      }
       var item = new goog.ui.MenuItem(caption);
       menu.addItem(item);
       if (caption == name) {
@@ -133,4 +159,3 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
   };
   app.sendRequest('list', {'path':path}, callback);
 };
-
