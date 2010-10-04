@@ -9,6 +9,7 @@
 
 goog.provide('armadillo.ModalDialog');
 
+goog.require('goog.dom.classes');
 goog.require('goog.events.EventHandler');
 goog.require('goog.ui.Container');
 goog.require('goog.ui.Control');
@@ -51,6 +52,7 @@ armadillo.ModalDialog.prototype.createDom = function() {
  */
 armadillo.ModalDialog.prototype.decorateInternal = function(element) {
   this.element_ = element;
+  goog.dom.classes.set(this.element_, 'modalDialog');
 
   var close = new goog.ui.Control('Close Modal Dialog');
   var dialog = this;

@@ -95,6 +95,17 @@ h1 {
   font-size: 0.7em;
 }
 
+.modalDialog {
+  position: absolute;
+  background: white;
+  border: 3px solid red;
+  padding: 5px;
+  z-index: 99999;
+  top: 25%;
+  width: 50%;
+  left: 25%;
+}
+
 /**
  * Delete Confirmation Dialog
  * From Google Closure Library
