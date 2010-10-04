@@ -30,7 +30,15 @@ armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
    * Full path of the control.
    * @type  {string}
    */
-  this.path_ = path;
+  this.path_ = null;
+
+  /**
+   * The name of the file at the |path_|.
+   * @type  {string}
+   */
+  this.name_ = null;
+
+  this.setPath(path);
 
   /**
    * Whether or not the last component is editable.
@@ -53,6 +61,16 @@ goog.inherits(armadillo.PathControl, goog.ui.Component);
 armadillo.PathControl.prototype.disposeInternal = function() {
   armadillo.PathControl.superClass_.disposeInternal.call(this);
   this.components_ = null;
+};
+
+/**
+ * Sets the path.
+ * @param  {string}  path
+ */
+armadillo.PathControl.prototype.setPath = function(path) {
+  this.path_ = app.stripLastPathComponent(path);
+  this.name_ = path.substr(this.path_.length);
+  console.log(this.path_ + ' = ' + this.name_);
 };
 
 /**
@@ -95,16 +113,19 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
 
   var path = '/';
   goog.array.forEach(components, function (part, i) {
-    if (i != components.length - 1) {
-      this.addChild(this.createComponentNode_(path, part), true);
-    } else {
-      var input = new goog.ui.LabelInput(part, this.dom_);
-      this.addChild(input, true);
-      input.setEnabled(this.editableLastComponent_);
-      input.setValue(part);
-    }
+    this.addChild(this.createComponentNode_(path, part), true);
     path += part + '/';
   }, this);
+
+  if (this.editableLastComponent_) {
+    var input = new goog.ui.Control(this.dom_.createDom('input'));
+    input.getElement().value = this.name_;
+    this.addChild(input, true);
+  } else {
+    var label = new goog.ui.Control(this.name_);
+    this.addChild(label, true);
+    goog.dom.classes.add(label.getElement(), 'goog-inline-block');
+  }
 };
 
 /**
@@ -169,4 +190,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
  */
 armadillo.PathControl.prototype.componentChanged_ = function(e) {
   console.log(e.target.getValue());
+  this.path_ = e.target.getValue();
+  this.removeChildren(true);
+  this.decorateInternal(this.element_);
 };

@@ -90,7 +90,7 @@ armadillo.App.prototype.list = function(path) {
  */
 armadillo.App.prototype.navigate = function(target) {
   if (target == '../') {
-    this.list(this.stripLastPathComponent_(this.currentPath_));
+    this.list(this.stripLastPathComponent(this.currentPath_));
   } else {
     this.list(this.currentPath_ + target);
   }
@@ -127,7 +127,7 @@ armadillo.App.prototype.getCurrentPath = function() {
  * @param  {string}  path
  * @returns string
  */
-armadillo.App.prototype.stripLastPathComponent_ = function(path) {
+armadillo.App.prototype.stripLastPathComponent = function(path) {
   for (var i = path.length - 1; i >= 0; --i) {
     if (path[i] == '/') {
       if (i != path.length - 1) {
