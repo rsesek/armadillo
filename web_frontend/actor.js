@@ -16,6 +16,7 @@ goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.positioning.ClientPosition');
 goog.require('goog.positioning.Corner');
+goog.require('goog.style');
 goog.require('goog.ui.Dialog');
 goog.require('goog.ui.Popup');
 
@@ -178,6 +179,8 @@ armadillo.Actor.prototype.performMove_ = function() {
   dialog.addChild(editor, true);
 
   dialog.setVisible(true);
+  var position = goog.style.getPosition(dialog.getElement());
+  goog.style.setPosition(dialog.getElement(), position.x, '10%');
 };
 
 /**
