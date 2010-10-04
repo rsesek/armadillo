@@ -111,15 +111,21 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
     path = app.joinPath(path, part);
   }, this);
 
+  var nameComponent = null;
   if (this.editableLastComponent_) {
-    var input = new goog.ui.Control(this.dom_.createDom('input'));
-    input.getElement().value = this.name_;
-    this.addChild(input, true);
+    var attrs = {
+      'type' : 'text',
+      'name' : 'pathName',
+      'value' : this.name_
+    };
+    nameComponent = new goog.ui.Control(this.dom_.createDom('input', attrs));
+    nameComponent.setAllowTextSelection(true);
+    nameComponent.setHandleMouseEvents(true);
   } else {
-    var label = new goog.ui.Control(this.name_);
-    this.addChild(label, true);
-    goog.dom.classes.add(label.getElement(), 'goog-inline-block');
+    nameComponent = new goog.ui.Control(this.name_);
   }
+  this.addChild(nameComponent, true);
+  goog.dom.classes.add(nameComponent.getElement(), 'goog-inline-block');
 };
 
 /**
