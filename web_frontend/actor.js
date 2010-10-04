@@ -154,13 +154,13 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
   if (option == armadillo.Actor.options_.OPEN) {
     // TODO: assert that this.file_.isDirectory().
     app.navigate(this.file_.getName());
-    this.hide();
   } else if (option == armadillo.Actor.options_.MOVE ||
              option == armadillo.Actor.options_.RENAME) {
     this.performMove_();
   } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
   }
+  this.hide();
 };
 
 /**
