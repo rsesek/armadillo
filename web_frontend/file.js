@@ -138,7 +138,7 @@ armadillo.File.prototype.move = function(dest) {
 };
 
 /**
- * Click handler for the list element.
+ * Click handler for the link element; only for directories.
  * @param  {Event}  e
  */
 armadillo.File.prototype.clickHandler_ = function(e) {
@@ -152,7 +152,7 @@ armadillo.File.prototype.clickHandler_ = function(e) {
 };
 
 /**
- * Click handler for the button element.
+ * Click handler for the row, which brings up the Actor interface.
  * @param  {Event}  e
  */
 armadillo.File.prototype.actorHandler_ = function(e) {
@@ -160,7 +160,15 @@ armadillo.File.prototype.actorHandler_ = function(e) {
     return;
   e.stopPropagation();
   var actor = new armadillo.Actor(this);
-  actor.show(e.clientX, e.clientY);
+  // Adjust the mouse position so that if "Open" is the first tile, it is easy
+  // to navigate.
+  var x = e.clientX;
+  var y = e.clientY;
+  if (this.isDirectory()) {
+    x -= 20;
+    y -= 20;
+  }
+  actor.show(x, y);
 };
 
 /**
