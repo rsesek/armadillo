@@ -163,6 +163,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
  * @inheritDoc
  */
 armadillo.PathControl.prototype.enterDocument = function() {
+  armadillo.PathControl.superClass_.enterDocument.call(this);
   console.log('enter document ' + this.nameControl_.getElement());
   this.nameControl_.getElement().focus();
 };
