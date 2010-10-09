@@ -84,9 +84,11 @@ armadillo.File.prototype.isDirectory = function() {
  * Sets the highlight state.
  */
 armadillo.File.prototype.setHighlight = function(h) {
-  return;  // TODO: enable.
+/*
+  // TODO: enable.
   goog.dom.classes.addRemove(this.element_, this.highlight_, h);
   this.highlight_ = h;
+*/
 };
 
 /**
