@@ -79,7 +79,6 @@ armadillo.PathControl.prototype.disposeInternal = function() {
 armadillo.PathControl.prototype.setPath = function(path) {
   this.path_ = app.stripLastPathComponent(path);
   this.name_ = path.substr(this.path_.length);
-  console.log(this.path_ + ' = ' + this.name_);
 };
 
 /**
@@ -164,7 +163,6 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
  */
 armadillo.PathControl.prototype.enterDocument = function() {
   armadillo.PathControl.superClass_.enterDocument.call(this);
-  console.log('enter document ' + this.nameControl_.getElement());
   this.nameControl_.getElement().focus();
 };
 
@@ -229,7 +227,6 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
  * @param  {Event}  e
  */
 armadillo.PathControl.prototype.componentChanged_ = function(e) {
-  console.log(e.target.getValue());
   this.path_ = e.target.getValue();
   this.removeChildren(true);
   this.decorateInternal(this.element_);
@@ -241,7 +238,6 @@ armadillo.PathControl.prototype.componentChanged_ = function(e) {
  */
 armadillo.PathControl.prototype.nameChanged_ = function(e) {
   // TODO: assert(this.editableLastComponent_)
-  console.log('new name = ' + e.target.value);
   this.name_ = e.target.value;
   e.stopPropagation();
   return true;
