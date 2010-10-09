@@ -112,12 +112,14 @@ def Main():
     print '  COPY ' + resource
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
   fd = open(os.path.join(fe_resources, 'closure.css'), 'w+')
+  fd.write('/*=== Generated Resources for Closure Library ===*/')
   for resource in RESOURCES_CLOSURE:
-    dest_name = 'closure_' + resource
-    print '  COPY ' + dest_name
-    shutil.copy(os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource),
-        os.path.join(fe_resources, dest_name))
-    fd.write('@import url(/fe/' + dest_name + ');\n')
+    print '  COPY closure/' + resource
+    respath = os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource)
+    ofd = open(respath, 'r')
+    fd.write('\n\n/*=== File: ' + respath.replace(ROOT, '/') + ' ===*/\n')
+    fd.writelines(ofd.readlines())
+    ofd.close()
   fd.close()
   
   # Version
