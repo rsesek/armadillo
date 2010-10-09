@@ -46,7 +46,7 @@ h1 {
 }
 
 #ls li.file-selected {
-  background-color: green;
+  background-color: rgb(255, 208, 164);
 }
 
 #ls li.file-active {

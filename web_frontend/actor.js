@@ -147,6 +147,7 @@ armadillo.Actor.prototype.show = function(x, y) {
  * Hides the popup.
  */
 armadillo.Actor.prototype.hide = function() {
+  this.file_.setHighlight(armadillo.File.Highlight.SELECTED);
   this.popup_.setVisible(false);
 };
 
