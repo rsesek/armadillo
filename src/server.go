@@ -23,6 +23,7 @@ import (
 
 var dir, file = path.Split(path.Clean(os.Getenv("_")))
 var kFrontEndFiles string = path.Join(dir, "fe")
+var gConfig *config.Configuration = nil
 
 func indexHandler(connection *http.Conn, request *http.Request) {
   fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"), os.O_RDONLY, 0)
@@ -74,6 +75,18 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
   }  
 }
 
+func proxyHandler(connection *http.Conn, request *http.Request) {
+  url := request.FormValue("url")
+  if len(url) < 1 {
+    return
+  }
+
+  for i := range gConfig.ProxyURLs {
+    allowedURL := gConfig.ProxyURLs[i]
+    io.WriteString(connection, allowedURL)
+  }
+}
+
 func errorResponse(connection *http.Conn, message string) {
   message = strings.Replace(message, paths.JailRoot, "/", -1)
   response := map[string] string {
@@ -105,6 +118,9 @@ func RunFrontEnd(config *config.Configuration) {
   mux.HandleFunc("/", indexHandler)
   mux.Handle("/fe/", http.FileServer(kFrontEndFiles, "/fe/"))
   mux.HandleFunc("/service", serviceHandler)
+  mux.HandleFunc("/proxy", proxyHandler)
+
+  gConfig = config
 
   error := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), mux)
   fmt.Printf("error %v", error)
