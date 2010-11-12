@@ -12,14 +12,24 @@ package main
 import (
   "flag"
   "fmt"
+  "./config"
   "./paths"
   "./server"
 )
 
 func main() {
+  var configPath *string = flag.String("config", "~/.armadillo", "Path to the configuration file")
+  var config = new(config.Configuration)
+  if len(*configPath) > 0 {
+    // Read configuration.
+  }
   flag.StringVar(&paths.JailRoot, "jail", "/", "Restrict file operations to this directory root")
   var port *int = flag.Int("port", 8080, "Port to run the server on")
   flag.Parse()
+
+  config.JailRoot = paths.JailRoot
+  config.Port = *port
+
   fmt.Printf("Starting Armadillo on port %d with root:\n  %v\n", *port, paths.JailRoot)
-  server.RunFrontEnd(*port)
+  server.RunFrontEnd(config)
 }

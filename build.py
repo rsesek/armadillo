@@ -30,6 +30,7 @@ CLOSURE_CALCDEPS = os.path.join(CLOSURE_DEST, 'closure', 'bin', 'calcdeps.py')
 VERSION_FILE = os.path.join(FE_PATH, 'version.js.proto')
 
 SOURCES = [
+  'config.go',
   'paths.go',
   'server.go',
   'main.go'

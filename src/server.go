@@ -17,6 +17,7 @@ import (
   "os"
   "path"
   "strings"
+  "./config"
   "./paths"
 )
 
@@ -99,12 +100,12 @@ func okResponse(connection *http.Conn, data interface{}) {
   }
 }
 
-func RunFrontEnd(port int) {
+func RunFrontEnd(config *config.Configuration) {
   mux := http.NewServeMux()
   mux.HandleFunc("/", indexHandler)
   mux.Handle("/fe/", http.FileServer(kFrontEndFiles, "/fe/"))
   mux.HandleFunc("/service", serviceHandler)
 
-  error := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+  error := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), mux)
   fmt.Printf("error %v", error)
 }
