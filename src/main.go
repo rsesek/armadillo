@@ -19,17 +19,22 @@ import (
 
 func main() {
   var configPath *string = flag.String("config", "~/.armadillo", "Path to the configuration file")
-  var config = new(config.Configuration)
-  if len(*configPath) > 0 {
-    // Read configuration.
-  }
   flag.StringVar(&paths.JailRoot, "jail", "/", "Restrict file operations to this directory root")
   var port *int = flag.Int("port", 8080, "Port to run the server on")
   flag.Parse()
 
-  config.JailRoot = paths.JailRoot
-  config.Port = *port
+  var configuration = new(config.Configuration)
+  fmt.Printf("Reading configuration from %v\n", *configPath)
+  if len(*configPath) > 0 {
+    error := config.ReadFromFile(*configPath, configuration)
+    if error != nil {
+      fmt.Printf("Error while reading configuration: %v\n", error)
+    }
+  }
+
+  configuration.JailRoot = paths.JailRoot
+  configuration.Port = *port
 
   fmt.Printf("Starting Armadillo on port %d with root:\n  %v\n", *port, paths.JailRoot)
-  server.RunFrontEnd(config)
+  server.RunFrontEnd(configuration)
 }
