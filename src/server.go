@@ -14,6 +14,7 @@ import (
   "http"
   "io"
   "json"
+  "net"
   "os"
   "path"
   "strings"
@@ -76,15 +77,54 @@ func serviceHandler(connection *http.Conn, request *http.Request) {
 }
 
 func proxyHandler(connection *http.Conn, request *http.Request) {
-  url := request.FormValue("url")
-  if len(url) < 1 {
+  rawURL := request.FormValue("url")
+  if len(rawURL) < 1 {
     return
   }
 
+  var validURL bool = false
   for i := range gConfig.ProxyURLs {
     allowedURL := gConfig.ProxyURLs[i]
-    io.WriteString(connection, allowedURL)
+    validURL = validURL || strings.HasPrefix(rawURL, allowedURL)
   }
+
+  if !validURL {
+    errorResponse(connection, "URL is not in proxy whitelist")
+    return
+  }
+
+  url, err := http.ParseURL(rawURL)
+  if err != nil {
+    errorResponse(connection, err.String())
+    return
+  }
+  err = performProxy(url, connection, request)
+  if err != nil {
+    errorResponse(connection, err.String())
+  }
+}
+
+func performProxy(url *http.URL, response *http.Conn, origRequest *http.Request) os.Error {
+  conn, err := net.Dial("tcp", "", url.Host + ":http")
+  if err != nil {
+    return err
+  }
+  client := http.NewClientConn(conn, nil)
+  var request http.Request
+  request.URL = url
+  request.Method = "GET"
+  request.UserAgent = origRequest.UserAgent
+  err = client.Write(&request)
+  if err != nil {
+    return err
+  }
+  var proxyResponse *http.Response
+  proxyResponse, err = client.Read()
+  if err != nil {
+    return err
+  }
+  _, err = io.Copy(response, proxyResponse.Body)
+  return err
 }
 
 func errorResponse(connection *http.Conn, message string) {
