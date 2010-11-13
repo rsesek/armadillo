@@ -42,15 +42,33 @@ armadillo.TVRenamer.prototype.disposeInternal = function() {
  */
 armadillo.TVRenamer.prototype.run = function() {
   console.log('running for ' + this.file_.getName());
-  console.log(this.parseName_(this.file_.getName()));
-  // goog.net.XhrIo.send();
+  var data = this.parseName_(this.file_.getName());
+  var url = this.buildURL_(data[0], data[1], data[2]);
+  console.log('url = ' + url);
+  goog.net.XhrIo.send('/proxy?url=' + encodeURIComponent(url),
+      goog.bind(this.lookupHandler_, this));
 };
 
 /**
  * Callback for when the network data is received.
+ * @param  {object}  response
  * @private
  */
-armadillo.TVRenamer.prototype.lookupHandler_ = function() {
+armadillo.TVRenamer.prototype.lookupHandler_ = function(e) {
+  var response = e.target.getResponseText();
+  var tags = {};
+  goog.array.forEach(response.split('\n'), function (line) {
+    if (line.length > 0) {
+      var parts = line.split('@', 2);
+      tags[parts[0]] = parts[1];
+    }
+  });
+
+  if (tags['Show Name'] && tags['Episode Info']) {
+    var episode = tags['Episode Info'].split('^');
+    var name = tags['Show Name'] + ' - ' + episode[0] + ' - ' + episode[1];
+    console.log('final name = ' + name);
+  }
 };
 
 /**
