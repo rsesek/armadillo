@@ -107,20 +107,22 @@ armadillo.File.prototype.draw = function() {
     this.element_ = goog.dom.createElement('li');
     this.element_.representedObject = this;
     var handler = (this.isSpecial_() ? this.clickHandler_ : this.actorHandler_);
-    this.actorListener_ = goog.events.listen(this.element_,
-        goog.events.EventType.CLICK, handler, false, this);
   }
   goog.dom.removeChildren(this.element_);
 
   // Set the name of the entry.
+  this.title_ = goog.dom.createDom('div', null);
   if (this.isDirectory()) {
     this.link_ = goog.dom.createDom('a', null, this.name_);
     this.linkListener_ = goog.events.listen(this.link_,
         goog.events.EventType.CLICK, this.clickHandler_, false, this);
-    goog.dom.appendChild(this.element_, this.link_);
+    goog.dom.appendChild(this.title_, this.link_);
   } else {
-    goog.dom.setTextContent(this.element_, this.name_);
+    goog.dom.setTextContent(this.title_, this.name_);
   }
+  goog.dom.appendChild(this.element_, this.title_);
+  this.actorListener_ = goog.events.listen(this.title_,
+      goog.events.EventType.CLICK, handler, false, this);
 
   return this.element_;
 };
@@ -180,10 +182,10 @@ armadillo.File.prototype.actorHandler_ = function(e) {
   e.stopPropagation();
   if (!this.actor_.isInDocument())
     this.actor_.render(this.element_);
-  if (false && !this.zippy_)
-    this.zippy_ = new goog.ui.AnimatedZippy(this.element_,
+  if (!this.zippy_)
+    this.zippy_ = new goog.ui.AnimatedZippy(this.title_,
         this.actor_.getElement(), false);
-  // this.zippy_.toggle();
+  this.zippy_.toggle();
 };
 
 /**

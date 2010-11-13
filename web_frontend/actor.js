@@ -151,7 +151,6 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
   } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
   }
-  this.hide();
 };
 
 /**
@@ -170,7 +169,6 @@ armadillo.Actor.prototype.performMove_ = function() {
       var newPath = editor.getPath();
       this.file_.move(newPath);
     }
-    this.dispose();
   };
   // Will be removed when the event source closes.
   this.eh_.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
@@ -200,7 +198,6 @@ armadillo.Actor.prototype.performDelete_ = function() {
     if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
       this.file_.remove();
     }
-    this.dispose();
   };
   // Will be removed when the event source closes.
   this.eh_.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
