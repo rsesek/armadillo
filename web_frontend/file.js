@@ -182,10 +182,11 @@ armadillo.File.prototype.actorHandler_ = function(e) {
   e.stopPropagation();
   if (!this.actor_.isInDocument())
     this.actor_.render(this.element_);
-  if (!this.zippy_)
+  if (!this.zippy_) {
     this.zippy_ = new goog.ui.AnimatedZippy(this.title_,
         this.actor_.getElement(), false);
-  this.zippy_.toggle();
+    this.zippy_.toggle();
+  }
 };
 
 /**
