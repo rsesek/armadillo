@@ -12,6 +12,7 @@ goog.provide('armadillo.File');
 goog.require('armadillo.Actor');
 goog.require('goog.Disposable');
 goog.require('goog.dom');
+goog.require('goog.ui.AnimatedZippy');
 
 /**
  * A file in a directory listing.
@@ -25,6 +26,8 @@ armadillo.File = function(name, path) {
   this.path_ = path;
   this.highlight_ = '';
   this.isDirectory_ = app.isDirectory(name);
+  this.actor_ = new armadillo.Actor(this);
+  this.zippy_ = null;
 };
 goog.inherits(armadillo.File, goog.Disposable);
 
@@ -44,6 +47,9 @@ armadillo.File.prototype.disposeInternal = function() {
   this.link_ = null;
   goog.events.unlistenByKey(this.linkListener_);
   goog.events.unlistenByKey(this.actorListener_);
+  this.actor_.dispose();
+  if (this.zippy_)
+    this.zippy_.dispose();
 };
 
 /**
@@ -160,9 +166,6 @@ armadillo.File.prototype.move = function(dest) {
  * @param  {Event}  e
  */
 armadillo.File.prototype.clickHandler_ = function(e) {
-  if (armadillo.Actor.isModal()) {
-    return;
-  }
   if (this.isDirectory_) {
     app.navigate(this.name_);
   }
@@ -174,19 +177,15 @@ armadillo.File.prototype.clickHandler_ = function(e) {
  * @param  {Event}  e
  */
 armadillo.File.prototype.actorHandler_ = function(e) {
-  if (armadillo.Actor.isModal())
-    return;
   e.stopPropagation();
-  var actor = new armadillo.Actor(this);
-  // Adjust the mouse position so that if "Open" is the first tile, it is easy
-  // to navigate.
-  var x = e.clientX;
-  var y = e.clientY;
-  if (this.isDirectory()) {
-    x -= 20;
-    y -= 20;
+  if (!this.actor_.isInDocument()) {
+    this.actor_.render(this.element_);
+    this.actor_.setVisible(true);
   }
-  actor.show(x, y);
+  if (!this.zippy_)
+    this.zippy_ = new goog.ui.AnimatedZippy(this.element_,
+        this.actor_.getElement(), false);
+  this.zippy_.toggle();
 };
 
 /**

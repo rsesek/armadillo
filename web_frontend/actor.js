@@ -15,12 +15,9 @@ goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.events.EventHandler');
-goog.require('goog.positioning.ClientPosition');
-goog.require('goog.positioning.Corner');
 goog.require('goog.style');
 goog.require('goog.ui.Container');
 goog.require('goog.ui.Dialog');
-goog.require('goog.ui.Popup');
 
 /**
  * The Actor is a popup that displays the various actions that can be performed
@@ -45,27 +42,12 @@ armadillo.Actor = function(file, opt_domHelper) {
   this.eh_ = new goog.events.EventHandler();
 
   /**
-   * The Container that holds the display element.
-   * @type  {goog.ui.Popup}
-   */
-  this.popup_ = new goog.ui.Popup(this.element_);
-  this.eh_.listenOnce(this.popup_, goog.ui.PopupBase.EventType.HIDE,
-      this.onPopupClosed_, false, this);
-
-  /**
    * The UI element used for a specific action.
    * @type  {goog.Disposable}
    */
   this.actionObject_ = null;
-
-  armadillo.Actor.actors_.push(this);
 }
 goog.inherits(armadillo.Actor, goog.ui.Container);
-
-/**
- * An array of all the Actors that have been created.
- */
-armadillo.Actor.actors_ = new Array();
 
 /**
  * The different options that the Actor can perform.
@@ -88,18 +70,6 @@ armadillo.Actor.optionStrings_ = {
 };
 
 /**
- * A global property that should be checked to see if an actor is present,
- * creating a modal session.
- */
-armadillo.Actor.isModal = function() {
-  var isVisible = false;
-  goog.array.forEach(armadillo.Actor.actors_, function (e) {
-    isVisible |= e.popup_.isVisible();
-  });
-  return isVisible;
-};
-
-/**
  * Disposer
  * @protected
  */
@@ -112,59 +82,12 @@ armadillo.Actor.prototype.disposeInternal = function() {
   goog.dom.removeNode(this.element_);
   this.element_ = null;
 
-  // Kill the popup.
-  this.popup_.dispose();
-  this.popup_ = null;
-
   if (this.actionObject_) {
     this.actionObject_.dispose();
     this.actionObject_ = null;
   }
 
-  // Remove the actor from the list.
-  goog.array.remove(armadillo.Actor.actors_, this);
-
   this.file_ = null;
-};
-
-/**
- * Shows the popup.
- * @param  {int}  x  The X position to show at
- * @param  {int}  y  The Y position to show at
- */
-armadillo.Actor.prototype.show = function(x, y) {
-  if (armadillo.Actor.isModal())
-    return;
-  this.popup_.setPinnedCorner(goog.positioning.Corner.TOP_LEFT);
-  this.popup_.setPosition(new goog.positioning.ClientPosition(x, y));
-  this.popup_.setHideOnEscape(true);
-  this.render();
-  this.popup_.setVisible(true);
-  this.file_.setHighlight(armadillo.File.Highlight.ACTIVE);
-};
-
-/**
- * Hides the popup.
- */
-armadillo.Actor.prototype.hide = function() {
-  this.file_.setHighlight(armadillo.File.Highlight.SELECTED);
-  this.popup_.setVisible(false);
-};
-
-
-/**
- * Creates a new path control object.
- */
-armadillo.Actor.prototype.createDom = function() {
-  this.decorateInternal(this.dom_.createDom('div', 'actor'));
-  this.popup_.setElement(this.element_);
-};
-
-/**
- * @inheritDoc
- */
-armadillo.Actor.prototype.canDecorate = function() {
-  return false;
 };
 
 /**
@@ -173,6 +96,7 @@ armadillo.Actor.prototype.canDecorate = function() {
  */
 armadillo.Actor.prototype.decorateInternal = function(element) {
   this.element_ = element;
+  goog.dom.classes.add(this.element_, 'actor');
   this.dom_.removeChildren(this.element_);
   for (var option in armadillo.Actor.options_) {
     var tile = this.createTile_(option);
@@ -323,7 +247,7 @@ goog.inherits(armadillo.Actor.TileControlRenderer_, goog.ui.ControlRenderer);
  * @param {goog.ui.Control} control Control to render.
  * @return {Element} Root element for the control.
  */
-goog.ui.ControlRenderer.prototype.createDom = function(control) {
+armadillo.Actor.TileControlRenderer_.prototype.createDom = function(control) {
   // Create and return DIV wrapping contents.
   return control.getDomHelper().createDom('div', 'tile', control.getContent());
 };
