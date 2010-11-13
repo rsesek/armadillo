@@ -178,14 +178,12 @@ armadillo.File.prototype.clickHandler_ = function(e) {
  */
 armadillo.File.prototype.actorHandler_ = function(e) {
   e.stopPropagation();
-  if (!this.actor_.isInDocument()) {
+  if (!this.actor_.isInDocument())
     this.actor_.render(this.element_);
-    this.actor_.setVisible(true);
-  }
-  if (!this.zippy_)
+  if (false && !this.zippy_)
     this.zippy_ = new goog.ui.AnimatedZippy(this.element_,
         this.actor_.getElement(), false);
-  this.zippy_.toggle();
+  // this.zippy_.toggle();
 };
 
 /**

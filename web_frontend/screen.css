@@ -34,7 +34,7 @@ h1 {
 
 #ls li {
   padding: .3em;
-  height: 1.5em;
+  min-height: 1.5em;
   line-height: 1.5em;
 }
 
@@ -71,8 +71,6 @@ h1 {
 .actor {
   width: 8.5em;
   height: 8.5em;
-  position: absolute;
-  visibility: hidden;
 
   background-color: rgb(77, 79, 83);
 

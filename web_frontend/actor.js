@@ -90,6 +90,11 @@ armadillo.Actor.prototype.disposeInternal = function() {
   this.file_ = null;
 };
 
+armadillo.Actor.prototype.createDom = function() {
+  this.setElementInternal(this.dom_.createDom('div'));
+  this.decorate(this.getElement());
+};
+
 /**
  * Decorates the given element into a path control.
  * @param  {Element}  element
@@ -217,19 +222,6 @@ armadillo.Actor.prototype.createActionDialog_ = function() {
   confirm.setDraggable(false);
   confirm.setHasTitleCloseButton(false);
   return confirm;
-};
-
-/**
- * Event handler for when this.popup_ closes.
- * @param  {Event}  e
- */
-armadillo.Actor.prototype.onPopupClosed_ = function(e) {
-  // If an action is not being performed, then dispose the Actor. Otherwise,
-  // this will get cleaned up after the actionObject_ closes.
-  if (!this.actionObject_) {
-    this.file_.setHighlight(armadillo.File.Highlight.SELECTED);
-    this.dispose();
-  }
 };
 
 /**
