@@ -153,7 +153,7 @@ func okResponse(connection *http.Conn, data interface{}) {
   }
 }
 
-func RunFrontEnd(config *config.Configuration) {
+func RunBackEnd(config *config.Configuration) {
   mux := http.NewServeMux()
   mux.HandleFunc("/", indexHandler)
   mux.Handle("/fe/", http.FileServer(kFrontEndFiles, "/fe/"))
