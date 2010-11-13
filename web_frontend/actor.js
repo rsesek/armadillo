@@ -11,6 +11,7 @@ goog.provide('armadillo.Actor');
 goog.provide('armadillo.Actor.TileControlRenderer_');
 
 goog.require('armadillo.PathControl');
+goog.require('armadillo.TVRenamer');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
@@ -56,7 +57,8 @@ armadillo.Actor.options_ = {
   OPEN : 'open',
   MOVE : 'move',
   RENAME : 'rename',
-  DELETE : 'delete'
+  DELETE : 'delete',
+  TV_RENAME : 'tv-rename',
 };
 
 /**
@@ -66,7 +68,8 @@ armadillo.Actor.optionStrings_ = {
   'open' : 'Open',
   'move' : 'Move',
   'rename' : 'Rename',
-  'delete' : 'Delete'  
+  'delete' : 'Delete',
+  'tv-rename' : 'Rename TV Episode',
 };
 
 /**
@@ -150,6 +153,8 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
     this.performMove_();
   } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
+  } else if (option == armadillo.Actor.options_.TV_RENAME) {
+    this.performTVRename_();
   }
 };
 
@@ -204,6 +209,15 @@ armadillo.Actor.prototype.performDelete_ = function() {
       closeCallback, false, this);
 
   this.actionObject_.setVisible(true);
+};
+
+/**
+ * Subroutine that renames a file to it's title based on season and episode.
+ * @private
+ */
+armadillo.Actor.prototype.performTVRename_ = function() {
+  var renamer = new armadillo.TVRenamer(this.file_);
+  renamer.run();
 };
 
 /**

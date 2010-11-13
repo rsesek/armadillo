@@ -37,6 +37,7 @@ SOURCES = [
 ]
 SOURCES_FE = [
   'version.js',
+  'tv_renamer.js',
   'path_control.js',
   'actor.js',
   'file.js',

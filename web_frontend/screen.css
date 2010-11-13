@@ -69,8 +69,7 @@ h1 {
 }
 
 .actor {
-  width: 8.5em;
-  height: 8.5em;
+  height: 2.3em;
 
   background-color: rgb(77, 79, 83);
 
@@ -82,8 +81,8 @@ h1 {
 }
 
 .actor .tile {
-  width: 4em;
-  height: 4em;
+  padding: 0em 1em 0em 1em;
+  height: 2em;
   display: inline-block;
   margin: .1em;
 
