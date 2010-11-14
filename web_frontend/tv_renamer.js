@@ -32,7 +32,7 @@ goog.inherits(armadillo.TVRenamer, goog.Disposable);
  * @inheritDoc
  */
 armadillo.TVRenamer.prototype.disposeInternal = function() {
-  goog.base(this);
+  goog.base(this, 'disposeInternal');
   this.file_ = null;
 };
 
