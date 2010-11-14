@@ -12,6 +12,8 @@ package main
 import (
   "flag"
   "fmt"
+  "os"
+  "strings"
   "./config"
   "./paths"
   "./server"
@@ -28,6 +30,8 @@ func main() {
   var configuration = new(config.Configuration)
   fmt.Printf("Reading configuration from %v\n", *configPath)
   if len(*configPath) > 0 {
+    *configPath = strings.Replace(*configPath, "~", "$HOME", 1)
+    *configPath = os.ShellExpand(*configPath)
     error := config.ReadFromFile(*configPath, configuration)
     if error != nil {
       fmt.Printf("Error while reading configuration: %v\n", error)
@@ -40,6 +44,11 @@ func main() {
   }
   if *port != 0 {
     configuration.Port = *port
+  }
+
+  if configuration.Port == 0 {
+    fmt.Printf("Failed to start server (invalid port)\n")
+    os.Exit(1)
   }
 
   // Run the server.
