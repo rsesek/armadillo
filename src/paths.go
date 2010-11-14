@@ -17,9 +17,11 @@ import (
   "./config"
 )
 
-var gJailRoot string;
+var gJailRoot string
+var gConfig *config.Configuration
 
 func SetConfig(aConfig *config.Configuration) {
+  gConfig = aConfig
   gJailRoot = aConfig.JailRoot
 }
 
@@ -61,6 +63,9 @@ func List(the_path string) (files vector.StringVector, err os.Error) {
     name := info.Name
     if info.IsDirectory() {
       name += "/"
+    }
+    if !gConfig.IncludeDotfiles && name[0] == '.' {
+      continue
     }
     files.Push(name)
   }
