@@ -91,7 +91,7 @@ armadillo.TVRenamer.prototype.parseName_ = function(name) {
   var matches = name.match(pattern);
   if (!matches || matches.length < 5)
     return null;
-  return [matches[2], parseInt(matches[3]), parseInt(matches[5])];
+  return [matches[2], parseInt(matches[3], 10), parseInt(matches[5], 10)];
 };
 
 /**
