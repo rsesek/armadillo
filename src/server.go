@@ -107,7 +107,6 @@ func proxyHandler(response http.ResponseWriter, request *http.Request) {
 func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http.Request) os.Error {
   conn, err := net.Dial("tcp", "", url.Host + ":http")
   if err != nil {
-    fmt.Printf("Could not dial: %v\n", err)
     return err
   }
   client := http.NewClientConn(conn, nil)
@@ -117,13 +116,11 @@ func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http
   request.UserAgent = origRequest.UserAgent
   err = client.Write(&request)
   if err != nil {
-    fmt.Printf("Could not proxy: %v\n", err)
     return err
   }
   var proxyResponse *http.Response
   proxyResponse, err = client.Read()
   if err != nil && err != http.ErrPersistEOF {
-    fmt.Printf("Could not read proxied response: %v\n", err)
     return err
   }
   _, err = io.Copy(response, proxyResponse.Body)
