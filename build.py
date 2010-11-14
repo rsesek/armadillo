@@ -79,16 +79,7 @@ def _PullDeps():
   else:
     subprocess.Popen([ 'svn', 'checkout', '-r', CLOSURE_REV, CLOSURE_SVN, CLOSURE_DEST ]).wait()
 
-def Main():
-  parser = optparse.OptionParser()
-  parser.add_option('-c', '--closure_fe', action="store_true", dest="compile_fe",
-                    help="Run the Front End inputs through the Closure Compiler")
-  (options, args) = parser.parse_args()
-
-  print '=== Starting Build ==='
-  os.chdir(PROD_PATH)
-  
-  # Compile.
+def _CompileBackEnd():
   for gofile in SOURCES:
     gofile = os.path.join(SRC_PATH, gofile)
     args = [ COMPILER, gofile ]
@@ -102,29 +93,8 @@ def Main():
   print '  ' + ' ' .join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()
-  
-  _PullDeps()
-  
-  # Copy
-  print '=== Copying Resources ==='
-  fe_resources = os.path.join(PROD_PATH, 'fe')
-  subprocess.Popen([ 'rm', '-rf', fe_resources ]).wait()
-  os.mkdir(fe_resources)
-  for resource in RESOURCES_FE:
-    print '  COPY ' + resource
-    shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
-  fd = open(os.path.join(fe_resources, 'closure.css'), 'w+')
-  fd.write('/*=== Generated Resources for Closure Library ===*/')
-  for resource in RESOURCES_CLOSURE:
-    print '  COPY closure/' + resource
-    respath = os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource)
-    ofd = open(respath, 'r')
-    fd.write('\n\n/*=== File: ' + respath.replace(ROOT, '/') + ' ===*/\n')
-    fd.writelines(ofd.readlines())
-    ofd.close()
-  fd.close()
-  
-  # Version
+
+def _StampVersion(options):
   print '=== Version Stamp ==='
   if os.path.exists(VERSION_FILE):
     gitcrement = subprocess.Popen([ 'gitcrement', 'next' ], stdout = subprocess.PIPE, cwd = ROOT)
@@ -153,6 +123,31 @@ def Main():
         subprocess.Popen([ 'git', 'commit', '--author=Armadillo Build Script <armadillo@bluestatic.org>',
             '-m', 'Stamp version.js @ ' + build_stamp + '.', versioned_stamp_file ], stdout = sys.stdout,
                 stderr = sys.stderr).wait()
+
+def _CompileFrontEnd(options):
+  _PullDeps()
+  
+  # Copy
+  print '=== Copying Resources ==='
+  fe_resources = os.path.join(PROD_PATH, 'fe')
+  subprocess.Popen([ 'rm', '-rf', fe_resources ]).wait()
+  os.mkdir(fe_resources)
+  for resource in RESOURCES_FE:
+    print '  COPY ' + resource
+    shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
+  fd = open(os.path.join(fe_resources, 'closure.css'), 'w+')
+  fd.write('/*=== Generated Resources for Closure Library ===*/')
+  for resource in RESOURCES_CLOSURE:
+    print '  COPY closure/' + resource
+    respath = os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource)
+    ofd = open(respath, 'r')
+    fd.write('\n\n/*=== File: ' + respath.replace(ROOT, '/') + ' ===*/\n')
+    fd.writelines(ofd.readlines())
+    ofd.close()
+  fd.close()
+  
+  # Version
+  _StampVersion(options)
   
   # Compile JS.
   print '=== Compiling Front End ==='
@@ -170,5 +165,25 @@ def Main():
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()
 
+
+def Main():
+  parser = optparse.OptionParser()
+  parser.add_option('-c', '--closure_fe', action="store_true", dest="compile_fe",
+                    help="Run the Front End inputs through the Closure Compiler")
+  parser.add_option('-b', '--back-end', action="store_true", dest="backend_only",
+                    help="Compiles only the back-end")
+  parser.add_option('-f', '--front-end', action="store_true", dest="frontend_only",
+                    help="Compiles only the front-end")
+  (options, args) = parser.parse_args()
+
+  print '=== Starting Build ==='
+  os.chdir(PROD_PATH)
+  
+  if not options.frontend_only:
+    _CompileBackEnd()
+  
+  if not options.backend_only:
+    _CompileFrontEnd(options)
+  
 if __name__ == '__main__':
   Main()
