@@ -59,13 +59,22 @@ h1 {
 
 #error {
   border-style: solid;
-	border-width: .15em;
-	border-color: rgb(167, 40, 26);
-	border-radius: .2em;
-	padding: .2em;
+  border-width: .15em;
+  border-top-width: 0em;
+  border-color: rgb(167, 40, 26);
+  border-radius: 0em 0em .5em .5em;
+  padding: .2em;
 
-  background-color: rgba(167, 40, 26, 0.1);
-	color: rgb(0, 30, 30);
+  background-color: rgba(167, 40, 26, 0.3);
+  color: rgb(0, 30, 30);
+
+  position: absolute;
+  width: 75%;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .actor {
