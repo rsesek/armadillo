@@ -67,7 +67,7 @@ armadillo.TVRenamer.prototype.lookupHandler_ = function(e) {
   if (tags['Show Name'] && tags['Episode Info']) {
     var episode = tags['Episode Info'].split('^');
     var name = tags['Show Name'] + ' - ' + episode[0] + ' - ' + episode[1];
-    console.log('final name = ' + name);
+    this.rename_(name);
   }
 };
 
@@ -97,4 +97,14 @@ armadillo.TVRenamer.prototype.parseName_ = function(name) {
 armadillo.TVRenamer.prototype.buildURL_ = function(show, season, episode) {
   return "http://services.tvrage.com/tools/quickinfo.php?show=" + show +
       "&ep=" + season + "x" + episode;
+};
+
+/**
+ * Performs the actual rename of the current file to the |newName|.
+ * @param  {string!}  newName
+ * @private
+ */
+armadillo.TVRenamer.prototype.rename_ = function(newName) {
+  var path = app.joinPath(this.file_.getParentPath(), newName);
+  this.file_.move(path);
 };
