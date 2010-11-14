@@ -11,8 +11,7 @@ goog.provide('armadillo.Actor');
 goog.provide('armadillo.Actor.TileControlRenderer_');
 
 goog.require('armadillo.PathControl');
-goog.require('armadillo.TVRenamer
-');
+goog.require('armadillo.TVRenamer');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
