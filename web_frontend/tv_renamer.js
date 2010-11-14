@@ -99,8 +99,8 @@ armadillo.TVRenamer.prototype.parseName_ = function(name) {
  * @private
  */
 armadillo.TVRenamer.prototype.buildURL_ = function(show, season, episode) {
-  return "http://services.tvrage.com/tools/quickinfo.php?show=" + show +
-      "&ep=" + season + "x" + episode;
+  return "http://services.tvrage.com/tools/quickinfo.php?show=" +
+      encodeURIComponent(show) + "&ep=" + season + "x" + episode;
 };
 
 /**
