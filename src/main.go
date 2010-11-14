@@ -18,11 +18,13 @@ import (
 )
 
 func main() {
+  // Set up the basic flags.
   var configPath *string = flag.String("config", "~/.armadillo", "Path to the configuration file")
-  flag.StringVar(&paths.JailRoot, "jail", "/", "Restrict file operations to this directory root")
-  var port *int = flag.Int("port", 8080, "Port to run the server on")
+  var jailRoot *string = flag.String("jail", "", "Restrict file operations to this directory root")
+  var port *int = flag.Int("port", 0, "Port to run the server on")
   flag.Parse()
 
+  // Load the configuration file, if it is present.
   var configuration = new(config.Configuration)
   fmt.Printf("Reading configuration from %v\n", *configPath)
   if len(*configPath) > 0 {
@@ -32,9 +34,17 @@ func main() {
     }
   }
 
-  configuration.JailRoot = paths.JailRoot
-  configuration.Port = *port
+  // Override configuration values with command line arguments.
+  if *jailRoot != "" {
+    configuration.JailRoot = *jailRoot
+  }
+  if *port != 0 {
+    configuration.Port = *port
+  }
 
-  fmt.Printf("Starting Armadillo on port %d with root:\n  %v\n", *port, paths.JailRoot)
+  // Run the server.
+  fmt.Printf("Starting Armadillo on port %d with root:\n  %v\n",
+      configuration.Port, configuration.JailRoot)
+  paths.SetConfig(configuration)
   server.RunBackEnd(configuration)
 }

@@ -128,7 +128,7 @@ func performProxy(url *http.URL, response *http.Conn, origRequest *http.Request)
 }
 
 func errorResponse(connection *http.Conn, message string) {
-  message = strings.Replace(message, paths.JailRoot, "/", -1)
+  message = strings.Replace(message, gConfig.JailRoot, "/", -1)
   response := map[string] string {
     "error"   : "-1",
     "message" : message,

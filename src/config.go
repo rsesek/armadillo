@@ -15,9 +15,18 @@ import (
 )
 
 type Configuration struct {
+  // The path to which all file operations are restricted.
   JailRoot string
+
+  // The port on which the server back end runs.
   Port int
+
+  // An array of URLs that the /proxy service will for which the back-end will
+  // forward GET requests and return the result.
   ProxyURLs []string
+
+  // A map of usernames to MD5-encoded passwords that will be allowed to log in
+  // via a .htaccess style realm.
   Users map [string] string
 }
 
