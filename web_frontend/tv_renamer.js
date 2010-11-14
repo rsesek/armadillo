@@ -43,6 +43,10 @@ armadillo.TVRenamer.prototype.disposeInternal = function() {
 armadillo.TVRenamer.prototype.run = function() {
   console.log('running for ' + this.file_.getName());
   var data = this.parseName_(this.file_.getName());
+  if (!data) {
+    app.showError('Could not parse episode information for ' + this.file_.getName());
+    return;
+  }
   var url = this.buildURL_(data[0], data[1], data[2]);
   console.log('url = ' + url);
   goog.net.XhrIo.send('/proxy?url=' + encodeURIComponent(url),
@@ -51,7 +55,7 @@ armadillo.TVRenamer.prototype.run = function() {
 
 /**
  * Callback for when the network data is received.
- * @param  {object}  response
+ * @param  {Event}  e
  * @private
  */
 armadillo.TVRenamer.prototype.lookupHandler_ = function(e) {
@@ -79,7 +83,7 @@ armadillo.TVRenamer.prototype.lookupHandler_ = function(e) {
  * @private
  */
 armadillo.TVRenamer.prototype.parseName_ = function(name) {
-  var pattern = /^(\d+_)?(.+) S?(\d+)(x|E)(\d+)/;
+  var pattern = /^(\d+_)?(.+) S?(\d+)(x|E)(\d+)/i;
   var matches = name.match(pattern);
   if (!matches || matches.length < 5)
     return null;
