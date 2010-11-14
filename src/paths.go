@@ -17,24 +17,22 @@ import (
   "./config"
 )
 
-var gJailRoot string
 var gConfig *config.Configuration
 
 func SetConfig(aConfig *config.Configuration) {
   gConfig = aConfig
-  gJailRoot = aConfig.JailRoot
 }
 
 func canonicalizePath(raw_path string) string {
-  raw_path = path.Join(gJailRoot, raw_path)
+  raw_path = path.Join(gConfig.JailRoot, raw_path)
   return path.Clean(raw_path)
 }
 
 func checkInJail(the_path string) bool {
-  if len(the_path) < len(gJailRoot) {
+  if len(the_path) < len(gConfig.JailRoot) {
     return false
   }
-  if the_path[0:len(gJailRoot)] != gJailRoot {
+  if the_path[0:len(gConfig.JailRoot)] != gConfig.JailRoot {
     return false
   }
   if strings.Index(the_path, "../") != -1 {
