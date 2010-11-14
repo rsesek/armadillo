@@ -57,6 +57,9 @@ RESOURCES_CLOSURE = [
 ]
 PRODUCT_NAME = 'armadillo'
 
+# The Golang version (hg id).
+BACK_END_COMPILER_VERSION = 'a7800e20064a release/release.2010-11-10'
+
 COMPILER = '8g'
 LINKER = '8l'
 O_EXTENSION = '8'
