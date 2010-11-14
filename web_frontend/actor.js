@@ -11,7 +11,8 @@ goog.provide('armadillo.Actor');
 goog.provide('armadillo.Actor.TileControlRenderer_');
 
 goog.require('armadillo.PathControl');
-goog.require('armadillo.TVRenamer');
+goog.require('armadillo.TVRenamer
+');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
@@ -58,7 +59,7 @@ armadillo.Actor.options_ = {
   MOVE : 'move',
   RENAME : 'rename',
   DELETE : 'delete',
-  TV_RENAME : 'tv-rename',
+  TV_RENAME : 'tv-rename'
 };
 
 /**
@@ -69,7 +70,7 @@ armadillo.Actor.optionStrings_ = {
   'move' : 'Move',
   'rename' : 'Rename',
   'delete' : 'Delete',
-  'tv-rename' : 'Rename TV Episode',
+  'tv-rename' : 'Rename TV Episode'
 };
 
 /**
