@@ -30,6 +30,12 @@ armadillo.App = function() {
       this.hashChanged_, false, this);
 
   this.clearError(false);
+  /**
+   * If this is the first load, we don't want to flash the error animating
+   * out. This will be set to true in the list callback.
+   * @type  {bool}
+   */
+  this.initialized_ = false;
 
   var version = goog.string.format('Armadillo %d.%d (%d)',
       armadillo.Version.MAJOR, armadillo.Version.MINOR,
@@ -61,7 +67,7 @@ armadillo.App.prototype.list = function(path) {
       app.showError(data['message']);
       return;  // Error.
     } else {
-      app.clearError();
+      app.clearError(app.initialized_);
     }
 
     // Update the listing.
@@ -80,6 +86,8 @@ armadillo.App.prototype.list = function(path) {
       var fileObject = new armadillo.File(file, path);
       goog.dom.appendChild(list, fileObject.draw());
     });
+
+    app.initialized_ = true;
   }
   this.sendRequest('list', {'path':path}, callback);
 };
@@ -167,7 +175,9 @@ armadillo.App.prototype.clearError = function(animate) {
     anim.play();
   else
     anim.hide();
-  goog.dom.setTextContent(elm, '');
+  goog.events.listenOnce(anim, goog.fx.Animation.EventType.END, function() {
+    goog.dom.setTextContent(elm, '');
+  });
 };
 
 /**
