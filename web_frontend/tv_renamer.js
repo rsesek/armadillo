@@ -70,6 +70,10 @@ armadillo.TVRenamer.prototype.lookupHandler_ = function(e) {
 
   if (tags['Show Name'] && tags['Episode Info']) {
     var episode = tags['Episode Info'].split('^');
+    // Strip off leading zeros from the season number.
+    while (episode[0].charAt(0) == '0') {
+      episode[0] = episode[0].substr(1);
+    }
     var name = tags['Show Name'] + ' - ' + episode[0] + ' - ' + episode[1];
     this.rename_(name);
   }
