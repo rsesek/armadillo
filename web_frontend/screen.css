@@ -107,6 +107,7 @@ h1 {
   border-width: .1em;
 
   text-align: center;
+  line-height: 1.75em;
 }
 
 .actor .tile .title {
