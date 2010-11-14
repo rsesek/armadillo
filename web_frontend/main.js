@@ -15,6 +15,7 @@ goog.require('armadillo.Version');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.fx.dom.FadeInAndShow');
+goog.require('goog.fx.dom.FadeOutAndHide');
 goog.require('goog.net.XhrIo');
 goog.require('goog.string.format');
 goog.require('goog.Uri.QueryData');
@@ -25,11 +26,10 @@ armadillo.App = function() {
     start_path = window.location.hash.substr(1);
   }
   this.list(start_path);
-  this.errorEffect_ =
-      new goog.fx.dom.FadeInAndShow(goog.dom.getElement('error'), 2.0);
-  this.errorEffect_.hide();
   goog.events.listen(window, goog.events.EventType.HASHCHANGE,
       this.hashChanged_, false, this);
+
+  this.clearError(false);
 
   var version = goog.string.format('Armadillo %d.%d (%d)',
       armadillo.Version.MAJOR, armadillo.Version.MINOR,
@@ -158,10 +158,16 @@ armadillo.App.prototype.joinPath = function() {
 
 /**
  * Clears the error message.
+ * @param   {bool?}  animate  Whether or not to animate out.
  */
-armadillo.App.prototype.clearError = function() {
-  this.errorEffect_.hide();
-  goog.dom.setTextContent(this.errorEffect_.element, '');
+armadillo.App.prototype.clearError = function(animate) {
+  var elm = goog.dom.getElement('error');
+  var anim = new goog.fx.dom.FadeOutAndHide(elm, 500);
+  if (animate)
+    anim.play();
+  else
+    anim.hide();
+  goog.dom.setTextContent(elm, '');
 };
 
 /**
@@ -169,6 +175,8 @@ armadillo.App.prototype.clearError = function() {
  * @param  {string}  message
  */
 armadillo.App.prototype.showError = function(message) {
-  goog.dom.setTextContent(this.errorEffect_.element, message);
-  this.errorEffect_.show();
+  var elm = goog.dom.getElement('error');
+  goog.dom.setTextContent(elm, message);
+  var anim = new goog.fx.dom.FadeInAndShow(elm, 1000);
+  anim.play();
 };
