@@ -68,6 +68,7 @@ armadillo.App.prototype.list = function(path) {
     goog.dom.setTextContent(goog.dom.getElement('pwd'), path);
     app.currentPath_ = path;
     window.location.hash = path;
+    document.title = path + ' - Armadillo';
     var list = goog.dom.getElement('ls');
     goog.dom.removeChildren(list);
 
