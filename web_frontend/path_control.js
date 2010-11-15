@@ -11,7 +11,7 @@ goog.provide('armadillo.PathControl');
 goog.provide('armadillo.PathControl.NameControlRenderer_');
 
 goog.require('goog.array');
-goog.require('goog.ui.Component');
+goog.require('goog.ui.Control');
 goog.require('goog.ui.FilteredMenu');
 goog.require('goog.ui.LabelInput');
 goog.require('goog.ui.MenuButton');
@@ -25,7 +25,7 @@ goog.require('goog.ui.MenuItem');
  * @constructor
  */
 armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
-  goog.ui.Component.call(this, opt_domHelper);
+  goog.ui.Control.call(this, opt_domHelper);
 
   /**
    * Full path of the control.
@@ -58,7 +58,7 @@ armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
    */
   this.eh_ = new goog.events.EventHandler();
 };
-goog.inherits(armadillo.PathControl, goog.ui.Component);
+goog.inherits(armadillo.PathControl, goog.ui.Control);
 
 /**
  * Disposer

@@ -17,6 +17,7 @@ goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.events.EventHandler');
 goog.require('goog.style');
+goog.require('goog.ui.Button');
 goog.require('goog.ui.Container');
 goog.require('goog.ui.Dialog');
 
@@ -47,6 +48,12 @@ armadillo.Actor = function(file, opt_domHelper) {
    * @type  {goog.Disposable}
    */
   this.actionObject_ = null;
+
+  /**
+   * Controls for the current action.
+   * @type  {goog.ui.Control}
+   */
+  this.controlContainer_ = null;
 }
 goog.inherits(armadillo.Actor, goog.ui.Container);
 
@@ -81,6 +88,10 @@ armadillo.Actor.prototype.disposeInternal = function() {
 
   this.eh_.dispose();
 
+  if (this.controlContainer_)
+    this.controlContainer_.dispose();
+  this.controlContainer_ = null;
+
   // Remove the actor display element.
   goog.dom.removeNode(this.element_);
   this.element_ = null;
@@ -112,6 +123,8 @@ armadillo.Actor.prototype.decorateInternal = function(element) {
       this.addChild(tile, true);
     }
   }
+  this.controlContainer_ = new goog.ui.Control();
+  this.addChild(this.controlContainer_, true);
 };
 
 /**
@@ -145,6 +158,8 @@ armadillo.Actor.prototype.createTile_ = function(option) {
  */
 armadillo.Actor.prototype.tileClickHandler_ = function(e) {
   var option = e.target.actorOption;
+  this.controlContainer_.removeChildren(true);
+  this.controlContainer_.setVisible(true);
   if (option == armadillo.Actor.options_.OPEN) {
     // TODO: assert that this.file_.isDirectory().
     app.navigate(this.file_.getName());
@@ -163,25 +178,14 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
  * @private
  */
 armadillo.Actor.prototype.performMove_ = function() {
-  this.actionObject_ = this.createActionDialog_();
-  this.actionObject_.setTitle('Move File');
-
   var editor = new armadillo.PathControl(this.file_.getFullPath(), true);
-  this.actionObject_.addChild(editor, true);
+  this.controlContainer_.addChild(editor, true);
 
-  var closeCallback = function(e) {
-    if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
-      var newPath = editor.getPath();
-      this.file_.move(newPath);
-    }
+  var okCallback = function(e) {
+    var newPath = editor.getPath();
+    this.file_.move(newPath);
   };
-  // Will be removed when the event source closes.
-  this.eh_.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
-      closeCallback, false, this);
-
-  this.actionObject_.setVisible(true);
-  var position = goog.style.getPosition(this.actionObject_.getElement());
-  goog.style.setPosition(this.actionObject_.getElement(), position.x, '10%');
+  this.createOkCancel_(goog.bind(okCallback, this), null);
 };
 
 /**
@@ -233,6 +237,33 @@ armadillo.Actor.prototype.createActionDialog_ = function() {
   confirm.setDraggable(false);
   confirm.setHasTitleCloseButton(false);
   return confirm;
+};
+
+/**
+ * Creates two buttons: one for OK one for Cancel and attahes them to the
+ * |controlContainer_|.
+ * @param  {function(Event)?}  okCallback
+ * @param  {function(Event)?}  cancelCallback
+ */
+armadillo.Actor.prototype.createOkCancel_ = function(okCallback, cancelCallback) {
+  var ok = new goog.ui.Button('OK');
+  if (okCallback)
+    this.eh_.listen(ok, goog.ui.Component.EventType.ACTION, okCallback);
+  var cancel = new goog.ui.Button('Cancel');
+  if (!cancelCallback)
+    cancelCallback = goog.bind(this.defaultCancelCallback_, this);
+  this.eh_.listen(cancel, goog.ui.Component.EventType.ACTION, cancelCallback);
+  this.controlContainer_.addChild(ok, true);
+  this.controlContainer_.addChild(cancel, true);
+};
+
+/**
+ * The default cancel callback for the above createOkCancel_().
+ * @param  {event}  e
+ * @private
+ */
+armadillo.Actor.prototype.defaultCancelCallback_ = function(e) {
+  this.controlContainer_.removeChildren(true);
 };
 
 /**
