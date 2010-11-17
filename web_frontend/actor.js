@@ -65,7 +65,6 @@ goog.inherits(armadillo.Actor, goog.ui.Container);
 armadillo.Actor.options_ = {
   OPEN : 'open',
   MOVE : 'move',
-  RENAME : 'rename',
   DELETE : 'delete',
   TV_RENAME : 'tv-rename'
 };
@@ -76,7 +75,6 @@ armadillo.Actor.options_ = {
 armadillo.Actor.optionStrings_ = {
   'open' : 'Open',
   'move' : 'Move',
-  'rename' : 'Rename',
   'delete' : 'Delete',
   'tv-rename' : 'Rename TV Episode'
 };
@@ -166,8 +164,7 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
   if (option == armadillo.Actor.options_.OPEN) {
     // TODO: assert that this.file_.isDirectory().
     app.navigate(this.file_.getName());
-  } else if (option == armadillo.Actor.options_.MOVE ||
-             option == armadillo.Actor.options_.RENAME) {
+  } else if (option == armadillo.Actor.options_.MOVE) {
     this.performMove_();
   } else if (option == armadillo.Actor.options_.DELETE) {
     this.performDelete_();
