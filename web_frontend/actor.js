@@ -31,6 +31,9 @@ goog.require('goog.ui.Dialog');
 armadillo.Actor = function(file, opt_domHelper) {
   goog.ui.Container.call(this, null, null, opt_domHelper);
 
+  this.setFocusable(false);
+  this.setFocusableChildrenAllowed(true);
+
   /**
    * The file object on which this acts.
    * @type  {armadillo.File}
@@ -124,6 +127,7 @@ armadillo.Actor.prototype.decorateInternal = function(element) {
     }
   }
   this.controlContainer_ = new goog.ui.Control();
+  this.controlContainer_.setSupportedState(goog.ui.Component.State.FOCUSED, false);
   this.addChild(this.controlContainer_, true);
 };
 

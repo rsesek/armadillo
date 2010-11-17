@@ -27,6 +27,8 @@ goog.require('goog.ui.MenuItem');
 armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
   goog.ui.Control.call(this, opt_domHelper);
 
+  this.setSupportedState(goog.ui.Component.State.FOCUSED, false);
+
   /**
    * Full path of the control.
    * @type  {string}
@@ -144,7 +146,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
     this.nameControl_ = new goog.ui.Control(this.dom_.createDom('input', attrs),
         new armadillo.PathControl.NameControlRenderer_());
     this.nameControl_.setAllowTextSelection(true);
-    this.nameControl_.setHandleMouseEvents(true);
+    this.nameControl_.setHandleMouseEvents(false);
     this.addChild(this.nameControl_, true);
 
     this.eh_.listen(this.nameControl_.getElement(), goog.events.EventType.CHANGE,
