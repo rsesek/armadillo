@@ -19,7 +19,6 @@ goog.require('goog.events.EventHandler');
 goog.require('goog.style');
 goog.require('goog.ui.Button');
 goog.require('goog.ui.Container');
-goog.require('goog.ui.Dialog');
 
 /**
  * The Actor is a popup that displays the various actions that can be performed
@@ -197,26 +196,16 @@ armadillo.Actor.prototype.performMove_ = function() {
  * @private
  */
 armadillo.Actor.prototype.performDelete_ = function() {
-  this.actionObject_ = this.createActionDialog_();
-  this.actionObject_.setTitle('Confirm Delete');
-
-  var container = this.actionObject_.getContentElement();
   var content = goog.dom.createDom('span', null,
       'Are you sure you want to delete:',
       goog.dom.createElement('br'),
       goog.dom.createDom('strong', null, this.file_.getName()));
-  goog.dom.appendChild(container, content);
+  this.controlContainer_.addChild(new goog.ui.Control(content), true);
 
-  var closeCallback = function(e) {
-    if (e.key != goog.ui.Dialog.DefaultButtonKeys.CANCEL) {
-      this.file_.remove();
-    }
+  var okCallback = function(e) {
+    this.file_.remove();
   };
-  // Will be removed when the event source closes.
-  this.eh_.listen(this.actionObject_, goog.ui.Dialog.SELECT_EVENT,
-      closeCallback, false, this);
-
-  this.actionObject_.setVisible(true);
+  this.createOkCancel_(goog.bind(okCallback, this), null);
 };
 
 /**
@@ -226,21 +215,6 @@ armadillo.Actor.prototype.performDelete_ = function() {
 armadillo.Actor.prototype.performTVRename_ = function() {
   var renamer = new armadillo.TVRenamer(this.file_);
   renamer.run();
-};
-
-/**
- * Creates a new instance of a Dialog that has some basic properties set that
- * are common to performing actions.
- * @private
- */
-armadillo.Actor.prototype.createActionDialog_ = function() {
-  var confirm = new goog.ui.Dialog();
-  confirm.setDisposeOnHide(true);
-  confirm.setEscapeToCancel(true);
-  confirm.setModal(true);
-  confirm.setDraggable(false);
-  confirm.setHasTitleCloseButton(false);
-  return confirm;
 };
 
 /**
