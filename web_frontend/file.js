@@ -87,6 +87,20 @@ armadillo.File.prototype.isDirectory = function() {
 };
 
 /**
+ * Returns the extension of the file, or an empty string if theh file is a
+ * directory or does not have an extension.
+ * @returns string
+ */
+armadillo.File.prototype.getExtension = function() {
+  if (this.isDirectory())
+    return '';
+  var index = this.getName().lastIndexOf('.');
+  if (index == -1)
+    return '';
+  return this.getName().substring(index);
+};
+
+/**
  * Sets the highlight state.
  */
 armadillo.File.prototype.setHighlight = function(h) {

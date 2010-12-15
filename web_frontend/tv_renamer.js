@@ -113,6 +113,7 @@ armadillo.TVRenamer.prototype.buildURL_ = function(show, season, episode) {
  * @private
  */
 armadillo.TVRenamer.prototype.rename_ = function(newName) {
-  var path = app.joinPath(this.file_.getParentPath(), newName);
+  var path = app.joinPath(this.file_.getParentPath(),
+      newName + this.file_.getExtension());
   this.file_.move(path);
 };
