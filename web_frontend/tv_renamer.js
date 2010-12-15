@@ -87,11 +87,17 @@ armadillo.TVRenamer.prototype.lookupHandler_ = function(e) {
  * @private
  */
 armadillo.TVRenamer.prototype.parseName_ = function(name) {
-  var pattern = /^(\d+_)?(.+) S?(\d+)(x|E)(\d+)/i;
+  var pattern = /^(\d+_)?(.+)( |\.)S?(\d+)(x|E)(\d+)/i;
   var matches = name.match(pattern);
+  console.log(matches);
   if (!matches || matches.length < 5)
     return null;
-  return [matches[2], parseInt(matches[3], 10), parseInt(matches[5], 10)];
+  // If the separator between the show title and episode is a period, then
+  // it's likely of the form "some.show.name.s03e06.720p.blah.mkv", so strip the
+  // periods in the title.
+  if (matches[3] == '.')
+    matches[2] = matches[2].replace('.', ' ');
+  return [matches[2], parseInt(matches[4], 10), parseInt(matches[6], 10)];
 };
 
 /**
