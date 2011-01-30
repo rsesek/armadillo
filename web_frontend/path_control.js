@@ -27,6 +27,7 @@ goog.require('goog.ui.MenuItem');
 armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
   goog.ui.Control.call(this, opt_domHelper);
 
+  this.setHandleMouseEvents(false);
   this.setSupportedState(goog.ui.Component.State.FOCUSED, false);
 
   /**
@@ -239,6 +240,7 @@ armadillo.PathControl.prototype.componentChanged_ = function(e) {
  * @param  {Event} e
  */
 armadillo.PathControl.prototype.nameChanged_ = function(e) {
+  console.log(e);
   // TODO: assert(this.editableLastComponent_)
   this.name_ = e.target.value;
   e.stopPropagation();
