@@ -111,7 +111,7 @@ def _StampVersion(options):
     fd.seek(0)
     fd.truncate()
     for line in lines:
-      line = re.sub(r'(BUILD =) ([0-9]+)', r'\1 ' + build_stamp, line)
+      line = re.sub(r'(BUILD =) ([0-9\.]+)', r'\1 ' + build_stamp, line)
       line = re.sub(r'(STAMP =) ([0-9]+)', r'\1 ' + time_stamp, line)
       fd.write(line)
     fd.close()
