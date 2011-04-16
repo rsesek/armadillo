@@ -19,29 +19,13 @@ import (
   "regexp"
   "strconv"
   "strings"
-  "./paths"
 )
 
 // Takes a full file path and renames the last path component as if it were a
 // TV episode. This performs the actual rename as well.
 func RenameEpisode(inPath string) (*string, os.Error) {
-  // Make sure a path was given.
-  if len(inPath) < 1 {
-    return nil, os.NewError("Invalid path")
-  }
-  // Check that it's inside the jail.
-  var safePath *string = paths.Verify(inPath)
-  if safePath == nil {
-    return nil, os.NewError("Path is invalid or outside of jail")
-  }
-  // Make sure that the file exists.
-  _, err := os.Stat(*safePath)
-  if err != nil {
-    return nil, err
-  }
-
   // Parse the filename into its components.
-  dirName, fileName := path.Split(*safePath)
+  dirName, fileName := path.Split(inPath)
   info := parseEpisodeName(fileName)
   if info == nil {
     return nil, os.NewError("Could not parse file name")

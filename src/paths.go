@@ -41,16 +41,6 @@ func checkInJail(the_path string) bool {
   return true
 }
 
-// Verifies that the path is in the jail and returns the cleaned-up path. Will
-// return nil on error.
-func Verify(thePath string) *string {
-  fullPath := canonicalizePath(thePath)
-  if !checkInJail(fullPath) {
-    return nil
-  }
-  return &fullPath
-}
-
 func List(the_path string) (files vector.StringVector, err os.Error) {
   full_path := canonicalizePath(the_path)
   if !checkInJail(full_path) {
