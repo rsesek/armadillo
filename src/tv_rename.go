@@ -171,7 +171,7 @@ func parseResponse(response *http.Response) *fullEpisodeInfo {
     }
     switch parts[0] {
       case "Show Name":
-        info.episode.showName = parts[1]
+        info.episode.showName = strings.TrimSpace(parts[1])
       case "Episode Info":
         // Split the line, which is of the form: |SxE^Name^AirDate|.
         parts = strings.Split(parts[1], "^", 3)
