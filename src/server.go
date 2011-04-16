@@ -20,6 +20,7 @@ import (
   "strings"
   "./config"
   "./paths"
+  "./tv_rename"
 )
 
 var dir, file = path.Split(path.Clean(os.Getenv("_")))
@@ -71,7 +72,19 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
         }
         okResponse(response, data)
       }
+    case "tv_rename":
+      newPath, err := tv_rename.RenameEpisode(request.FormValue("path"))
+      if err != nil {
+        errorResponse(response, err.String())
+      } else {
+        data := map[string] interface{} {
+          "path" : *newPath,
+          "error" : 0,
+        }
+        okResponse(response, data)
+      }
     default:
+      fmt.Printf("Invalid action: '%s'\n", request.FormValue("action"))
       errorResponse(response, "Unhandled action")
   }  
 }
