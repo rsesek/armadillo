@@ -1,6 +1,6 @@
 //
 // Armadillo File Manager
-// Copyright (c) 2010, Robert Sesek <http://www.bluestatic.org>
+// Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
 // 
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -21,6 +21,12 @@ goog.require('goog.string.format');
 goog.require('goog.Uri.QueryData');
 
 armadillo.App = function() {
+}
+
+/**
+ * Runs the main front end.
+ */
+armadillo.App.prototype.frontEndMain = function() {
   var start_path = '/';
   if (window.location.hash) {
     start_path = window.location.hash.substr(1);
@@ -35,7 +41,16 @@ armadillo.App = function() {
       armadillo.Version.MAJOR, armadillo.Version.MINOR,
       armadillo.Version.BUILD);
   goog.dom.setTextContent(goog.dom.getElement('footer'), version)
-}
+};
+
+/**
+ * Performs a remote service request, which is essentially an API call that uses
+ * the JavaScript frontend rather than the backend.
+ */
+armadillo.App.prototype.serviceRequestMain = function() {
+  document.write(window.location);
+  console.log(window.location);
+};
 
 /**
  * Starts a new XHR service request from the backend.

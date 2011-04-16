@@ -45,6 +45,7 @@ SOURCES_FE = [
 ]
 RESOURCES_FE = [
   'index.html',
+  'service_request.html',
   'screen.css',
   'reset.css'
 ]
