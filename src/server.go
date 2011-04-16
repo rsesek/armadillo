@@ -67,8 +67,9 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
       if err != nil {
         errorResponse(response, err.String())
       } else {
-        data := map[string] string {
+        data := map[string] interface{} {
           "path" : target,
+          "error" : 0,
         }
         okResponse(response, data)
       }
@@ -142,8 +143,8 @@ func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http
 
 func errorResponse(response http.ResponseWriter, message string) {
   message = strings.Replace(message, gConfig.JailRoot, "/", -1)
-  data := map[string] string {
-    "error"   : "-1",
+  data := map[string] interface{} {
+    "error"   : -1,
     "message" : message,
   }
   json_data, err := json.Marshal(data)
