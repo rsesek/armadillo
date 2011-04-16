@@ -12,6 +12,8 @@ package tv_rename
 import (
   "fmt"
   "os"
+  "path"
+  "regexp"
   "./paths"
 )
 
@@ -23,14 +25,33 @@ func RenameEpisode(inPath string) (*string, os.Error) {
     return nil, os.NewError("Invalid path")
   }
   // Check that it's inside the jail.
-  var path *string = paths.Verify(inPath)
-  if path == nil {
+  var safePath *string = paths.Verify(inPath)
+  if safePath == nil {
     return nil, os.NewError("Path is invalid or outside of jail")
   }
   // Make sure that the file exists.
-  fileInfo, err := os.Stat(*path)
+  _, err := os.Stat(*safePath)
   if err != nil {
     return nil, err
   }
-  return path, nil
+
+  // Parse the filename into its components.
+  _, fileName := path.Split(*safePath)
+  parseEpisodeName(fileName)
+
+  return safePath, nil
+}
+
+type episodeInfo struct {
+  showName string
+  season int
+  episode int
+}
+
+// Parses the last path component into a the component structure.
+func parseEpisodeName(name string) episodeInfo {
+  regex := regexp.MustCompile("^([0-9]+_)?(.+)( |\\.)(S|s)?([0-9]+)[xeXE]([0-9]+)")
+  matches := regex.FindAllString(name, 0)
+  fmt.Printf("matches = %s\n", matches)
+  return episodeInfo{ "", 0, 0 }
 }
