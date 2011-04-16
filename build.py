@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.5
 #
 # Armadillo File Manager
-# Copyright (c) 2010, Robert Sesek <http://www.bluestatic.org>
+# Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
 # 
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -32,6 +32,7 @@ VERSION_FILE = os.path.join(FE_PATH, 'version.js.proto')
 SOURCES = [
   'config.go',
   'paths.go',
+  'tv_rename.go',
   'server.go',
   'main.go'
 ]
