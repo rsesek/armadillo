@@ -31,7 +31,7 @@ armadillo.App = function() {
 
   this.clearError(false);
 
-  var version = goog.string.format('Armadillo %d.%d (%.1f)',
+  var version = goog.string.format('Armadillo %d.%d (%f)',
       armadillo.Version.MAJOR, armadillo.Version.MINOR,
       armadillo.Version.BUILD);
   goog.dom.setTextContent(goog.dom.getElement('footer'), version)
