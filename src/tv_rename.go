@@ -10,7 +10,10 @@
 package tv_rename
 
 import (
+  "bufio"
   "fmt"
+  "http"
+  "net"
   "os"
   "path"
   "regexp"
@@ -38,20 +41,41 @@ func RenameEpisode(inPath string) (*string, os.Error) {
   }
 
   // Parse the filename into its components.
-  _, fileName := path.Split(*safePath)
+  dirName, fileName := path.Split(*safePath)
   info := parseEpisodeName(fileName)
   if info == nil {
     return nil, os.NewError("Could not parse file name")
   }
-  fmt.Print("info = ", *info)
 
-  return safePath, nil
+  // Create the URL and perform the lookup.
+  queryURL := buildURL(info)
+  response, err := performLookup(queryURL)
+  if err != nil {
+    return nil, err
+  }
+
+  // Parse the response into the fullEpisodeInfo struct.
+  fullInfo := parseResponse(response)
+
+  // Create the new path.
+  newName := fmt.Sprintf("%s - %dx%02d - %s", fullInfo.episode.showName,
+      fullInfo.episode.season, fullInfo.episode.episode, fullInfo.episodeName)
+  newName = strings.Replace(newName, "/", "_", -1)
+  newName += path.Ext(fileName)
+  newPath := path.Join(dirName, newName)
+
+  return &newPath, nil
 }
 
 type episodeInfo struct {
   showName string
   season int
   episode int
+}
+
+type fullEpisodeInfo struct {
+  episode episodeInfo
+  episodeName string
 }
 
 // Parses the last path component into a the component structure.
@@ -63,12 +87,8 @@ func parseEpisodeName(name string) *episodeInfo {
   }
 
   // Convert the season and episode numbers to integers.
-  season, err := strconv.Atoi(matches[0][3])
-  if err != nil {
-    return nil
-  }
-  episode, err := strconv.Atoi(matches[0][4])
-  if err != nil {
+  season, episode := convertEpisode(matches[0][3], matches[0][4])
+  if season == 0 && season == episode {
     return nil
   }
 
@@ -85,4 +105,84 @@ func parseEpisodeName(name string) *episodeInfo {
     season,
     episode,
   }
+}
+
+// Builds the URL to which we send a HTTP request to get the episode name.
+func buildURL(info *episodeInfo) string {
+  return fmt.Sprintf("http://services.tvrage.com/tools/quickinfo.php?show=%s&ep=%dx%d",
+      http.URLEscape(info.showName), info.season, info.episode)
+}
+
+// Converts a season and episode to integers. If the return values are both 0,
+// an error occurred.
+func convertEpisode(season string, episode string) (int, int) {
+  seasonInt, err := strconv.Atoi(season)
+  if err != nil {
+    return 0, 0
+  }
+  episodeInt, err := strconv.Atoi(episode)
+  if err != nil {
+    return 0, 0
+  }
+  return seasonInt, episodeInt
+}
+
+// Performs the actual lookup and returns the HTTP response.
+func performLookup(urlString string) (*http.Response, os.Error) {
+  url, err := http.ParseURL(urlString)
+  if err != nil {
+    return nil, err
+  }
+
+  // Open a TCP connection.
+  conn, err := net.Dial("tcp", "", url.Host + ":" + url.Scheme)
+  if err != nil {
+    return nil, err
+  }
+
+  // Perform the HTTP request.
+  client := http.NewClientConn(conn, nil)
+  var request http.Request
+  request.URL = url
+  request.Method = "GET"
+  request.UserAgent = "Armadillo File Manager"
+  err = client.Write(&request)
+  if err != nil {
+    return nil, err
+  }
+  return client.Read()
+}
+
+// Parses the HTTP response from performLookup().
+func parseResponse(response *http.Response) *fullEpisodeInfo {
+  var err os.Error
+  var line string
+  var info fullEpisodeInfo
+
+  buf := bufio.NewReader(response.Body)
+  for ; err != os.EOF; line, err = buf.ReadString('\n') {
+    // An error ocurred while reading.
+    if err != nil {
+      return nil
+    }
+    var parts []string = strings.Split(line, "@", 2)
+    if len(parts) != 2 {
+      continue
+    }
+    switch parts[0] {
+      case "Show Name":
+        info.episode.showName = parts[1]
+      case "Episode Info":
+        // Split the line, which is of the form: |SxE^Name^AirDate|.
+        parts = strings.Split(parts[1], "^", 3)
+        info.episodeName = parts[1]
+        // Split the episode string.
+        episode := strings.Split(parts[0], "x", 2)
+        info.episode.season, info.episode.episode = convertEpisode(episode[0], episode[1])
+        if info.episode.season == 0 && info.episode.season == info.episode.episode {
+          return nil
+        }
+    }
+  }
+  return &info
 }
