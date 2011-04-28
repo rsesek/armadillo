@@ -22,7 +22,7 @@ PROD_PATH = os.path.join(ROOT, 'out')
 FE_PATH   = os.path.join(ROOT, 'web_frontend')
 
 CLOSURE_SVN      = 'http://closure-library.googlecode.com/svn/trunk/'
-CLOSURE_REV      = '235'
+CLOSURE_REV      = '886'
 CLOSURE_DEST     = os.path.join(ROOT, 'closure')
 CLOSURE_COMPILER = os.path.join(ROOT, 'closure-compiler.jar')
 CLOSURE_CALCDEPS = os.path.join(CLOSURE_DEST, 'closure', 'bin', 'calcdeps.py')
