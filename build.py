@@ -7,6 +7,7 @@
 # the terms of the GNU General Public License as published by the Free Software
 # Foundation, either version 3 of the License, or any later version.
 #
+
 import optparse
 import os
 import re
@@ -65,10 +66,6 @@ COMPILER = '6g'
 LINKER = '6l'
 O_EXTENSION = '6'
 
-def _ObjFileName(gofile):
-  gofile = os.path.basename(gofile)
-  return os.path.join(PROD_PATH, os.path.splitext(gofile)[0] + '.' + O_EXTENSION)
-
 def _PullDeps():
   print '=== Pulling Dependencies ==='
   if os.path.exists(CLOSURE_DEST):
@@ -76,7 +73,7 @@ def _PullDeps():
     handle.wait()
     for line in handle.stdout:
       if line.startswith('Revision'):
-        if not line.startswith('Revision: ' + CLOSURE_REV):
+        if not line.strip().endswith(CLOSURE_REV):
           subprocess.Popen([ 'svn', 'update', '-r', CLOSURE_REV, CLOSURE_DEST ]).wait()
         else:
           print '  Closure @ ' + CLOSURE_REV
@@ -92,7 +89,6 @@ def _CompileBackEnd():
     handle.wait()
   
   # Link
-  objects = map(_ObjFileName, SOURCES)
   args = [ LINKER, '-o', os.path.join(PROD_PATH, PRODUCT_NAME), 'main.' + O_EXTENSION ]
   print '  ' + ' ' .join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
