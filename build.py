@@ -59,11 +59,11 @@ RESOURCES_CLOSURE = [
 PRODUCT_NAME = 'armadillo'
 
 # The Golang version (hg id).
-BACK_END_COMPILER_VERSION = 'a7800e20064a release/release.2010-11-10'
+BACK_END_COMPILER_VERSION = 'c5c62aeb6267 release/release.r56/weekly.2011-03-07.1'
 
-COMPILER = '8g'
-LINKER = '8l'
-O_EXTENSION = '8'
+COMPILER = '6g'
+LINKER = '6l'
+O_EXTENSION = '6'
 
 def _ObjFileName(gofile):
   gofile = os.path.basename(gofile)
@@ -93,7 +93,7 @@ def _CompileBackEnd():
   
   # Link
   objects = map(_ObjFileName, SOURCES)
-  args = [ LINKER, '-o', os.path.join(PROD_PATH, PRODUCT_NAME), 'main.8' ]
+  args = [ LINKER, '-o', os.path.join(PROD_PATH, PRODUCT_NAME), 'main.' + O_EXTENSION ]
   print '  ' + ' ' .join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()

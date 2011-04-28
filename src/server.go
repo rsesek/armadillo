@@ -133,7 +133,7 @@ func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http
     return err
   }
   var proxyResponse *http.Response
-  proxyResponse, err = client.Read()
+  proxyResponse, err = client.Read(&request)
   if err != nil && err != http.ErrPersistEOF {
     return err
   }

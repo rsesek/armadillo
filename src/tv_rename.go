@@ -134,7 +134,7 @@ func performLookup(urlString string) (*http.Response, os.Error) {
   if err != nil {
     return nil, err
   }
-  return client.Read()
+  return client.Read(&request)
 }
 
 // Parses the HTTP response from performLookup().
