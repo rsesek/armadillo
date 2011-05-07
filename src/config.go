@@ -36,7 +36,7 @@ type Configuration struct {
 }
 
 func ReadFromFile(aPath string, config *Configuration) os.Error {
-	fd, error := os.Open(aPath, os.O_RDONLY, 0)
+	fd, error := os.Open(aPath)
 	if error != nil {
 		return error
 	}

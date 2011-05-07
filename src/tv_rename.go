@@ -119,7 +119,7 @@ func performLookup(urlString string) (*http.Response, os.Error) {
 	}
 
 	// Open a TCP connection.
-	conn, err := net.Dial("tcp", "", url.Host+":"+url.Scheme)
+	conn, err := net.Dial("tcp", url.Host+":"+url.Scheme)
 	if err != nil {
 		return nil, err
 	}

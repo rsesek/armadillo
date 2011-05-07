@@ -47,7 +47,7 @@ func List(the_path string) (files vector.StringVector, err os.Error) {
 		return nil, os.NewError("Path outside of jail")
 	}
 
-	fd, file_error := os.Open(full_path, os.O_RDONLY, 0)
+	fd, file_error := os.Open(full_path)
 	if file_error != nil {
 		return nil, file_error
 	}

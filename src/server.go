@@ -28,7 +28,7 @@ var kFrontEndFiles string = path.Join(dir, "fe")
 var gConfig *config.Configuration = nil
 
 func indexHandler(response http.ResponseWriter, request *http.Request) {
-	fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"), os.O_RDONLY, 0)
+	fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"))
 	if err != nil {
 		fmt.Print("Error opening file ", err.String(), "\n")
 		return
@@ -119,7 +119,7 @@ func proxyHandler(response http.ResponseWriter, request *http.Request) {
 }
 
 func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http.Request) os.Error {
-	conn, err := net.Dial("tcp", "", url.Host+":http")
+	conn, err := net.Dial("tcp", url.Host+":http")
 	if err != nil {
 		return err
 	}
@@ -149,7 +149,7 @@ func errorResponse(response http.ResponseWriter, message string) {
 	}
 	json_data, err := json.Marshal(data)
 
-	response.SetHeader("Content-Type", "text/json")
+	response.Header().Set("Content-Type", "text/json")
 	if err != nil {
 		io.WriteString(response, "{\"error\":\"-9\",\"message\":\"Internal encoding error\"}")
 	} else {
@@ -158,7 +158,7 @@ func errorResponse(response http.ResponseWriter, message string) {
 }
 
 func okResponse(response http.ResponseWriter, data interface{}) {
-	response.SetHeader("Content-Type", "text/json")
+	response.Header().Set("Content-Type", "text/json")
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		errorResponse(response, "Internal encoding error")
