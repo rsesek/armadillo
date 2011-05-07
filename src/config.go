@@ -10,36 +10,36 @@
 package config
 
 import (
-  "json"
-  "os"
+	"json"
+	"os"
 )
 
 type Configuration struct {
-  // The path to which all file operations are restricted.
-  JailRoot string
+	// The path to which all file operations are restricted.
+	JailRoot string
 
-  // The port on which the server back end runs.
-  Port int
+	// The port on which the server back end runs.
+	Port int
 
-  // An array of URLs that the /proxy service will for which the back-end will
-  // forward GET requests and return the result.
-  ProxyURLs []string
+	// An array of URLs that the /proxy service will for which the back-end will
+	// forward GET requests and return the result.
+	ProxyURLs []string
 
-  // A map of usernames to MD5-encoded passwords that will be allowed to log in
-  // via a .htaccess style realm.
-  Users map [string] string
+	// A map of usernames to MD5-encoded passwords that will be allowed to log in
+	// via a .htaccess style realm.
+	Users map[string]string
 
-  // Whether to include dotfiles (files that begin with a '.'). Users will still
-  // be able to access directories that begin with a '.', but they will not be
-  // included in the list.
-  IncludeDotfiles bool
+	// Whether to include dotfiles (files that begin with a '.'). Users will still
+	// be able to access directories that begin with a '.', but they will not be
+	// included in the list.
+	IncludeDotfiles bool
 }
 
 func ReadFromFile(aPath string, config *Configuration) os.Error {
-  fd, error := os.Open(aPath, os.O_RDONLY, 0)
-  if error != nil {
-    return error
-  }
-  decoder := json.NewDecoder(fd)
-  return decoder.Decode(config)
+	fd, error := os.Open(aPath, os.O_RDONLY, 0)
+	if error != nil {
+		return error
+	}
+	decoder := json.NewDecoder(fd)
+	return decoder.Decode(config)
 }
