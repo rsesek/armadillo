@@ -66,7 +66,8 @@ armadillo.Actor.options_ = {
   OPEN : 'open',
   MOVE : 'move',
   DELETE : 'delete',
-  TV_RENAME : 'tv-rename'
+  TV_RENAME : 'tv-rename',
+  DOWNLOAD : 'download'
 };
 
 /**
@@ -76,7 +77,8 @@ armadillo.Actor.optionStrings_ = {
   'open' : 'Open',
   'move' : 'Move',
   'delete' : 'Delete',
-  'tv-rename' : 'Rename TV Episode'
+  'tv-rename' : 'Rename TV Episode',
+  'download' : 'Download'
 };
 
 /**
@@ -170,6 +172,8 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
     this.performDelete_();
   } else if (option == armadillo.Actor.options_.TV_RENAME) {
     this.performTVRename_();
+  } else if (option == armadillo.Actor.options_.DOWNLOAD) {
+    this.performDownload_();
   }
 };
 
@@ -212,6 +216,14 @@ armadillo.Actor.prototype.performDelete_ = function() {
 armadillo.Actor.prototype.performTVRename_ = function() {
   var renamer = new armadillo.TVRenamer(this.file_);
   renamer.run();
+};
+
+/**
+ * Subroutine that streams a file.
+ * @private
+ */
+armadillo.Actor.prototype.performDownload_ = function() {
+  window.location = '/download?path=' + this.file_.getFullPath();
 };
 
 /**

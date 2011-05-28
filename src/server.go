@@ -84,18 +84,6 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 			}
 			okResponse(response, data)
 		}
-	case "download":
-		valid, fullPath := paths.IsValid(request.FormValue("path"))
-		if valid {
-			info, _ := os.Lstat(fullPath)  // Error is already checked by |valid|.
-			if info.IsDirectory() {
-				errorResponse(response, "File is a directory")
-				return
-			}
-			http.ServeFile(response, request, fullPath)
-		} else {
-			errorResponse(response, "Invalid path")
-		}
 	default:
 		fmt.Printf("Invalid action: '%s'\n", request.FormValue("action"))
 		errorResponse(response, "Unhandled action")
@@ -153,6 +141,20 @@ func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http
 	return err
 }
 
+func downloadHandler(response http.ResponseWriter, request *http.Request) {
+	valid, fullPath := paths.IsValid(request.FormValue("path"))
+	if valid {
+		info, _ := os.Lstat(fullPath)  // Error is already checked by |valid|.
+		if info.IsDirectory() {
+			http.Error(response, "Path is a directory", http.StatusBadRequest)
+		} else {
+			http.ServeFile(response, request, fullPath)
+		}
+	} else {
+		http.NotFound(response, request)
+	}
+}
+
 func errorResponse(response http.ResponseWriter, message string) {
 	message = strings.Replace(message, gConfig.JailRoot, "/", -1)
 	data := map[string]interface{}{
@@ -184,6 +186,7 @@ func RunBackEnd(config *config.Configuration) {
 	mux.HandleFunc("/", indexHandler)
 	mux.Handle("/fe/", http.FileServer(kFrontEndFiles, "/fe/"))
 	mux.HandleFunc("/service", serviceHandler)
+	mux.HandleFunc("/download", downloadHandler)
 	mux.HandleFunc("/proxy", proxyHandler)
 
 	gConfig = config
