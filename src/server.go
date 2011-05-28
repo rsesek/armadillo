@@ -84,6 +84,18 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 			}
 			okResponse(response, data)
 		}
+	case "download":
+		valid, fullPath := paths.IsValid(request.FormValue("path"))
+		if valid {
+			info, _ := os.Lstat(fullPath)  // Error is already checked by |valid|.
+			if info.IsDirectory() {
+				errorResponse(response, "File is a directory")
+				return
+			}
+			http.ServeFile(response, request, fullPath)
+		} else {
+			errorResponse(response, "Invalid path")
+		}
 	default:
 		fmt.Printf("Invalid action: '%s'\n", request.FormValue("action"))
 		errorResponse(response, "Unhandled action")

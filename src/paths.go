@@ -41,6 +41,12 @@ func checkInJail(the_path string) bool {
 	return true
 }
 
+func IsValid(path string) (bool, string) {
+	path = canonicalizePath(path)
+	_, err := os.Lstat(path)
+	return err == nil && checkInJail(path), path
+}
+
 func List(the_path string) (files vector.StringVector, err os.Error) {
 	full_path := canonicalizePath(the_path)
 	if !checkInJail(full_path) {
