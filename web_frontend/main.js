@@ -47,7 +47,7 @@ armadillo.App.prototype.sendRequest = function(action, extra_data, callback) {
   var data = new goog.Uri.QueryData();
   data.set('action', action);
   data.extend(extra_data);
-  goog.net.XhrIo.send('/service', callback, 'POST', data);
+  goog.net.XhrIo.send('service', callback, 'POST', data);
 };
 
 /**
