@@ -1,7 +1,7 @@
 //
 // Armadillo File Manager
 // Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
-// 
+//
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
 // Foundation, either version 3 of the License, or any later version.
@@ -101,12 +101,5 @@ func MakeDir(target string) os.Error {
 	if !checkInJail(target) {
 		return os.NewError("Path outside of jail")
 	}
-
-	dir, _ := path.Split(target)
-	isValid, _ := IsValid(dir)
-	if !isValid {
-		return os.NewError("Containing directory not valid")
-	}
-
 	return os.Mkdir(target, 0644)
 }
