@@ -95,3 +95,18 @@ func Move(source string, target string) os.Error {
 	}
 	return os.Rename(source, target)
 }
+
+func MakeDir(target string) os.Error {
+	target = canonicalizePath(target)
+	if !checkInJail(target) {
+		return os.NewError("Path outside of jail")
+	}
+
+	dir, _ := path.Split(target)
+	isValid, _ := IsValid(dir)
+	if !isValid {
+		return os.NewError("Containing directory not valid")
+	}
+
+	return os.Mkdir(target, 0644)
+}

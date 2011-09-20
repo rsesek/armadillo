@@ -1,7 +1,7 @@
 //
 // Armadillo File Manager
-// Copyright (c) 2010, Robert Sesek <http://www.bluestatic.org>
-// 
+// Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
+//
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
 // Foundation, either version 3 of the License, or any later version.
@@ -69,6 +69,18 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 		} else {
 			data := map[string]interface{}{
 				"path":  target,
+				"error": 0,
+			}
+			okResponse(response, data)
+		}
+	case "mkdir":
+		path := request.FormValue("path")
+		err := paths.MakeDir(path)
+		if err != nil {
+			errorResponse(response, err.String())
+		} else {
+			data := map[string]interface{}{
+				"path": path,
 				"error": 0,
 			}
 			okResponse(response, data)
