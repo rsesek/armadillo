@@ -1,7 +1,7 @@
 //
 // Armadillo File Manager
-// Copyright (c) 2010, Robert Sesek <http://www.bluestatic.org>
-// 
+// Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
+//
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
 // Foundation, either version 3 of the License, or any later version.
@@ -30,6 +30,10 @@ armadillo.App = function() {
       this.hashChanged_, false, this);
 
   this.clearError(false);
+
+  var mkdir = goog.dom.getElement('mkdir');
+  goog.events.listen(mkdir, goog.events.EventType.CLICK,
+      this.mkdirHandler_, false, this);
 
   var version = goog.string.format('Armadillo %d.%d (%f)',
       armadillo.Version.MAJOR, armadillo.Version.MINOR,
@@ -183,4 +187,23 @@ armadillo.App.prototype.showError = function(message) {
   goog.dom.setTextContent(elm, message);
   var anim = new goog.fx.dom.FadeInAndShow(elm, 1000);
   anim.play();
+};
+
+/**
+ * Creates a subdirectory in the current path.
+ */
+armadillo.App.prototype.mkdirHandler_ = function() {
+  var name = prompt('Name the new subdirectory', '');
+  if (name != null && name != '') {
+    var path = this.joinPath(this.getCurrentPath(), name);
+    this.sendRequest('mkdir', {'path':path}, function(e) {
+      var data = e.target.getResponseJson();
+      if (data['error']) {
+        app.showError(data['message']);
+      } else {
+        app.clearError();
+        app.list(app.getCurrentPath());
+      }
+    });
+  }
 };

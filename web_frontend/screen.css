@@ -87,7 +87,7 @@ h1 {
   border-style: solid;
 }
 
-.actor .tile {
+.tile {
   padding: 0em 1em 0em 1em;
   height: 2em;
   display: inline-block;
@@ -117,11 +117,11 @@ h1 {
   line-height: 1.75em;
 }
 
-.actor .tile .title {
+.tile .title {
   font-size: 0.7em;
 }
 
-.actor .tile:active {
+.tile:active {
   background: -webkit-gradient(
       linear,
       left bottom,
