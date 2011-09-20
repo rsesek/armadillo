@@ -101,5 +101,5 @@ func MakeDir(target string) os.Error {
 	if !checkInJail(target) {
 		return os.NewError("Path outside of jail")
 	}
-	return os.Mkdir(target, 0644)
+	return os.Mkdir(target, 0755)
 }
