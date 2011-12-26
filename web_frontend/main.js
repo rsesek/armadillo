@@ -13,9 +13,6 @@ goog.provide('armadillo.App');
 goog.require('armadillo.File');
 goog.require('armadillo.Version');
 goog.require('goog.array');
-goog.require('goog.dom');
-goog.require('goog.fx.dom.FadeInAndShow');
-goog.require('goog.fx.dom.FadeOutAndHide');
 goog.require('goog.string.format');
 
 armadillo.App = function() {
@@ -24,19 +21,17 @@ armadillo.App = function() {
     start_path = window.location.hash.substr(1);
   }
   this.list(start_path);
-  goog.events.listen(window, goog.events.EventType.HASHCHANGE,
-      this.hashChanged_, false, this);
+
+  $(window).bind('hashchange', this.hashChanged_.bind(this));
 
   this.clearError(false);
 
-  var mkdir = goog.dom.getElement('mkdir');
-  goog.events.listen(mkdir, goog.events.EventType.CLICK,
-      this.mkdirHandler_, false, this);
+  $('#mkdir').click(this.mkdirHandler_.bind(this));
 
   var version = goog.string.format('Armadillo %d.%d (%f)',
       armadillo.Version.MAJOR, armadillo.Version.MINOR,
       armadillo.Version.BUILD);
-  goog.dom.setTextContent(goog.dom.getElement('footer'), version)
+  $('#footer').text(version);
 }
 
 /**
@@ -70,21 +65,22 @@ armadillo.App.prototype.list = function(path) {
     }
 
     // Update the listing.
-    goog.dom.setTextContent(goog.dom.getElement('pwd'), path);
+    $('#pwd').text(path);
     app.currentPath_ = path;
     window.location.hash = path;
     document.title = path + ' - Armadillo';
-    var list = goog.dom.getElement('ls');
-    goog.dom.removeChildren(list);
+
+    var list = $('#ls');
+    list.empty();
 
     // Add a previous directory entry.
     if (path != '/' && path != '')
       goog.array.insertAt(data, '../', 0);
 
     // Add items for each entry.
-    goog.array.forEach(data, function(file) {
+    $.each(data, function(i, file) {
       var fileObject = new armadillo.File(file, path);
-      goog.dom.appendChild(list, fileObject.draw());
+      list.append(fileObject.draw());
     });
   }
   this.sendRequest('list', {'path':path}, callback);
@@ -152,7 +148,7 @@ armadillo.App.prototype.joinPath = function() {
   var path = '';
   var sep = '/';
   var last = arguments.length - 1;
-  goog.array.forEach(arguments, function (c, i) {
+  $.each(arguments, function (i, c) {
     if (c == sep && i != 0)
       return;
     path += c;
@@ -167,16 +163,15 @@ armadillo.App.prototype.joinPath = function() {
  * @param   {bool?}  animate  Whether or not to animate out.
  */
 armadillo.App.prototype.clearError = function(animate) {
-  var elm = goog.dom.getElement('error');
-  var anim = new goog.fx.dom.FadeOutAndHide(elm, 500);
-  if (!goog.dom.getTextContent(elm) || !animate) {
-    anim.hide();
+  var elm = $('#error');
+  if (!elm.text() || !animate) {
+    elm.hide();
     return;
   }
-  goog.events.listenOnce(anim, goog.fx.Animation.EventType.END, function() {
-    goog.dom.setTextContent(elm, '');
+
+  elm.fadeOut(500, function() {
+    elm.text('');
   });
-  anim.play();
 };
 
 /**
@@ -184,10 +179,7 @@ armadillo.App.prototype.clearError = function(animate) {
  * @param  {string}  message
  */
 armadillo.App.prototype.showError = function(message) {
-  var elm = goog.dom.getElement('error');
-  goog.dom.setTextContent(elm, message);
-  var anim = new goog.fx.dom.FadeInAndShow(elm, 1000);
-  anim.play();
+  $('#error').text(message).fadeIn(1000);
 };
 
 /**
