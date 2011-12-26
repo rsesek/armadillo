@@ -97,7 +97,6 @@ armadillo.Actor.prototype.createTile_ = function(option) {
   title.text(armadillo.Actor.optionStrings_[value]);
 
   var tile = $.createDom('div').addClass('tile');
-  tile.actorOption = value;
   tile.append(title);
 
   // Cannot open non-directory files.
@@ -105,16 +104,16 @@ armadillo.Actor.prototype.createTile_ = function(option) {
     return null;
   }
 
-  tile.click(this.tileClickHandler_.bind(this));
+  tile.click(this.tileClickHandler_.bind(this, value));
   return tile;
 };
 
 /**
  * Click handler for individual tiles.
+ * @param {int} option The Actor.option used
  * @param  {Event}  e
  */
-armadillo.Actor.prototype.tileClickHandler_ = function(e) {
-  var option = e.target.actorOption;
+armadillo.Actor.prototype.tileClickHandler_ = function(option, e) {
   this.controlContainer_.empty();
   this.controlContainer_.show();
   if (option == armadillo.Actor.options_.OPEN) {
@@ -137,7 +136,7 @@ armadillo.Actor.prototype.tileClickHandler_ = function(e) {
  */
 armadillo.Actor.prototype.performMove_ = function() {
   var editor = new armadillo.PathControl(this.file_.getFullPath(), true);
-  this.controlContainer_.append(editor);
+  this.controlContainer_.append(editor.element_);
 
   var okCallback = function(e) {
     var newPath = editor.getPath();
