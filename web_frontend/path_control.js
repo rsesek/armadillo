@@ -158,7 +158,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
     if (path == '') {
       // If this is the root path element, make sure the root is accessible for
       // moving items.
-      goog.array.insertAt(data, '/', 0);
+      data.splice(0, 1, '/');
     }
     menu.empty();
     $.each(data, function (i, caption) {
