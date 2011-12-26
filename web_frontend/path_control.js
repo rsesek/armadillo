@@ -1,6 +1,6 @@
 //
 // Armadillo File Manager
-// Copyright (c) 2010, Robert Sesek <http://www.bluestatic.org>
+// Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
 // 
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -10,11 +10,6 @@
 goog.provide('armadillo.PathControl');
 
 goog.require('goog.array');
-goog.require('goog.ui.Control');
-goog.require('goog.ui.FilteredMenu');
-goog.require('goog.ui.LabelInput');
-goog.require('goog.ui.MenuButton');
-goog.require('goog.ui.MenuItem');
 
 /**
  * Creates a new path editing control for a given path.
@@ -24,8 +19,6 @@ goog.require('goog.ui.MenuItem');
  * @constructor
  */
 armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
-  goog.ui.Control.call(this, opt_domHelper);
-
   /**
    * Full path of the control.
    * @type  {string}
@@ -50,25 +43,6 @@ armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
    * @type  {goog.ui.Control}
    */
   this.nameControl_ = null;
-
-  /**
-   * Event Handler
-   * @type  {goog.events.EventHandler}
-   */
-  this.eh_ = new goog.events.EventHandler();
-};
-goog.inherits(armadillo.PathControl, goog.ui.Control);
-
-/**
- * Disposer
- * @protected
- */
-armadillo.PathControl.prototype.disposeInternal = function() {
-  armadillo.PathControl.superClass_.disposeInternal.call(this);
-  this.nameControl_ = null;
-
-  this.eh_.dispose();
-  this.eh_ = null;
 };
 
 /**
@@ -158,19 +132,16 @@ armadillo.PathControl.prototype.enterDocument = function() {
  * @param  {string}  name  The current component after |path|.
  */
 armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
-  var menu = new goog.ui.FilteredMenu();
-  menu.setFilterLabel(name);
-  menu.setAllowMultiple(false);
-  menu.setOpenFollowsHighlight(true);
-  goog.events.listen(menu, goog.ui.Component.EventType.ACTION,
-      this.componentChanged_, false, this);
+  var menu = $.createDom('select');
   this.fetchMenuContents_(path, name, menu);
 
-  var button = new goog.ui.MenuButton(name, menu, null, this.dom_);
-  button.setFocusablePopupMenu(true);
-  button.setScrollOnOverflow(true);
-  button.setVisible(true);
-  return button;
+  var option = $.createDom('option');
+  option.text(name).attr('selected', 'selected');
+
+  menu.append(option);
+  menu.change(this.componentChanged_.bind(this));
+
+  return menu;
 };
 
 /**
@@ -192,16 +163,17 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
       // moving items.
       goog.array.insertAt(data, '/', 0);
     }
+    menu.empty();
     $.each(data, function (i, caption) {
       // It only makes sense to be able to move into directories.
       if (!app.isDirectory(caption)) {
         return;
       }
-      var item = new goog.ui.MenuItem(caption);
-      item.setValue(app.joinPath(path, name, caption));
-      menu.addItem(item);
+      var item = $.createDom('option');
+      item.val(app.joinPath(path, name, caption)).text(caption);
+      menu.append(item);
       if (caption == name) {
-        menu.setHighlighted(item);
+        item.attr('selected', 'selected');
       }
     });
   };
@@ -213,8 +185,8 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
  * @param  {Event}  e
  */
 armadillo.PathControl.prototype.componentChanged_ = function(e) {
-  this.path_ = e.target.getValue();
-  this.element_.clear();
+  this.path_ = $(e.target).val();
+  this.element_.empty();
   this.decorateInternal(this.element_);
 };
 
