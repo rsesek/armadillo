@@ -8,7 +8,6 @@
 //
 
 goog.provide('armadillo.PathControl');
-goog.provide('armadillo.PathControl.NameControlRenderer_');
 
 goog.require('goog.array');
 goog.require('goog.ui.Control');
@@ -26,9 +25,6 @@ goog.require('goog.ui.MenuItem');
  */
 armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
   goog.ui.Control.call(this, opt_domHelper);
-
-  this.setHandleMouseEvents(false);
-  this.setSupportedState(goog.ui.Component.State.FOCUSED, false);
 
   /**
    * Full path of the control.
@@ -104,14 +100,8 @@ armadillo.PathControl.prototype.getNameControl = function() {
  * Creates a new path control object.
  */
 armadillo.PathControl.prototype.createDom = function() {
-  this.decorateInternal(this.dom_.createElement('div'));
-};
-
-/**
- * @inheritDoc
- */
-armadillo.PathControl.prototype.canDecorate = function() {
-  return true;
+  this.decorateInternal($.createDom('div'));
+  return this.element_;
 };
 
 /**
@@ -133,32 +123,25 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
   }
 
   var path = '';
-  goog.array.forEach(components, function (part, i) {
-    this.addChild(this.createComponentNode_(path, part), true);
+  $.each(components, function (i, part) {
+    this.element_.append(this.createComponentNode_(path, part), true);
     path = app.joinPath(path, part);
-  }, this);
+  }.bind(this));
 
   if (this.editableLastComponent_) {
-    var attrs = {
+    this.nameControl_ = $.createDom('input');
+    this.nameControl_.attr({
       'type' : 'text',
       'name' : 'pathName',
       'value' : this.name_
-    };
-    this.nameControl_ = new goog.ui.Control(this.dom_.createDom('input', attrs),
-        new armadillo.PathControl.NameControlRenderer_());
-    this.nameControl_.setAllowTextSelection(true);
-    this.nameControl_.setHandleMouseEvents(false);
-    this.addChild(this.nameControl_, true);
+    });
 
-    this.eh_.listen(this.nameControl_.getElement(), goog.events.EventType.CHANGE,
-        this.nameChanged_, false, this);
-    this.eh_.listen(this.nameControl_.getElement(), goog.events.EventType.KEYDOWN,
-        this.nameChanged_, false, this);
+    this.nameControl_.bind('change keydown', this.nameChanged_.bind(this));
   } else {
-    this.nameControl_ = new goog.ui.Control(this.name_);
-    this.addChild(this.nameControl_, true);
+    this.nameControl_ = $.createDom('span').text(this.name_);
   }
-  goog.dom.classes.add(this.nameControl_.getElement(), 'goog-inline-block');
+
+  this.element_.append(this.nameControl_);
 };
 
 /**
@@ -209,7 +192,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
       // moving items.
       goog.array.insertAt(data, '/', 0);
     }
-    goog.array.forEach(data, function (caption) {
+    $.each(data, function (i, caption) {
       // It only makes sense to be able to move into directories.
       if (!app.isDirectory(caption)) {
         return;
@@ -231,7 +214,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
  */
 armadillo.PathControl.prototype.componentChanged_ = function(e) {
   this.path_ = e.target.getValue();
-  this.removeChildren(true);
+  this.element_.clear();
   this.decorateInternal(this.element_);
 };
 
@@ -245,21 +228,4 @@ armadillo.PathControl.prototype.nameChanged_ = function(e) {
   this.name_ = e.target.value;
   e.stopPropagation();
   return true;
-};
-
-/**
- * Renderer for the Name Control of the Path Control
- * @constructor_
- */
-armadillo.PathControl.NameControlRenderer_ = function() {
-  goog.ui.ControlRenderer.call(this);
-};
-goog.inherits(armadillo.PathControl.NameControlRenderer_, goog.ui.ControlRenderer);
-
-armadillo.PathControl.NameControlRenderer_.prototype.createDom = function(control) {
-  var content = control.getContent();
-  if (content instanceof HTMLElement) {
-    return content;
-  }
-  return armadillo.PathControl.NameControlRenderer_.superClass_.createDom.call(this, control);
 };

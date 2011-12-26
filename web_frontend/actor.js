@@ -136,7 +136,7 @@ armadillo.Actor.prototype.tileClickHandler_ = function(option, e) {
  */
 armadillo.Actor.prototype.performMove_ = function() {
   var editor = new armadillo.PathControl(this.file_.getFullPath(), true);
-  this.controlContainer_.append(editor.element_);
+  this.controlContainer_.append(editor.createDom());
 
   var okCallback = function(e) {
     var newPath = editor.getPath();
