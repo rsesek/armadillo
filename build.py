@@ -52,13 +52,6 @@ RESOURCES_FE = [
   'screen.css',
   'reset.css'
 ]
-RESOURCES_CLOSURE = [
-  'common.css',
-  'dialog.css',
-  'menu.css',
-  'menuitem.css',
-  'menubutton.css',
-]
 PRODUCT_NAME = 'armadillo'
 
 # The Golang version (hg id).
@@ -137,16 +130,6 @@ def _CompileFrontEnd(options):
   for resource in RESOURCES_FE:
     print '  COPY ' + resource
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
-  fd = open(os.path.join(fe_resources, 'closure.css'), 'w+')
-  fd.write('/*=== Generated Resources for Closure Library ===*/')
-  for resource in RESOURCES_CLOSURE:
-    print '  COPY closure/' + resource
-    respath = os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource)
-    ofd = open(respath, 'r')
-    fd.write('\n\n/*=== File: ' + respath.replace(ROOT, '/') + ' ===*/\n')
-    fd.writelines(ofd.readlines())
-    ofd.close()
-  fd.close()
   
   # Version
   _StampVersion(options)
@@ -155,7 +138,6 @@ def _CompileFrontEnd(options):
   print '=== Compiling Front End ==='
   outfile = os.path.join(PROD_PATH, 'fe', PRODUCT_NAME + '.js')
   fe_sources = map(lambda f: '-i' + os.path.join(FE_PATH, f), SOURCES_FE)
-  closure_sources = os.path.join(CLOSURE_DEST, 'closure', 'goog')
   args = [ CLOSURE_CALCDEPS ]
   args.extend(fe_sources)
   output = "script"
