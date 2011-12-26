@@ -18,3 +18,11 @@ jQuery.namespace = function(ns) {
     parent = parent[space];
   });
 }
+
+/**
+ * Shortcut for creating a DOM element.
+ * @param {string} elm
+ */
+jQuery.createDom = function(elm) {
+  return this(document.createElement(elm));
+}

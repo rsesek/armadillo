@@ -182,9 +182,12 @@ armadillo.File.prototype.clickHandler_ = function(e) {
  */
 armadillo.File.prototype.actorHandler_ = function(e) {
   e.stopPropagation();
-  if (!this.actor_.isInDocument())
-    this.actor_.render(this.element_);
-  $(this.actor_.getElement()).slideToggle('fast');
+  if (!this.actor_.element) {
+    var elm = this.actor_.createDom();
+    elm.hide();
+    $(this.element_).append(elm);
+  }
+  this.actor_.element_.slideToggle('fast');
 };
 
 /**
