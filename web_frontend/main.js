@@ -12,7 +12,6 @@ goog.provide('armadillo.App');
 
 goog.require('armadillo.File');
 goog.require('armadillo.Version');
-goog.require('goog.array');
 goog.require('goog.string.format');
 
 armadillo.App = function() {
@@ -75,7 +74,7 @@ armadillo.App.prototype.list = function(path) {
 
     // Add a previous directory entry.
     if (path != '/' && path != '')
-      goog.array.insertAt(data, '../', 0);
+      data.splice(0, 1, '../');
 
     // Add items for each entry.
     $.each(data, function(i, file) {

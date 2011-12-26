@@ -9,8 +9,6 @@
 
 goog.provide('armadillo.PathControl');
 
-goog.require('goog.array');
-
 /**
  * Creates a new path editing control for a given path.
  * @param  {string}  path  The path to create an editor for
@@ -93,7 +91,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
   // If the last component is emtpy, do not use it because it means a directory
   // is being moved.
   if (components[components.length - 1] == '') {
-    goog.array.removeAt(components, components.length - 1);
+    components.splice(-1);
   }
 
   var path = '';

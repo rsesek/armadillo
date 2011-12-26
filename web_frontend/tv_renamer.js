@@ -9,31 +9,18 @@
 
 goog.provide('armadillo.TVRenamer');
 
-goog.require('goog.Disposable');
-
 /**
  * Creates a helper to rename a file in a pretty format for TV episodes.
  * @extends  {goog.Disposable}
  * @constructor
  */
 armadillo.TVRenamer = function(file) {
-  goog.base(this);
-
   /**
    * The file object
    * @type  {armadillo.File}
    */
   this.file_ = file;
 }
-goog.inherits(armadillo.TVRenamer, goog.Disposable);
-
-/**
- * @inheritDoc
- */
-armadillo.TVRenamer.prototype.disposeInternal = function() {
-  goog.base(this, 'disposeInternal');
-  this.file_ = null;
-};
 
 /**
  * Performs the information lookup and renames the file if the lookup is
