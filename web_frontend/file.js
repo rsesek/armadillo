@@ -12,7 +12,6 @@ goog.provide('armadillo.File');
 goog.require('armadillo.Actor');
 goog.require('goog.Disposable');
 goog.require('goog.dom');
-goog.require('goog.ui.AnimatedZippy');
 
 /**
  * A file in a directory listing.
@@ -27,7 +26,6 @@ armadillo.File = function(name, path) {
   this.highlight_ = '';
   this.isDirectory_ = app.isDirectory(name);
   this.actor_ = new armadillo.Actor(this);
-  this.zippy_ = null;
 };
 goog.inherits(armadillo.File, goog.Disposable);
 
@@ -48,8 +46,6 @@ armadillo.File.prototype.disposeInternal = function() {
   goog.events.unlistenByKey(this.linkListener_);
   goog.events.unlistenByKey(this.actorListener_);
   this.actor_.dispose();
-  if (this.zippy_)
-    this.zippy_.dispose();
 };
 
 /**
@@ -196,11 +192,7 @@ armadillo.File.prototype.actorHandler_ = function(e) {
   e.stopPropagation();
   if (!this.actor_.isInDocument())
     this.actor_.render(this.element_);
-  if (!this.zippy_) {
-    this.zippy_ = new goog.ui.AnimatedZippy(this.title_,
-        this.actor_.getElement(), false);
-    this.zippy_.toggle();
-  }
+  $(this.actor_.getElement()).slideToggle('fast');
 };
 
 /**
