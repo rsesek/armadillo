@@ -135,7 +135,7 @@ armadillo.File.prototype.draw = function() {
  */
 armadillo.File.prototype.remove = function() {
   var file = this;
-  var callback = function(data) {
+  var callback = function(data, status, xhr) {
     if (data['error']) {
       app.showError(data['message']);
       return;
@@ -154,7 +154,7 @@ armadillo.File.prototype.remove = function() {
  */
 armadillo.File.prototype.move = function(dest) {
   var file = this;
-  var callback = function(data) {
+  var callback = function(data, status, xhr) {
     if (data['error']) {
       app.showError(data['message']);
     } else {

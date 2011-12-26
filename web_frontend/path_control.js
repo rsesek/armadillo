@@ -152,8 +152,7 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
  * @param  {goog.ui.Menu}  The menu to attach items to
  */
 armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) {
-  var callback = function(e) {
-    var data = e.target.getResponseJson();
+  var callback = function(data, status, xhr) {
     if (data['error']) {
       app.showError(data['message']);
       return;

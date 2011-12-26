@@ -16,9 +16,7 @@ goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.fx.dom.FadeInAndShow');
 goog.require('goog.fx.dom.FadeOutAndHide');
-goog.require('goog.net.XhrIo');
 goog.require('goog.string.format');
-goog.require('goog.Uri.QueryData');
 
 armadillo.App = function() {
   var start_path = '/';
@@ -44,14 +42,18 @@ armadillo.App = function() {
 /**
  * Starts a new XHR service request from the backend.
  * @param  {string}  action  Action to perform.
- * @param  {Object}  extra_data  Extra data to add.
+ * @param  {Object}  data  Extra data to add.
  * @param  {Function}  callback  XHR callback.
+ * @return {jqXHR} The jQuery XHR object.
  */
-armadillo.App.prototype.sendRequest = function(action, extra_data, callback) {
-  var data = new goog.Uri.QueryData();
-  data.set('action', action);
-  data.extend(extra_data);
-  goog.net.XhrIo.send('service', callback, 'POST', data);
+armadillo.App.prototype.sendRequest = function(action, data, callback) {
+  data.action = action;
+  return $.ajax({
+      url: 'service',
+      type: 'POST',
+      data: data,
+      success: callback
+  });
 };
 
 /**
@@ -59,8 +61,7 @@ armadillo.App.prototype.sendRequest = function(action, extra_data, callback) {
  * @param  {string}  path  Path to list; relative to jail.
  */
 armadillo.App.prototype.list = function(path) {
-  var callback = function(e) {
-    var data = e.target.getResponseJson();
+  var callback = function(data, status, xhr) {
     if (data['error']) {
       app.showError(data['message']);
       return;  // Error.
@@ -196,8 +197,7 @@ armadillo.App.prototype.mkdirHandler_ = function() {
   var name = prompt('Name the new subdirectory', '');
   if (name != null && name != '') {
     var path = this.joinPath(this.getCurrentPath(), name);
-    this.sendRequest('mkdir', {'path':path}, function(e) {
-      var data = e.target.getResponseJson();
+    this.sendRequest('mkdir', {'path':path}, function(data, status, xhr) {
       if (data['error']) {
         app.showError(data['message']);
       } else {

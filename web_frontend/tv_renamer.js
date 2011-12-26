@@ -10,7 +10,6 @@
 goog.provide('armadillo.TVRenamer');
 
 goog.require('goog.Disposable');
-goog.require('goog.net.XhrIo');
 
 /**
  * Creates a helper to rename a file in a pretty format for TV episodes.
@@ -42,8 +41,7 @@ armadillo.TVRenamer.prototype.disposeInternal = function() {
  */
 armadillo.TVRenamer.prototype.run = function() {
   var file = this.file_;
-  var callback = function(xhr) {
-    var data = xhr.currentTarget.getResponseJson();
+  var callback = function(data, stauts, xhr) {
     if (data['error']) {
       app.showError(data['message']);
     } else {
