@@ -10,8 +10,6 @@
 goog.provide('armadillo.File');
 
 goog.require('armadillo.Actor');
-goog.require('goog.Disposable');
-goog.require('goog.dom');
 
 /**
  * A file in a directory listing.
@@ -20,14 +18,12 @@ goog.require('goog.dom');
  * @constructor
  */
 armadillo.File = function(name, path) {
-  goog.Disposable.call(this);
   this.name_ = name;
   this.path_ = path;
   this.highlight_ = '';
   this.isDirectory_ = app.isDirectory(name);
   this.actor_ = new armadillo.Actor(this);
 };
-goog.inherits(armadillo.File, goog.Disposable);
 
 armadillo.File.Highlight = {
   NONE : '',
@@ -40,11 +36,8 @@ armadillo.File.Highlight = {
  * @protected
  */
 armadillo.File.prototype.disposeInternal = function() {
-  armadillo.File.superClass_.disposeInternal.call(this);
   this.element_ = null;
   this.link_ = null;
-  goog.events.unlistenByKey(this.linkListener_);
-  goog.events.unlistenByKey(this.actorListener_);
   this.actor_.dispose();
 };
 
@@ -114,25 +107,24 @@ armadillo.File.prototype.setHighlight = function(h) {
 armadillo.File.prototype.draw = function() {
   // Create the element if it does not exist.  If it does, remove all children.
   if (!this.element_) {
-    this.element_ = goog.dom.createElement('li');
+    this.element_ = document.createElement('li');
     this.element_.representedObject = this;
     var handler = (this.isSpecial_() ? this.clickHandler_ : this.actorHandler_);
   }
-  goog.dom.removeChildren(this.element_);
+  $(this.element_).empty();
 
   // Set the name of the entry.
-  this.title_ = goog.dom.createDom('div', null);
+  this.title_ = document.createElement('div');
   if (this.isDirectory()) {
-    this.link_ = goog.dom.createDom('a', null, this.name_);
-    this.linkListener_ = goog.events.listen(this.link_,
-        goog.events.EventType.CLICK, this.clickHandler_, false, this);
-    goog.dom.appendChild(this.title_, this.link_);
+    this.link_ = $(document.createElement('a'));
+    this.link_.text(this.name_);
+    this.link_.click(this.clickHandler_.bind(this));
+    $(this.title_).append(this.link_);
   } else {
-    goog.dom.setTextContent(this.title_, this.name_);
+    $(this.title_).text(this.name_);
   }
-  goog.dom.appendChild(this.element_, this.title_);
-  this.actorListener_ = goog.events.listen(this.title_,
-      goog.events.EventType.CLICK, handler, false, this);
+  $(this.element_).append(this.title_);
+  $(this.title_).click(handler.bind(this));
 
   return this.element_;
 };
