@@ -161,8 +161,7 @@ def _CompileFrontEnd(options):
   output = "script"
   if options.compile_fe:
     output = "compiled"
-  args.extend([ '-p', closure_sources, '-o', output, '-c', CLOSURE_COMPILER,
-      '--output_file', outfile ])
+  args.extend([ '-o', output, '-c', CLOSURE_COMPILER, '--output_file', outfile ])
   print '  ' + ' '.join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()

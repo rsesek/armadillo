@@ -7,11 +7,7 @@
 // Foundation, either version 3 of the License, or any later version.
 //
 
-goog.provide('armadillo');
-goog.provide('armadillo.App');
-
-goog.require('armadillo.File');
-goog.require('armadillo.Version');
+$.namespace('armadillo.App');
 
 armadillo.App = function() {
   var start_path = '/';

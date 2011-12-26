@@ -7,7 +7,7 @@
 // Foundation, either version 3 of the License, or any later version.
 //
 
-goog.provide('armadillo.Version');
+$.namespace('armadillo.Version');
 
 armadillo.Version.MAJOR = 0;
 armadillo.Version.MINOR = 7;

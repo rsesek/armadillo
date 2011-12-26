@@ -7,7 +7,7 @@
 // Foundation, either version 3 of the License, or any later version.
 //
 
-goog.provide('armadillo.PathControl');
+$.namespace('armadillo.PathControl');
 
 /**
  * Creates a new path editing control for a given path.

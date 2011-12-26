@@ -7,10 +7,7 @@
 // Foundation, either version 3 of the License, or any later version.
 //
 
-goog.provide('armadillo.Actor');
-
-goog.require('armadillo.PathControl');
-goog.require('armadillo.TVRenamer');
+$.namespace('armadillo.Actor');
 
 /**
  * The Actor is a popup that displays the various actions that can be performed

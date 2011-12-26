@@ -7,7 +7,7 @@
 // Foundation, either version 3 of the License, or any later version.
 //
 
-goog.provide('armadillo.TVRenamer');
+$.namespace('armadillo.TVRenamer');
 
 /**
  * Creates a helper to rename a file in a pretty format for TV episodes.
