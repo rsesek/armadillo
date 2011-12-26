@@ -118,7 +118,7 @@ def _CompileFrontEnd(options):
   print '=== Compiling Front End ==='
   outfile = os.path.join(PROD_PATH, 'fe', PRODUCT_NAME + '.js')
   if options.compile_fe:
-    fe_sources = map(lambda f: '--js ' + os.path.join(FE_PATH, f), SOURCES_FE)
+    fe_sources = map(lambda f: '--js=' + os.path.join(FE_PATH, f), SOURCES_FE)
     args = [ 'java', '-jar', CLOSURE_COMPILER ]
     args.extend(fe_sources)
     args.extend(['--js_output_file', outfile])
