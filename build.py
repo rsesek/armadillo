@@ -38,6 +38,8 @@ SOURCES = [
   'main.go'
 ]
 SOURCES_FE = [
+  'jquery-1.7.1.js',
+  'utils.js',
   'version.js',
   'tv_renamer.js',
   'path_control.js',
