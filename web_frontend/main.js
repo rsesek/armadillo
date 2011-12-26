@@ -12,7 +12,6 @@ goog.provide('armadillo.App');
 
 goog.require('armadillo.File');
 goog.require('armadillo.Version');
-goog.require('goog.string.format');
 
 armadillo.App = function() {
   var start_path = '/';
@@ -27,9 +26,8 @@ armadillo.App = function() {
 
   $('#mkdir').click(this.mkdirHandler_.bind(this));
 
-  var version = goog.string.format('Armadillo %d.%d (%f)',
-      armadillo.Version.MAJOR, armadillo.Version.MINOR,
-      armadillo.Version.BUILD);
+  var version = 'Armadillo ' + armadillo.Version.MAJOR  + '.' + armadillo.Version.MINOR +
+      ' (' + armadillo.Version.BUILD + ')';
   $('#footer').text(version);
 }
 
