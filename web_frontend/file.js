@@ -112,17 +112,17 @@ armadillo.File.prototype.draw = function() {
   $(this.element_).empty();
 
   // Set the name of the entry.
-  this.title_ = document.createElement('div');
+  this.title_ = $.createDom('div');
   if (this.isDirectory()) {
-    this.link_ = $(document.createElement('a'));
+    this.link_ = $.createDom('a');
     this.link_.text(this.name_);
     this.link_.click(this.clickHandler_.bind(this));
-    $(this.title_).append(this.link_);
+    this.title_.append(this.link_);
   } else {
-    $(this.title_).text(this.name_);
+    this.title_.text(this.name_);
   }
   $(this.element_).append(this.title_);
-  $(this.title_).click(handler.bind(this));
+  this.title_.click(handler.bind(this));
 
   return this.element_;
 };
