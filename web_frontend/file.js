@@ -180,12 +180,12 @@ armadillo.File.prototype.clickHandler_ = function(e) {
  */
 armadillo.File.prototype.actorHandler_ = function(e) {
   e.stopPropagation();
-  if (!this.actor_.element) {
+  if (!this.actor_.getElement()) {
     var elm = this.actor_.createDom();
     elm.hide();
     $(this.element_).append(elm);
   }
-  this.actor_.element_.slideToggle('fast');
+  this.actor_.getElement().slideToggle('fast');
 };
 
 /**

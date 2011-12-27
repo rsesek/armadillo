@@ -24,6 +24,12 @@ armadillo.Actor = function(file, opt_domHelper) {
   this.file_ = file;
 
   /**
+   * The root DOM element for the actor.
+   * @type  {Element}
+   */
+  this.element_ = null;
+
+  /**
    * The UI element used for a specific action.
    * @type  {goog.Disposable}
    */
@@ -35,6 +41,14 @@ armadillo.Actor = function(file, opt_domHelper) {
    */
   this.controlContainer_ = null;
 }
+
+/**
+ * Gets the root of the Actor.
+ * @return  {Element}
+ */
+armadillo.Actor.prototype.getElement = function() {
+  return this.element_;
+};
 
 /**
  * The different options that the Actor can perform.
