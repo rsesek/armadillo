@@ -161,8 +161,8 @@ armadillo.Actor.prototype.performMove_ = function() {
  * @private
  */
 armadillo.Actor.prototype.performDelete_ = function() {
-  var content = $('<span>Are you sure you want to delete:<br/><strong>' +
-      this.file_.getName() + '</strong></span>');
+  var content = $('<div>Are you sure you want to delete:<br/><strong>' +
+      this.file_.getName() + '</strong></div>');
   this.controlContainer_.append(content);
 
   var okCallback = function(e) {
