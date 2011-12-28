@@ -38,7 +38,7 @@ armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
 
   /**
    * Control UI for the name component of the path.
-   * @type  {goog.ui.Control}
+   * @type  {Element}
    */
   this.nameControl_ = null;
 };
@@ -62,7 +62,7 @@ armadillo.PathControl.prototype.getPath = function() {
 
 /**
  * Gets the name control.
- * @returns  {goog.ui.Control}
+ * @returns  {Element}
  */
 armadillo.PathControl.prototype.getNameControl = function() {
   return this.nameControl_;
@@ -147,7 +147,7 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
  * the given menu.
  * @param  {string}  path  The path to get a list of items in
  * @param  {string}  name  The name to select
- * @param  {goog.ui.Menu}  The menu to attach items to
+ * @param  {Element}  The menu to attach items to
  */
 armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) {
   var fullPath = this.path_;

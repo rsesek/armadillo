@@ -11,7 +11,6 @@ $.namespace('armadillo.TVRenamer');
 
 /**
  * Creates a helper to rename a file in a pretty format for TV episodes.
- * @extends  {goog.Disposable}
  * @constructor
  */
 armadillo.TVRenamer = function(file) {

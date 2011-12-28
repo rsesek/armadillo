@@ -13,10 +13,9 @@ $.namespace('armadillo.Actor');
  * The Actor is a popup that displays the various actions that can be performed
  * on a given File.
  * @param  {armadillo.File}  file  The file to act on.
- * @param  {goog.dom.DomHelper}  opt_domHelper
  * @constructor
  */
-armadillo.Actor = function(file, opt_domHelper) {
+armadillo.Actor = function(file) {
   /**
    * The file object on which this acts.
    * @type  {armadillo.File}
@@ -30,14 +29,8 @@ armadillo.Actor = function(file, opt_domHelper) {
   this.element_ = null;
 
   /**
-   * The UI element used for a specific action.
-   * @type  {goog.Disposable}
-   */
-  this.actionObject_ = null;
-
-  /**
    * Controls for the current action.
-   * @type  {goog.ui.Control}
+   * @type  {Element}
    */
   this.controlContainer_ = null;
 }
@@ -98,7 +91,7 @@ armadillo.Actor.prototype.decorateInternal = function(element) {
 /**
  * Creates the DOM Element that is inserted into the popup.
  * @param  {armadillo.Actor.options_}  Key of the option to create
- * @returns  {goog.ui.Control}
+ * @returns  {Element}
  */
 armadillo.Actor.prototype.createTile_ = function(option) {
   var value = armadillo.Actor.options_[option];
