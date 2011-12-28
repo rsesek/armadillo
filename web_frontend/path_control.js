@@ -158,7 +158,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
     }
 
     // Create an empty node for the current directory.
-    data.splice(0, 1, '/');
+    data.unshift('/');
 
     menu.empty();
     $.each(data, function (i, caption) {

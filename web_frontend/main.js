@@ -68,7 +68,7 @@ armadillo.App.prototype.list = function(path) {
 
     // Add a previous directory entry.
     if (path != '/' && path != '')
-      data.splice(0, 1, '../');
+      data.unshift('../');
 
     // Add items for each entry.
     $.each(data, function(i, file) {
