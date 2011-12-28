@@ -22,11 +22,7 @@ SRC_PATH  = os.path.join(ROOT, 'src')
 PROD_PATH = os.path.join(ROOT, 'out')
 FE_PATH   = os.path.join(ROOT, 'web_frontend')
 
-CLOSURE_SVN      = 'http://closure-library.googlecode.com/svn/trunk/'
-CLOSURE_REV      = '886'
-CLOSURE_DEST     = os.path.join(ROOT, 'closure')
 CLOSURE_COMPILER = os.path.join(ROOT, 'closure-compiler.jar')
-CLOSURE_CALCDEPS = os.path.join(CLOSURE_DEST, 'closure', 'bin', 'calcdeps.py')
 
 VERSION_FILE = os.path.join(FE_PATH, 'version.js.proto')
 
@@ -38,6 +34,8 @@ SOURCES = [
   'main.go'
 ]
 SOURCES_FE = [
+  'jquery-1.7.1.js',
+  'utils.js',
   'version.js',
   'tv_renamer.js',
   'path_control.js',
@@ -50,13 +48,6 @@ RESOURCES_FE = [
   'screen.css',
   'reset.css'
 ]
-RESOURCES_CLOSURE = [
-  'common.css',
-  'dialog.css',
-  'menu.css',
-  'menuitem.css',
-  'menubutton.css',
-]
 PRODUCT_NAME = 'armadillo'
 
 # The Golang version (hg id).
@@ -65,20 +56,6 @@ BACK_END_COMPILER_VERSION = '95d2ce135523 (release-branch.r57) release/release.r
 COMPILER = '6g'
 LINKER = '6l'
 O_EXTENSION = '6'
-
-def _PullDeps():
-  print '=== Pulling Dependencies ==='
-  if os.path.exists(CLOSURE_DEST):
-    handle = subprocess.Popen([ 'svn', 'info', CLOSURE_DEST ], stdout = subprocess.PIPE)
-    handle.wait()
-    for line in handle.stdout:
-      if line.startswith('Revision'):
-        if not line.strip().endswith(CLOSURE_REV):
-          subprocess.Popen([ 'svn', 'update', '-r', CLOSURE_REV, CLOSURE_DEST ]).wait()
-        else:
-          print '  Closure @ ' + CLOSURE_REV
-  else:
-    subprocess.Popen([ 'svn', 'checkout', '-r', CLOSURE_REV, CLOSURE_SVN, CLOSURE_DEST ]).wait()
 
 def _CompileBackEnd():
   for gofile in SOURCES:
@@ -125,8 +102,6 @@ def _StampVersion(options):
                 stderr = sys.stderr).wait()
 
 def _CompileFrontEnd(options):
-  _PullDeps()
-  
   # Copy
   print '=== Copying Resources ==='
   fe_resources = os.path.join(PROD_PATH, 'fe')
@@ -135,16 +110,6 @@ def _CompileFrontEnd(options):
   for resource in RESOURCES_FE:
     print '  COPY ' + resource
     shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
-  fd = open(os.path.join(fe_resources, 'closure.css'), 'w+')
-  fd.write('/*=== Generated Resources for Closure Library ===*/')
-  for resource in RESOURCES_CLOSURE:
-    print '  COPY closure/' + resource
-    respath = os.path.join(CLOSURE_DEST, 'closure', 'goog', 'css', resource)
-    ofd = open(respath, 'r')
-    fd.write('\n\n/*=== File: ' + respath.replace(ROOT, '/') + ' ===*/\n')
-    fd.writelines(ofd.readlines())
-    ofd.close()
-  fd.close()
   
   # Version
   _StampVersion(options)
@@ -152,18 +117,23 @@ def _CompileFrontEnd(options):
   # Compile JS.
   print '=== Compiling Front End ==='
   outfile = os.path.join(PROD_PATH, 'fe', PRODUCT_NAME + '.js')
-  fe_sources = map(lambda f: '-i' + os.path.join(FE_PATH, f), SOURCES_FE)
-  closure_sources = os.path.join(CLOSURE_DEST, 'closure', 'goog')
-  args = [ CLOSURE_CALCDEPS ]
-  args.extend(fe_sources)
-  output = "script"
   if options.compile_fe:
-    output = "compiled"
-  args.extend([ '-p', closure_sources, '-o', output, '-c', CLOSURE_COMPILER,
-      '--output_file', outfile ])
-  print '  ' + ' '.join(args)
-  handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
-  handle.wait()
+    fe_sources = map(lambda f: '--js=' + os.path.join(FE_PATH, f), SOURCES_FE)
+    args = [ 'java', '-jar', CLOSURE_COMPILER ]
+    args.extend(fe_sources)
+    args.extend(['--js_output_file', outfile])
+    print '  ' + ' '.join(args)
+    handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
+    handle.wait()
+  else:
+    fd = open(outfile, 'w+')
+    for fe_source in SOURCES_FE:
+      fd2 = open(os.path.join(FE_PATH, fe_source), 'r')
+      fd.write('// === ' + fe_source + '\n')
+      fd.write(fd2.read())
+      fd2.close()
+    fd.close()
+    print '  DONE'
 
 
 def Main():

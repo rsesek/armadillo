@@ -7,34 +7,19 @@
 // Foundation, either version 3 of the License, or any later version.
 //
 
-goog.provide('armadillo.TVRenamer');
-
-goog.require('goog.Disposable');
-goog.require('goog.net.XhrIo');
+$.namespace('armadillo.TVRenamer');
 
 /**
  * Creates a helper to rename a file in a pretty format for TV episodes.
- * @extends  {goog.Disposable}
  * @constructor
  */
 armadillo.TVRenamer = function(file) {
-  goog.base(this);
-
   /**
    * The file object
    * @type  {armadillo.File}
    */
   this.file_ = file;
 }
-goog.inherits(armadillo.TVRenamer, goog.Disposable);
-
-/**
- * @inheritDoc
- */
-armadillo.TVRenamer.prototype.disposeInternal = function() {
-  goog.base(this, 'disposeInternal');
-  this.file_ = null;
-};
 
 /**
  * Performs the information lookup and renames the file if the lookup is
@@ -42,8 +27,7 @@ armadillo.TVRenamer.prototype.disposeInternal = function() {
  */
 armadillo.TVRenamer.prototype.run = function() {
   var file = this.file_;
-  var callback = function(xhr) {
-    var data = xhr.currentTarget.getResponseJson();
+  var callback = function(data, stauts, xhr) {
     if (data['error']) {
       app.showError(data['message']);
     } else {
