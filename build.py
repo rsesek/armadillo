@@ -121,7 +121,7 @@ def _CompileFrontEnd(options):
     fe_sources = map(lambda f: '--js=' + os.path.join(FE_PATH, f), SOURCES_FE)
     args = [ 'java', '-jar', CLOSURE_COMPILER ]
     args.extend(fe_sources)
-    args.extend(['--js_output_file', outfile])
+    args.extend(['--js_output_file', outfile, '--compilation_level', 'SIMPLE_OPTIMIZATIONS'])
     print '  ' + ' '.join(args)
     handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
     handle.wait()
