@@ -30,16 +30,6 @@ armadillo.File.Highlight = {
 };
 
 /**
- * Disposer
- * @protected
- */
-armadillo.File.prototype.disposeInternal = function() {
-  this.element_ = null;
-  this.link_ = null;
-  this.actor_.dispose();
-};
-
-/**
  * Returns the name of the file.
  * @returns string
  */
@@ -102,7 +92,7 @@ armadillo.File.prototype.setHighlight = function(h) {
  * Constructs the Elements that make up the UI.
  * @returns  {Element}  An element ready for insertion into DOM.
  */
-armadillo.File.prototype.draw = function() {
+armadillo.File.prototype.createDom = function() {
   // Create the element if it does not exist.  If it does, remove all children.
   if (!this.element_) {
     this.element_ = document.createElement('li');

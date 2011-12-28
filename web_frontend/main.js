@@ -77,7 +77,7 @@ armadillo.App.prototype.list = function(path) {
     // Add items for each entry.
     $.each(data, function(i, file) {
       var fileObject = new armadillo.File(file, path);
-      list.append(fileObject.draw());
+      list.append(fileObject.createDom());
     });
   }
   this.sendRequest('list', {'path':path}, callback);
