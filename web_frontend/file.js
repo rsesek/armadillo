@@ -95,11 +95,10 @@ armadillo.File.prototype.setHighlight = function(h) {
 armadillo.File.prototype.createDom = function() {
   // Create the element if it does not exist.  If it does, remove all children.
   if (!this.element_) {
-    this.element_ = document.createElement('li');
-    this.element_.representedObject = this;
+    this.element_ = $.createDom('li');
     var handler = (this.isSpecial_() ? this.clickHandler_ : this.actorHandler_);
   }
-  $(this.element_).empty();
+  this.element_.empty();
 
   // Set the name of the entry.
   this.title_ = $.createDom('div');
@@ -111,7 +110,7 @@ armadillo.File.prototype.createDom = function() {
   } else {
     this.title_.text(this.name_);
   }
-  $(this.element_).append(this.title_);
+  this.element_.append(this.title_);
   this.title_.click(handler.bind(this));
 
   return this.element_;
@@ -173,7 +172,7 @@ armadillo.File.prototype.actorHandler_ = function(e) {
   if (!this.actor_.getElement()) {
     var elm = this.actor_.createDom();
     elm.hide();
-    $(this.element_).append(elm);
+    this.element_.append(elm);
   }
   this.actor_.getElement().slideToggle('fast');
 };
