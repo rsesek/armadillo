@@ -9,6 +9,10 @@
 
 $.namespace('armadillo.App');
 
+$(document).ready(function() {
+    app = new armadillo.App();
+});
+
 armadillo.App = function() {
   var start_path = '/';
   if (window.location.hash) {
