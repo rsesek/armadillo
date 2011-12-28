@@ -134,7 +134,7 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
   this.fetchMenuContents_(path, name, menu);
 
   var option = $.createDom('option');
-  option.text(name).attr('selected', 'selected');
+  option.text('Loading...').attr('selected', 'selected');
 
   menu.append(option);
   menu.change(this.componentChanged_.bind(this));
