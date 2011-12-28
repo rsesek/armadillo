@@ -65,27 +65,24 @@ armadillo.Actor.optionStrings_ = {
   'download' : 'Download'
 };
 
-armadillo.Actor.prototype.createDom = function() {
-  this.decorateInternal($.createDom('div'));
-  return this.element_;
-};
-
 /**
- * Decorates the given element into a path control.
- * @param  {Element}  element
+ * Creates and sets the elemnt this object represents.
+ * @return  {Element}
  */
-armadillo.Actor.prototype.decorateInternal = function(element) {
-  this.element_ = element;
-  this.element_.addClass('actor');
-  this.element_.empty();
+armadillo.Actor.prototype.createDom = function() {
+  this.element_ = $.createDom('div').addClass('actor').empty();
   for (var option in armadillo.Actor.options_) {
     var tile = this.createTile_(option);
     if (tile) {
       this.element_.append(tile);
     }
   }
+
+
   this.controlContainer_ = $.createDom('div');
   this.element_.append(this.controlContainer_);
+
+  return this.element_;
 };
 
 /**

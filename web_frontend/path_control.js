@@ -70,9 +70,11 @@ armadillo.PathControl.prototype.getNameControl = function() {
 
 /**
  * Creates a new path control object.
+ * @returns  {Element}
  */
 armadillo.PathControl.prototype.createDom = function() {
-  this.decorateInternal($.createDom('div'));
+  this.element_ = $.createDom('div');
+  this.createDom_(this.element_);
   return this.element_;
 };
 
@@ -80,8 +82,7 @@ armadillo.PathControl.prototype.createDom = function() {
  * Decorates the given element into a path control.
  * @param  {Element}  element
  */
-armadillo.PathControl.prototype.decorateInternal = function(element) {
-  this.element_ = element;
+armadillo.PathControl.prototype.createDom_ = function(element) {
   var components = this.path_.split('/');
 
   // If this is an item that lives at the root, generate a special node for
@@ -96,7 +97,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
 
   var path = '';
   $.each(components, function (i, part) {
-    this.element_.append(this.createComponentNode_(path, part));
+    element.append(this.createComponentNode_(path, part));
     path = app.joinPath(path, part);
   }.bind(this));
 
@@ -113,7 +114,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
     this.nameControl_ = $.createDom('span').text(this.name_);
   }
 
-  this.element_.append(this.nameControl_);
+  element.append(this.nameControl_);
 };
 
 /**
@@ -185,7 +186,7 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
 armadillo.PathControl.prototype.componentChanged_ = function(e) {
   this.path_ = $(e.target).val();
   this.element_.empty();
-  this.decorateInternal(this.element_);
+  this.createDom_(this.element_);
 };
 
 /**
