@@ -223,7 +223,7 @@ armadillo.Actor.prototype.performTVRename_ = function() {
  * @private
  */
 armadillo.Actor.prototype.performDownload_ = function() {
-  window.location = '/download?path=' + this.file_.getFullPath();
+  window.location = 'download?path=' + this.file_.getFullPath();
 };
 
 /**
