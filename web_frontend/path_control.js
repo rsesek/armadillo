@@ -96,7 +96,7 @@ armadillo.PathControl.prototype.decorateInternal = function(element) {
 
   var path = '';
   $.each(components, function (i, part) {
-    this.element_.append(this.createComponentNode_(path, part), true);
+    this.element_.append(this.createComponentNode_(path, part));
     path = app.joinPath(path, part);
   }.bind(this));
 
@@ -150,16 +150,16 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
  * @param  {goog.ui.Menu}  The menu to attach items to
  */
 armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) {
+  var fullPath = this.path_;
   var callback = function(data, status, xhr) {
     if (data['error']) {
       app.showError(data['message']);
       return;
     }
-    if (path == '') {
-      // If this is the root path element, make sure the root is accessible for
-      // moving items.
-      data.splice(0, 1, '/');
-    }
+
+    // Create an empty node for the current directory.
+    data.splice(0, 1, '/');
+
     menu.empty();
     $.each(data, function (i, caption) {
       // It only makes sense to be able to move into directories.
@@ -167,9 +167,10 @@ armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) 
         return;
       }
       var item = $.createDom('option');
-      item.val(app.joinPath(path, name, caption)).text(caption);
+      var componentPath = app.joinPath(path, name, caption);
+      item.val(componentPath).text(caption);
       menu.append(item);
-      if (caption == name) {
+      if (fullPath.substr(0, componentPath.length) == componentPath) {
         item.attr('selected', 'selected');
       }
     });
