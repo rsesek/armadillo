@@ -25,10 +25,6 @@ type Configuration struct {
 	// forward GET requests and return the result.
 	ProxyURLs []string
 
-	// A map of usernames to MD5-encoded passwords that will be allowed to log in
-	// via a .htaccess style realm.
-	Users map[string]string
-
 	// Whether to include dotfiles (files that begin with a '.'). Users will still
 	// be able to access directories that begin with a '.', but they will not be
 	// included in the list.
