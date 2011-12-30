@@ -51,7 +51,7 @@ RESOURCES_FE = [
 PRODUCT_NAME = 'armadillo'
 
 # The Golang version (hg id).
-BACK_END_COMPILER_VERSION = '95d2ce135523 (release-branch.r57) release/release.r57.1'
+BACK_END_COMPILER_VERSION = 'c1702f36df03 (release-branch.r60) release/release.r60.3'
 
 COMPILER = '6g'
 LINKER = '6l'

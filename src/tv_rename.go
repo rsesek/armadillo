@@ -19,6 +19,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"url"
 )
 
 // Takes a full file path and renames the last path component as if it were a
@@ -94,7 +95,7 @@ func parseEpisodeName(name string) *episodeInfo {
 // Builds the URL to which we send a HTTP request to get the episode name.
 func buildURL(info *episodeInfo) string {
 	return fmt.Sprintf("http://services.tvrage.com/tools/quickinfo.php?show=%s&ep=%dx%d",
-		http.URLEscape(info.showName), info.season, info.episode)
+		url.QueryEscape(info.showName), info.season, info.episode)
 }
 
 // Converts a season and episode to integers. If the return values are both 0,
@@ -113,13 +114,13 @@ func convertEpisode(season string, episode string) (int, int) {
 
 // Performs the actual lookup and returns the HTTP response.
 func performLookup(urlString string) (*http.Response, os.Error) {
-	url, err := http.ParseURL(urlString)
+	url_, err := url.Parse(urlString)
 	if err != nil {
 		return nil, err
 	}
 
 	// Open a TCP connection.
-	conn, err := net.Dial("tcp", url.Host+":"+url.Scheme)
+	conn, err := net.Dial("tcp", url_.Host+":"+url_.Scheme)
 	if err != nil {
 		return nil, err
 	}
@@ -127,9 +128,9 @@ func performLookup(urlString string) (*http.Response, os.Error) {
 	// Perform the HTTP request.
 	client := http.NewClientConn(conn, nil)
 	var request http.Request
-	request.URL = url
+	request.URL = url_
 	request.Method = "GET"
-	request.UserAgent = "Armadillo File Manager"
+	request.Header.Set("User-Agent", "Armadillo File Manager")
 	err = client.Write(&request)
 	if err != nil {
 		return nil, err
@@ -149,7 +150,7 @@ func parseResponse(response *http.Response) *fullEpisodeInfo {
 		if err != nil {
 			return nil
 		}
-		var parts []string = strings.Split(line, "@", 2)
+		var parts []string = strings.SplitN(line, "@", 2)
 		if len(parts) != 2 {
 			continue
 		}
@@ -158,10 +159,10 @@ func parseResponse(response *http.Response) *fullEpisodeInfo {
 			info.episode.showName = strings.TrimSpace(parts[1])
 		case "Episode Info":
 			// Split the line, which is of the form: |SxE^Name^AirDate|.
-			parts = strings.Split(parts[1], "^", 3)
+			parts = strings.SplitN(parts[1], "^", 3)
 			info.episodeName = parts[1]
 			// Split the episode string.
-			episode := strings.Split(parts[0], "x", 2)
+			episode := strings.SplitN(parts[0], "x", 2)
 			info.episode.season, info.episode.episode = convertEpisode(episode[0], episode[1])
 			if info.episode.season == 0 && info.episode.season == info.episode.episode {
 				return nil

@@ -18,6 +18,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"url"
 	"./config"
 	"./paths"
 	"./tv_rename"
@@ -80,7 +81,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 			errorResponse(response, err.String())
 		} else {
 			data := map[string]interface{}{
-				"path": path,
+				"path":  path,
 				"error": 0,
 			}
 			okResponse(response, data)
@@ -119,27 +120,27 @@ func proxyHandler(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	url, err := http.ParseURL(rawURL)
+	url_, err := url.Parse(rawURL)
 	if err != nil {
 		errorResponse(response, err.String())
 		return
 	}
-	err = performProxy(url, response, request)
+	err = performProxy(url_, response, request)
 	if err != nil {
 		errorResponse(response, err.String())
 	}
 }
 
-func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http.Request) os.Error {
-	conn, err := net.Dial("tcp", url.Host+":http")
+func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http.Request) os.Error {
+	conn, err := net.Dial("tcp", url_.Host+":http")
 	if err != nil {
 		return err
 	}
 	client := http.NewClientConn(conn, nil)
 	var request http.Request
-	request.URL = url
+	request.URL = url_
 	request.Method = "GET"
-	request.UserAgent = origRequest.UserAgent
+	request.Header.Set("User-Agent", origRequest.UserAgent())
 	err = client.Write(&request)
 	if err != nil {
 		return err
@@ -156,7 +157,7 @@ func performProxy(url *http.URL, response http.ResponseWriter, origRequest *http
 func downloadHandler(response http.ResponseWriter, request *http.Request) {
 	valid, fullPath := paths.IsValid(request.FormValue("path"))
 	if valid {
-		info, _ := os.Lstat(fullPath)  // Error is already checked by |valid|.
+		info, _ := os.Lstat(fullPath) // Error is already checked by |valid|.
 		if info.IsDirectory() {
 			http.Error(response, "Path is a directory", http.StatusBadRequest)
 		} else {
@@ -196,7 +197,7 @@ func okResponse(response http.ResponseWriter, data interface{}) {
 func RunBackEnd(config *config.Configuration) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
-	mux.Handle("/fe/", http.FileServer(kFrontEndFiles, "/fe/"))
+	mux.Handle("/fe/", http.StripPrefix("/fe/", http.FileServer(http.Dir(kFrontEndFiles))))
 	mux.HandleFunc("/service", serviceHandler)
 	mux.HandleFunc("/download", downloadHandler)
 	mux.HandleFunc("/proxy", proxyHandler)
