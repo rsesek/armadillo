@@ -34,6 +34,7 @@ func indexHandler(response http.ResponseWriter, request *http.Request) {
 		fmt.Print("Error opening file ", err.String(), "\n")
 		return
 	}
+	response.Header().Set("Content-Type", "text/html")
 	io.Copy(response, fd)
 }
 
