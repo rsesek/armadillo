@@ -11,5 +11,5 @@ $.namespace('armadillo.Version');
 
 armadillo.Version.MAJOR = 0;
 armadillo.Version.MINOR = 8;
-armadillo.Version.BUILD = 599.0;
-armadillo.Version.STAMP = 1325268423;
+armadillo.Version.BUILD = 600.0;
+armadillo.Version.STAMP = 1325283227;
