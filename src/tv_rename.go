@@ -127,15 +127,16 @@ func performLookup(urlString string) (*http.Response, os.Error) {
 
 	// Perform the HTTP request.
 	client := http.NewClientConn(conn, nil)
-	var request http.Request
-	request.URL = url_
-	request.Method = "GET"
-	request.Header.Set("User-Agent", "Armadillo File Manager")
-	err = client.Write(&request)
+	request, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return nil, err
 	}
-	return client.Read(&request)
+	request.Header.Set("User-Agent", "Armadillo File Manager")
+	err = client.Write(request)
+	if err != nil {
+		return nil, err
+	}
+	return client.Read(request)
 }
 
 // Parses the HTTP response from performLookup().

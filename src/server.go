@@ -138,16 +138,17 @@ func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http
 		return err
 	}
 	client := http.NewClientConn(conn, nil)
-	var request http.Request
-	request.URL = url_
-	request.Method = "GET"
+	request, err := http.NewRequest("GET", url_.String(), nil)
+	if err != nil {
+		return err
+	}
 	request.Header.Set("User-Agent", origRequest.UserAgent())
-	err = client.Write(&request)
+	err = client.Write(request)
 	if err != nil {
 		return err
 	}
 	var proxyResponse *http.Response
-	proxyResponse, err = client.Read(&request)
+	proxyResponse, err = client.Read(request)
 	if err != nil && err != http.ErrPersistEOF {
 		return err
 	}
