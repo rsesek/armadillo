@@ -20,3 +20,40 @@ body {
 .tile .title {
   font-size: 1.0em;
 }
+
+.actor .select:first-child {
+  border-top: 1px solid red;
+}
+
+.actor select {
+  display: block;
+  width: 100%;
+}
+
+.actor input[type="text"] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+button {
+  width: 50%;
+  padding: 1em;
+
+  font-size: 1.0em;
+
+  border: .1em solid black;
+
+  background: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0, rgb(99,95,103)),
+      color-stop(1, rgb(255,255,255))
+  );
+  background: -moz-linear-gradient(
+      center bottom,
+      rgb(255,255,255) 100%,
+      rgb(173,175,175) 0%
+  );
+}
