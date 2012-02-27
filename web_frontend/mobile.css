@@ -10,3 +10,13 @@
 body {
   padding: 0;
 }
+
+.tile {
+  display: block;
+
+  line-height: 2em;
+}
+
+.tile .title {
+  font-size: 1.0em;
+}
