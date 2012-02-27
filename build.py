@@ -46,6 +46,7 @@ SOURCES_FE = [
 RESOURCES_FE = [
   'index.html',
   'screen.css',
+  'mobile.css',
   'reset.css'
 ]
 PRODUCT_NAME = 'armadillo'
