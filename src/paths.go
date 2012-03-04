@@ -57,6 +57,7 @@ func List(the_path string) (files vector.StringVector, err os.Error) {
 	if file_error != nil {
 		return nil, file_error
 	}
+	defer fd.Close()
 
 	fileinfos, read_err := fd.Readdir(-1)
 	if read_err != nil {

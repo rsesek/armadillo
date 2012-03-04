@@ -36,6 +36,8 @@ func ReadFromFile(aPath string, config *Configuration) os.Error {
 	if error != nil {
 		return error
 	}
+	defer fd.Close()
+
 	decoder := json.NewDecoder(fd)
 	return decoder.Decode(config)
 }
