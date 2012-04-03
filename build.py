@@ -36,12 +36,6 @@ SOURCES_FE = [
   'file.js',
   'main.js',
 ]
-RESOURCES_FE = [
-  'index.html',
-  'screen.css',
-  'mobile.css',
-  'reset.css'
-]
 PRODUCT_NAME = 'armadillo'
 
 # The Golang version (hg id).
