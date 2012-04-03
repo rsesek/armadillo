@@ -54,5 +54,5 @@ func main() {
 	fmt.Printf("Starting Armadillo on port %d with root:\n  %v\n",
 		configuration.Port, configuration.JailRoot)
 	server.SetConfig(configuration)
-	server.RunBackEnd(configuration)
+	server.RunBackEnd()
 }

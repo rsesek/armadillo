@@ -10,18 +10,11 @@
 package server
 
 import (
-	"../config"
 	"errors"
 	"os"
 	"path"
 	"strings"
 )
-
-var gConfig *config.Configuration
-
-func SetConfig(aConfig *config.Configuration) {
-	gConfig = aConfig
-}
 
 func canonicalizePath(raw_path string) string {
 	raw_path = path.Join(gConfig.JailRoot, raw_path)
