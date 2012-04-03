@@ -47,14 +47,14 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 
 	switch request.FormValue("action") {
 	case "list":
-		files, err := paths.List(request.FormValue("path"))
+		files, err := ListPath(request.FormValue("path"))
 		if err != nil {
 			errorResponse(response, err.Error())
 		} else {
 			okResponse(response, files)
 		}
 	case "remove":
-		err := paths.Remove(request.FormValue("path"))
+		err := RemovePath(request.FormValue("path"))
 		if err != nil {
 			errorResponse(response, err.Error())
 		} else {
@@ -66,7 +66,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 	case "move":
 		source := request.FormValue("source")
 		target := request.FormValue("target")
-		err := paths.Move(source, target)
+		err := MovePath(source, target)
 		if err != nil {
 			errorResponse(response, err.Error())
 		} else {
@@ -78,7 +78,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 		}
 	case "mkdir":
 		path := request.FormValue("path")
-		err := paths.MakeDir(path)
+		err := MakeDir(path)
 		if err != nil {
 			errorResponse(response, err.Error())
 		} else {
@@ -158,7 +158,7 @@ func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http
 }
 
 func downloadHandler(response http.ResponseWriter, request *http.Request) {
-	valid, fullPath := paths.IsValid(request.FormValue("path"))
+	valid, fullPath := IsValidPath(request.FormValue("path"))
 	if valid {
 		info, _ := os.Lstat(fullPath) // Error is already checked by |valid|.
 		if info.IsDir() {

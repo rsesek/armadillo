@@ -41,13 +41,13 @@ func checkInJail(the_path string) bool {
 	return true
 }
 
-func IsValid(path string) (bool, string) {
+func IsValidPathPath(path string) (bool, string) {
 	path = canonicalizePath(path)
 	_, err := os.Lstat(path)
 	return err == nil && checkInJail(path), path
 }
 
-func List(the_path string) (files []string, err error) {
+func ListPath(the_path string) (files []string, err error) {
 	full_path := canonicalizePath(the_path)
 	if !checkInJail(full_path) {
 		return nil, errors.New("Path outside of jail")
@@ -77,7 +77,7 @@ func List(the_path string) (files []string, err error) {
 	return files, nil
 }
 
-func Remove(the_path string) error {
+func RemovePath(the_path string) error {
 	full_path := canonicalizePath(the_path)
 	if !checkInJail(full_path) {
 		return errors.New("Path outside of jail")
@@ -85,7 +85,7 @@ func Remove(the_path string) error {
 	return os.RemoveAll(full_path)
 }
 
-func Move(source string, target string) error {
+func MovePath(source string, target string) error {
 	source = canonicalizePath(source)
 	target = canonicalizePath(target)
 	if !checkInJail(source) {
