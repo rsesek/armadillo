@@ -44,7 +44,7 @@ RESOURCES_FE = [
 PRODUCT_NAME = 'armadillo'
 
 # The Golang version (hg id).
-BACK_END_COMPILER_VERSION = 'c1702f36df03 (release-branch.r60) release/release.r60.3'
+BACK_END_COMPILER_VERSION = '920e9d1ffd1f (release-branch.go1) go1/release'
 
 def _CompileBackEnd():
   args = [ 'go', 'build', '-v', '.' ]
