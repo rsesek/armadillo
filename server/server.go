@@ -1,6 +1,6 @@
 //
 // Armadillo File Manager
-// Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
+// Copyright (c) 2010-2012, Robert Sesek <http://www.bluestatic.org>
 //
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -24,7 +24,7 @@ import (
 )
 
 var dir, file = path.Split(path.Clean(os.Getenv("_")))
-var kFrontEndFiles string = path.Join(dir, "fe")
+var kFrontEndFiles string = path.Join(dir, "frontend")
 var gConfig *config.Configuration
 
 func SetConfig(aConfig *config.Configuration) {
