@@ -57,6 +57,7 @@ func ListPath(the_path string) (files []string, err error) {
 		return nil, read_err
 	}
 
+	files = make([]string, 0)
 	for _, info := range fileinfos {
 		name := info.Name()
 		if info.IsDir() {
