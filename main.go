@@ -10,12 +10,12 @@
 package main
 
 import (
+	"./config"
+	"./server"
 	"flag"
 	"fmt"
 	"os"
 	"strings"
-	"./config"
-	"./server"
 )
 
 func main() {
