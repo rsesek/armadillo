@@ -19,9 +19,7 @@ import (
 	"path"
 	"strings"
 	"url"
-	"./config"
-	"./paths"
-	"./tv_rename"
+	"../config"
 )
 
 var dir, file = path.Split(path.Clean(os.Getenv("_")))
