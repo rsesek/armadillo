@@ -27,10 +27,6 @@ var dir, file = path.Split(path.Clean(os.Getenv("_")))
 var kFrontEndFiles string = path.Join(dir, "frontend")
 var gConfig *config.Configuration
 
-func SetConfig(aConfig *config.Configuration) {
-	gConfig = aConfig
-}
-
 func indexHandler(response http.ResponseWriter, request *http.Request) {
 	fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"))
 	if err != nil {
@@ -201,7 +197,9 @@ func okResponse(response http.ResponseWriter, data interface{}) {
 	}
 }
 
-func RunBackEnd() {
+func RunBackEnd(c *config.Configuration) {
+	gConfig = c
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
 	mux.Handle("/fe/", http.StripPrefix("/fe/", http.FileServer(http.Dir(kFrontEndFiles))))
