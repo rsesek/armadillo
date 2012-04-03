@@ -22,7 +22,7 @@ SRC_PATH  = os.path.join(ROOT, 'src')
 PROD_PATH = os.path.join(ROOT, 'out')
 FE_PATH   = os.path.join(ROOT, 'web_frontend')
 
-CLOSURE_COMPILER = os.path.join(ROOT, 'closure-compiler.jar')
+CLOSURE_COMPILER = os.path.join(ROOT, 'build', 'closure-compiler.jar')
 
 VERSION_FILE = os.path.join(FE_PATH, 'version.js.proto')
 
