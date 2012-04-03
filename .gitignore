@@ -1,4 +1,4 @@
-closure/
-out/
 /.gitcrement
-/web_frontend/version.js.proto
+/armadillo
+/frontend/armadillo.js
+/frontend/version.js.proto
