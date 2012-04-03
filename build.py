@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.5
 #
 # Armadillo File Manager
-# Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
+# Copyright (c) 2010-2012, Robert Sesek <http://www.bluestatic.org>
 # 
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -19,20 +19,13 @@ import time
 
 ROOT      = os.path.dirname(os.path.realpath(__file__))
 SRC_PATH  = os.path.join(ROOT, 'src')
-PROD_PATH = os.path.join(ROOT, 'out')
-FE_PATH   = os.path.join(ROOT, 'web_frontend')
+PROD_PATH = os.path.join(ROOT, 'frontend')
+FE_PATH   = os.path.join(ROOT, 'frontend')
 
-CLOSURE_COMPILER = os.path.join(ROOT, 'build', 'closure-compiler.jar')
+CLOSURE_COMPILER = os.path.join(ROOT, 'closure-compiler.jar')
 
 VERSION_FILE = os.path.join(FE_PATH, 'version.js.proto')
 
-SOURCES = [
-  'config.go',
-  'paths.go',
-  'tv_rename.go',
-  'server.go',
-  'main.go'
-]
 SOURCES_FE = [
   'jquery-1.7.1.js',
   'utils.js',
@@ -53,20 +46,8 @@ PRODUCT_NAME = 'armadillo'
 # The Golang version (hg id).
 BACK_END_COMPILER_VERSION = 'c1702f36df03 (release-branch.r60) release/release.r60.3'
 
-COMPILER = '6g'
-LINKER = '6l'
-O_EXTENSION = '6'
-
 def _CompileBackEnd():
-  for gofile in SOURCES:
-    gofile = os.path.join(SRC_PATH, gofile)
-    args = [ COMPILER, gofile ]
-    print '  ' + ' '.join(args)
-    handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
-    handle.wait()
-  
-  # Link
-  args = [ LINKER, '-o', os.path.join(PROD_PATH, PRODUCT_NAME), 'main.' + O_EXTENSION ]
+  args = [ 'go', 'build', '-v', '.' ]
   print '  ' + ' ' .join(args)
   handle = subprocess.Popen(args, stdout = sys.stdout, stderr = sys.stderr)
   handle.wait()
@@ -102,21 +83,12 @@ def _StampVersion(options):
                 stderr = sys.stderr).wait()
 
 def _CompileFrontEnd(options):
-  # Copy
-  print '=== Copying Resources ==='
-  fe_resources = os.path.join(PROD_PATH, 'fe')
-  subprocess.Popen([ 'rm', '-rf', fe_resources ]).wait()
-  os.mkdir(fe_resources)
-  for resource in RESOURCES_FE:
-    print '  COPY ' + resource
-    shutil.copy(os.path.join(FE_PATH, resource), fe_resources)
-  
   # Version
   _StampVersion(options)
   
   # Compile JS.
   print '=== Compiling Front End ==='
-  outfile = os.path.join(PROD_PATH, 'fe', PRODUCT_NAME + '.js')
+  outfile = os.path.join(PROD_PATH, PRODUCT_NAME + '.js')
   if options.compile_fe:
     fe_sources = map(lambda f: '--js=' + os.path.join(FE_PATH, f), SOURCES_FE)
     args = [ 'java', '-jar', CLOSURE_COMPILER ]
@@ -147,8 +119,7 @@ def Main():
   (options, args) = parser.parse_args()
 
   print '=== Starting Build ==='
-  os.chdir(PROD_PATH)
-  
+  os.chdir(ROOT)
   if not options.frontend_only:
     _CompileBackEnd()
   
