@@ -11,7 +11,6 @@ package server
 
 import (
 	"../config"
-	"container/vector"
 	"errors"
 	"os"
 	"path"
@@ -48,7 +47,7 @@ func IsValid(path string) (bool, string) {
 	return err == nil && checkInJail(path), path
 }
 
-func List(the_path string) (files vector.StringVector, err error) {
+func List(the_path string) (files []string, err error) {
 	full_path := canonicalizePath(the_path)
 	if !checkInJail(full_path) {
 		return nil, errors.New("Path outside of jail")
@@ -73,7 +72,7 @@ func List(the_path string) (files vector.StringVector, err error) {
 		if !gConfig.IncludeDotfiles && name[0] == '.' {
 			continue
 		}
-		files.Push(name)
+		files = append(files, name)
 	}
 	return files, nil
 }
