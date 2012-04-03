@@ -10,11 +10,12 @@
 package server
 
 import (
+	"../config"
 	"container/vector"
+	"errors"
 	"os"
 	"path"
 	"strings"
-	"../config"
 )
 
 var gConfig *config.Configuration
@@ -47,10 +48,10 @@ func IsValid(path string) (bool, string) {
 	return err == nil && checkInJail(path), path
 }
 
-func List(the_path string) (files vector.StringVector, err os.Error) {
+func List(the_path string) (files vector.StringVector, err error) {
 	full_path := canonicalizePath(the_path)
 	if !checkInJail(full_path) {
-		return nil, os.NewError("Path outside of jail")
+		return nil, errors.New("Path outside of jail")
 	}
 
 	fd, file_error := os.Open(full_path)
@@ -77,30 +78,30 @@ func List(the_path string) (files vector.StringVector, err os.Error) {
 	return files, nil
 }
 
-func Remove(the_path string) os.Error {
+func Remove(the_path string) error {
 	full_path := canonicalizePath(the_path)
 	if !checkInJail(full_path) {
-		return os.NewError("Path outside of jail")
+		return errors.New("Path outside of jail")
 	}
 	return os.RemoveAll(full_path)
 }
 
-func Move(source string, target string) os.Error {
+func Move(source string, target string) error {
 	source = canonicalizePath(source)
 	target = canonicalizePath(target)
 	if !checkInJail(source) {
-		return os.NewError("Source outside of jail")
+		return errors.New("Source outside of jail")
 	}
 	if !checkInJail(target) {
-		return os.NewError("Target outside of jail")
+		return errors.New("Target outside of jail")
 	}
 	return os.Rename(source, target)
 }
 
-func MakeDir(target string) os.Error {
+func MakeDir(target string) error {
 	target = canonicalizePath(target)
 	if !checkInJail(target) {
-		return os.NewError("Path outside of jail")
+		return errors.New("Path outside of jail")
 	}
 	return os.Mkdir(target, 0755)
 }

@@ -11,25 +11,27 @@ package server
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
-	"http"
+	"io"
 	"net"
-	"os"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"path"
 	"regexp"
 	"strconv"
 	"strings"
-	"url"
 )
 
 // Takes a full file path and renames the last path component as if it were a
 // TV episode. This performs the actual rename as well.
-func RenameEpisode(inPath string) (*string, os.Error) {
+func RenameEpisode(inPath string) (*string, error) {
 	// Parse the filename into its components.
 	dirName, fileName := path.Split(inPath)
 	info := parseEpisodeName(fileName)
 	if info == nil {
-		return nil, os.NewError("Could not parse file name")
+		return nil, errors.New("Could not parse file name")
 	}
 
 	// Create the URL and perform the lookup.
@@ -113,7 +115,7 @@ func convertEpisode(season string, episode string) (int, int) {
 }
 
 // Performs the actual lookup and returns the HTTP response.
-func performLookup(urlString string) (*http.Response, os.Error) {
+func performLookup(urlString string) (*http.Response, error) {
 	url_, err := url.Parse(urlString)
 	if err != nil {
 		return nil, err
@@ -126,7 +128,7 @@ func performLookup(urlString string) (*http.Response, os.Error) {
 	}
 
 	// Perform the HTTP request.
-	client := http.NewClientConn(conn, nil)
+	client := httputil.NewClientConn(conn, nil)
 	request, err := http.NewRequest("GET", urlString, nil)
 	if err != nil {
 		return nil, err
@@ -141,12 +143,12 @@ func performLookup(urlString string) (*http.Response, os.Error) {
 
 // Parses the HTTP response from performLookup().
 func parseResponse(response *http.Response) *fullEpisodeInfo {
-	var err os.Error
+	var err error
 	var line string
 	var info fullEpisodeInfo
 
 	buf := bufio.NewReader(response.Body)
-	for ; err != os.EOF; line, err = buf.ReadString('\n') {
+	for ; err != io.EOF; line, err = buf.ReadString('\n') {
 		// An error ocurred while reading.
 		if err != nil {
 			return nil

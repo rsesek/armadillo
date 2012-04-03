@@ -10,7 +10,7 @@
 package config
 
 import (
-	"json"
+	"encoding/json"
 	"os"
 )
 
@@ -31,7 +31,7 @@ type Configuration struct {
 	IncludeDotfiles bool
 }
 
-func ReadFromFile(aPath string, config *Configuration) os.Error {
+func ReadFromFile(aPath string, config *Configuration) error {
 	fd, error := os.Open(aPath)
 	if error != nil {
 		return error

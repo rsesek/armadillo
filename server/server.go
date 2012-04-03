@@ -10,16 +10,17 @@
 package server
 
 import (
+	"../config"
+	"encoding/json"
 	"fmt"
-	"http"
 	"io"
-	"json"
 	"net"
+	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"path"
 	"strings"
-	"url"
-	"../config"
 )
 
 var dir, file = path.Split(path.Clean(os.Getenv("_")))
@@ -29,7 +30,7 @@ var gConfig *config.Configuration = nil
 func indexHandler(response http.ResponseWriter, request *http.Request) {
 	fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"))
 	if err != nil {
-		fmt.Print("Error opening file ", err.String(), "\n")
+		fmt.Print("Error opening file ", err.Error(), "\n")
 		return
 	}
 	defer fd.Close()
@@ -48,14 +49,14 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 	case "list":
 		files, err := paths.List(request.FormValue("path"))
 		if err != nil {
-			errorResponse(response, err.String())
+			errorResponse(response, err.Error())
 		} else {
 			okResponse(response, files)
 		}
 	case "remove":
 		err := paths.Remove(request.FormValue("path"))
 		if err != nil {
-			errorResponse(response, err.String())
+			errorResponse(response, err.Error())
 		} else {
 			data := map[string]int{
 				"error": 0,
@@ -67,7 +68,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 		target := request.FormValue("target")
 		err := paths.Move(source, target)
 		if err != nil {
-			errorResponse(response, err.String())
+			errorResponse(response, err.Error())
 		} else {
 			data := map[string]interface{}{
 				"path":  target,
@@ -79,7 +80,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 		path := request.FormValue("path")
 		err := paths.MakeDir(path)
 		if err != nil {
-			errorResponse(response, err.String())
+			errorResponse(response, err.Error())
 		} else {
 			data := map[string]interface{}{
 				"path":  path,
@@ -90,7 +91,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 	case "tv_rename":
 		newPath, err := tv_rename.RenameEpisode(request.FormValue("path"))
 		if err != nil {
-			errorResponse(response, err.String())
+			errorResponse(response, err.Error())
 		} else {
 			data := map[string]interface{}{
 				"path":  *newPath,
@@ -123,21 +124,21 @@ func proxyHandler(response http.ResponseWriter, request *http.Request) {
 
 	url_, err := url.Parse(rawURL)
 	if err != nil {
-		errorResponse(response, err.String())
+		errorResponse(response, err.Error())
 		return
 	}
 	err = performProxy(url_, response, request)
 	if err != nil {
-		errorResponse(response, err.String())
+		errorResponse(response, err.Error())
 	}
 }
 
-func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http.Request) os.Error {
+func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http.Request) error {
 	conn, err := net.Dial("tcp", url_.Host+":http")
 	if err != nil {
 		return err
 	}
-	client := http.NewClientConn(conn, nil)
+	client := httputil.NewClientConn(conn, nil)
 	request, err := http.NewRequest("GET", url_.String(), nil)
 	if err != nil {
 		return err
@@ -149,7 +150,7 @@ func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http
 	}
 	var proxyResponse *http.Response
 	proxyResponse, err = client.Read(request)
-	if err != nil && err != http.ErrPersistEOF {
+	if err != nil && err != httputil.ErrPersistEOF {
 		return err
 	}
 	_, err = io.Copy(response, proxyResponse.Body)
@@ -160,7 +161,7 @@ func downloadHandler(response http.ResponseWriter, request *http.Request) {
 	valid, fullPath := paths.IsValid(request.FormValue("path"))
 	if valid {
 		info, _ := os.Lstat(fullPath) // Error is already checked by |valid|.
-		if info.IsDirectory() {
+		if info.IsDir() {
 			http.Error(response, "Path is a directory", http.StatusBadRequest)
 		} else {
 			http.ServeFile(response, request, fullPath)
