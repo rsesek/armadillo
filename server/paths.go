@@ -34,7 +34,7 @@ func checkInJail(the_path string) bool {
 	return true
 }
 
-func IsValidPathPath(path string) (bool, string) {
+func IsValidPath(path string) (bool, string) {
 	path = canonicalizePath(path)
 	_, err := os.Lstat(path)
 	return err == nil && checkInJail(path), path
@@ -58,8 +58,8 @@ func ListPath(the_path string) (files []string, err error) {
 	}
 
 	for _, info := range fileinfos {
-		name := info.Name
-		if info.IsDirectory() {
+		name := info.Name()
+		if info.IsDir() {
 			name += "/"
 		}
 		if !gConfig.IncludeDotfiles && name[0] == '.' {

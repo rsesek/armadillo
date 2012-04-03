@@ -26,7 +26,7 @@ import (
 
 // Takes a full file path and renames the last path component as if it were a
 // TV episode. This performs the actual rename as well.
-func RenameEpisode(inPath string) (*string, error) {
+func RenameTVEpisode(inPath string) (*string, error) {
 	// Parse the filename into its components.
 	dirName, fileName := path.Split(inPath)
 	info := parseEpisodeName(fileName)

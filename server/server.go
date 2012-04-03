@@ -93,7 +93,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 			okResponse(response, data)
 		}
 	case "tv_rename":
-		newPath, err := tv_rename.RenameEpisode(request.FormValue("path"))
+		newPath, err := RenameTVEpisode(request.FormValue("path"))
 		if err != nil {
 			errorResponse(response, err.Error())
 		} else {
@@ -209,6 +209,6 @@ func RunBackEnd() {
 	mux.HandleFunc("/download", downloadHandler)
 	mux.HandleFunc("/proxy", proxyHandler)
 
-	error := http.ListenAndServe(fmt.Sprintf(":%d", config.Port), mux)
+	error := http.ListenAndServe(fmt.Sprintf(":%d", gConfig.Port), mux)
 	fmt.Printf("error %v", error)
 }
