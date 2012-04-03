@@ -1,0 +1,59 @@
+/*
+ * Armadillo File Manager
+ * Copyright (c) 2012, Robert Sesek <http://www.bluestatic.org>
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or any later version.
+ */
+
+body {
+  padding: 0;
+}
+
+.tile {
+  display: block;
+
+  line-height: 2em;
+}
+
+.tile .title {
+  font-size: 1.0em;
+}
+
+.actor select:first-child {
+  margin-top: 2em;
+}
+
+.actor select {
+  display: block;
+  width: 100%;
+}
+
+.actor input[type="text"] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+button {
+  width: 50%;
+  padding: 1em;
+
+  font-size: 1.0em;
+
+  border: .1em solid black;
+
+  background: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0, rgb(99,95,103)),
+      color-stop(1, rgb(255,255,255))
+  );
+  background: -moz-linear-gradient(
+      center bottom,
+      rgb(99,95,103) 100%,
+      rgb(255,255,255) 0%
+  );
+}
