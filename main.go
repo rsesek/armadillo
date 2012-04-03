@@ -30,7 +30,7 @@ func main() {
 	fmt.Printf("Reading configuration from %v\n", *configPath)
 	if len(*configPath) > 0 {
 		*configPath = strings.Replace(*configPath, "~", "$HOME", 1)
-		*configPath = os.ShellExpand(*configPath)
+		*configPath = os.ExpandEnv(*configPath)
 		error := config.ReadFromFile(*configPath, configuration)
 		if error != nil {
 			fmt.Printf("Error while reading configuration: %v\n", error)
