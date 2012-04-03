@@ -18,11 +18,13 @@ import (
 	"strings"
 )
 
+var (
+	configPath = flag.String("config", "~/.armadillo", "Path to the configuration file")
+	jailRoot   = flag.String("jail", "", "Restrict file operations to this directory root")
+	port       = flag.Int("port", 0, "Port to run the server on")
+)
+
 func main() {
-	// Set up the basic flags.
-	var configPath *string = flag.String("config", "~/.armadillo", "Path to the configuration file")
-	var jailRoot *string = flag.String("jail", "", "Restrict file operations to this directory root")
-	var port *int = flag.Int("port", 0, "Port to run the server on")
 	flag.Parse()
 
 	// Load the configuration file, if it is present.
