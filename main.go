@@ -10,8 +10,8 @@
 package main
 
 import (
-	"./config"
-	"./server"
+	"github.com/rsesek/armadillo/config"
+	"github.com/rsesek/armadillo/server"
 	"flag"
 	"fmt"
 	"os"

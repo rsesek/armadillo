@@ -10,7 +10,7 @@
 package server
 
 import (
-	"../config"
+	"github.com/rsesek/armadillo/config"
 	"encoding/json"
 	"fmt"
 	"io"
