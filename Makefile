@@ -66,7 +66,7 @@ $(VERSION_FILE):
 	echo "$(VERSION_NAMESPACE).STAMP = $(STAMP);" >> $(VERSION_FILE)
 
 # Copies the version template to the source and commits it.
-stamp: version
+stamp: $(VERSION_FILE)
 	cp $(VERSION_FILE) $(VERSION_SOURCE)
 	git commit $(VERSION_SOURCE) \
 		--author='Armadillo Build Script <armadillo@bluestatic.org>' \
