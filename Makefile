@@ -8,7 +8,7 @@
 VERSION_MAJOR=0
 VERSION_MINOR=8
 VERSION_NAMESPACE=armadillo.Version
-VERSION_FILE=frontend/version.js.proto2
+VERSION_FILE=frontend/version.js.proto
 VERSION_SOURCE=$(basename $(VERSION_FILE))
 
 FRONTEND_SOURCES=frontend/jquery-1.7.1.js \
