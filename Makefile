@@ -24,9 +24,11 @@ FRONTEND_BIN=frontend/armadillo.js
 # Default target, used to produce the backend and uncompiled frontend.
 all: backend frontend
 
-# Creates the compiled frontend code and stamps the version information into
-# the release.
+# Creates the compiled frontend code.
 release: backend compiled
+
+# Performs a release build and stamps the actual version file.
+dist: stamp release
 
 # Compiles the backend server.
 backend:
@@ -40,7 +42,7 @@ $(FRONTEND_BIN): $(FRONTEND_SOURCES)
 
 # Compiles the frontend code for release.
 compiled: SOURCES_FLAGS=$(foreach f,$(FRONTEND_SOURCES),--js=$f)
-compiled: stamp
+compiled:
 	java -jar closure-compiler.jar \
 		$(SOURCES_FLAGS) \
 		--js_output_file=$(FRONTEND_BIN) \
