@@ -14,10 +14,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"os"
 	"path"
 	"strings"
@@ -105,58 +102,6 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func proxyHandler(response http.ResponseWriter, request *http.Request) {
-	rawURL := request.FormValue("url")
-	if len(rawURL) < 1 {
-		return
-	}
-
-	var validURL bool = false
-	for i := range gConfig.ProxyURLs {
-		allowedURL := gConfig.ProxyURLs[i]
-		validURL = validURL || strings.HasPrefix(rawURL, allowedURL)
-	}
-
-	if !validURL {
-		errorResponse(response, "URL is not in proxy whitelist")
-		return
-	}
-
-	url_, err := url.Parse(rawURL)
-	if err != nil {
-		errorResponse(response, err.Error())
-		return
-	}
-	err = performProxy(url_, response, request)
-	if err != nil {
-		errorResponse(response, err.Error())
-	}
-}
-
-func performProxy(url_ *url.URL, response http.ResponseWriter, origRequest *http.Request) error {
-	conn, err := net.Dial("tcp", url_.Host+":http")
-	if err != nil {
-		return err
-	}
-	client := httputil.NewClientConn(conn, nil)
-	request, err := http.NewRequest("GET", url_.String(), nil)
-	if err != nil {
-		return err
-	}
-	request.Header.Set("User-Agent", origRequest.UserAgent())
-	err = client.Write(request)
-	if err != nil {
-		return err
-	}
-	var proxyResponse *http.Response
-	proxyResponse, err = client.Read(request)
-	if err != nil && err != httputil.ErrPersistEOF {
-		return err
-	}
-	_, err = io.Copy(response, proxyResponse.Body)
-	return err
-}
-
 func downloadHandler(response http.ResponseWriter, request *http.Request) {
 	valid, fullPath := IsValidPath(request.FormValue("path"))
 	if valid {
@@ -205,7 +150,6 @@ func RunBackEnd(c *config.Configuration) {
 	mux.Handle("/fe/", http.StripPrefix("/fe/", http.FileServer(http.Dir(kFrontEndFiles))))
 	mux.HandleFunc("/service", serviceHandler)
 	mux.HandleFunc("/download", downloadHandler)
-	mux.HandleFunc("/proxy", proxyHandler)
 
 	error := http.ListenAndServe(fmt.Sprintf(":%d", gConfig.Port), mux)
 	fmt.Printf("error %v", error)

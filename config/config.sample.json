@@ -3,9 +3,5 @@
 
   "Port": 8084,
 
-  "ProxyURLs": [
-    "http://services.tvrage.com/tools/quickinfo.php",
-  ],
-
   "IncludeDotfiles": true
 }

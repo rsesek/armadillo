@@ -21,10 +21,6 @@ type Configuration struct {
 	// The port on which the server back end runs.
 	Port int
 
-	// An array of URLs that the /proxy service will for which the back-end will
-	// forward GET requests and return the result.
-	ProxyURLs []string
-
 	// Whether to include dotfiles (files that begin with a '.'). Users will still
 	// be able to access directories that begin with a '.', but they will not be
 	// included in the list.
