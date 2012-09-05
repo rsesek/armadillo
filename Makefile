@@ -67,6 +67,6 @@ $(VERSION_FILE):
 # Copies the version template to the source and commits it.
 stamp: $(VERSION_FILE)
 	cp $(VERSION_FILE) $(VERSION_SOURCE)
-	git commit $(VERSION_SOURCE) \
+	git commit $(VERSION_SOURCE) $(FRONTEND_BIN) \
 		--author='Armadillo Build Script <armadillo@bluestatic.org>' \
 		-m 'Stamp version.js @ $(shell gitcrement current)'
