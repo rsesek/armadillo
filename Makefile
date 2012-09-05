@@ -22,20 +22,20 @@ FRONTEND_SOURCES=frontend/jquery-1.7.1.js \
 FRONTEND_BIN=frontend/armadillo.js
 
 # Default target, used to produce the backend and uncompiled frontend.
-all: backend frontend
+all: backend version frontend
 
 # Creates the compiled frontend code.
-release: backend compiled
+release: backend version compiled
 
 # Performs a release build and stamps the actual version file.
-dist: stamp release
+dist: backend version $(VERSION_SOURCE) compiled stamp
 
 # Compiles the backend server.
 backend:
 	go build -v .
 
 # Compiles the frontend code for development.
-frontend: version $(FRONTEND_BIN)
+frontend: $(FRONTEND_BIN)
 
 $(FRONTEND_BIN): $(FRONTEND_SOURCES)
 	echo $(foreach f,$^,"document.write('<script src="fe/$(notdir $f)"></script>');\n") > $(FRONTEND_BIN)
@@ -64,9 +64,13 @@ $(VERSION_FILE):
 	echo "$(VERSION_NAMESPACE).BUILD = $(shell gitcrement next);" >> $(VERSION_FILE)
 	echo "$(VERSION_NAMESPACE).STAMP = $(shell date +%s);" >> $(VERSION_FILE)
 
-# Copies the version template to the source and commits it.
-stamp: $(VERSION_FILE)
-	cp $(VERSION_FILE) $(VERSION_SOURCE)
+# Copies the version template to the source.
+$(VERSION_SOURCE): $(VERSION_FILE)
+	cp $< $@
+
+# Commits the version source and the frontend bin.
+stamp:
 	git commit $(VERSION_SOURCE) $(FRONTEND_BIN) \
 		--author='Armadillo Build Script <armadillo@bluestatic.org>' \
 		-m 'Stamp version.js @ $(shell gitcrement current)'
+	git update-index --asume-unchanged $(FRONTEND_BIN)
