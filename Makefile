@@ -65,8 +65,8 @@ $(VERSION_FILE):
 	echo "$(VERSION_NAMESPACE).STAMP = $(shell date +%s);" >> $(VERSION_FILE)
 
 # Copies the version template to the source.
-copy_version_src: $(VERSION_FILE)
-	cp $< $(VERSION_SOURCE)
+copy_version_src:
+	cp $(VERSION_FILE) $(VERSION_SOURCE)
 
 # Commits the version source and the frontend bin.
 stamp:
