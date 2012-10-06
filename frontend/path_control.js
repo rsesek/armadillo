@@ -1,7 +1,7 @@
 //
 // Armadillo File Manager
-// Copyright (c) 2010-2011, Robert Sesek <http://www.bluestatic.org>
-// 
+// Copyright (c) 2010-2012, Robert Sesek <http://www.bluestatic.org>
+//
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
 // Foundation, either version 3 of the License, or any later version.
@@ -13,10 +13,9 @@ $.namespace('armadillo.PathControl');
  * Creates a new path editing control for a given path.
  * @param  {string}  path  The path to create an editor for
  * @param  {bool} editLastComponent  Whether the last component should be shown as an edit box
- * @param  {DomHelper}  opt_domHelper  Optional DOM helper
  * @constructor
  */
-armadillo.PathControl = function(path, editLastComponent, opt_domHelper) {
+armadillo.PathControl = function(path, editLastComponent) {
   /**
    * Full path of the control.
    * @type  {string}
