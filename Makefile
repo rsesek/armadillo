@@ -22,13 +22,13 @@ FRONTEND_SOURCES=frontend/jquery-1.7.1.js \
 FRONTEND_BIN=frontend/armadillo.js
 
 # Default target, used to produce the backend and uncompiled frontend.
-all: backend version frontend
+all: backend version frontend ignore_fe_bin
 
 # Creates the compiled frontend code.
-release: backend version compiled
+release: backend version compiled ignore_fe_bin
 
 # Performs a release build and stamps the actual version file.
-dist: backend version $(VERSION_SOURCE) compiled stamp
+dist: backend version copy_version_src compiled stamp ignore_fe_bin
 
 # Compiles the backend server.
 backend:
@@ -65,12 +65,15 @@ $(VERSION_FILE):
 	echo "$(VERSION_NAMESPACE).STAMP = $(shell date +%s);" >> $(VERSION_FILE)
 
 # Copies the version template to the source.
-$(VERSION_SOURCE): $(VERSION_FILE)
-	cp $< $@
+copy_version_src: $(VERSION_FILE)
+	cp $< $(VERSION_SOURCE)
 
 # Commits the version source and the frontend bin.
 stamp:
 	git commit $(VERSION_SOURCE) $(FRONTEND_BIN) \
 		--author='Armadillo Build Script <armadillo@bluestatic.org>' \
 		-m 'Stamp version.js @ $(shell gitcrement current)'
-	git update-index --asume-unchanged $(FRONTEND_BIN)
+
+# Marks the frontend binary as unmodified.
+ignore_fe_bin: $(FRONTEND_BIN)
+	git update-index --assume-unchanged $(FRONTEND_BIN)
