@@ -10,19 +10,30 @@
 package server
 
 import (
-	"github.com/rsesek/armadillo/config"
 	"encoding/json"
 	"fmt"
+	"github.com/rsesek/armadillo/config"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 )
 
-var dir, file = path.Split(path.Clean(os.Getenv("_")))
-var kFrontEndFiles string = path.Join(dir, "frontend")
-var gConfig *config.Configuration
+var (
+	kFrontEndFiles string
+	gConfig        *config.Configuration
+)
+
+func init() {
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("unable to get file information from runtime.Caller so the frontend files cannot be found")
+	}
+	// thisFile = /armadillo/server/server.go, so compute /armadillo/frontend/
+	kFrontEndFiles = path.Join(path.Dir(path.Dir(thisFile)), "frontend")
+}
 
 func indexHandler(response http.ResponseWriter, request *http.Request) {
 	fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"))
