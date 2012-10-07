@@ -6,7 +6,7 @@
 # Foundation, either version 3 of the License, or any later version.
 
 VERSION_MAJOR=0
-VERSION_MINOR=8
+VERSION_MINOR=9
 VERSION_NAMESPACE=armadillo.Version
 VERSION_FILE=frontend/version.js.proto
 VERSION_SOURCE=$(basename $(VERSION_FILE))
