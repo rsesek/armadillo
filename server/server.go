@@ -57,14 +57,14 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 	case "list":
 		files, err := ListPath(request.FormValue("path"))
 		if err != nil {
-			errorResponse(response, err.Error())
+			httpError(response, err.Error(), http.StatusNotFound)
 		} else {
 			okResponse(response, files)
 		}
 	case "remove":
 		err := RemovePath(request.FormValue("path"))
 		if err != nil {
-			errorResponse(response, err.Error())
+			httpError(response, err.Error(), http.StatusNotFound)
 		} else {
 			data := map[string]int{
 				"error": 0,
@@ -76,7 +76,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 		target := request.FormValue("target")
 		err := MovePath(source, target)
 		if err != nil {
-			errorResponse(response, err.Error())
+			httpError(response, err.Error(), http.StatusNotFound)
 		} else {
 			data := map[string]interface{}{
 				"path":  target,
@@ -88,7 +88,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 		path := request.FormValue("path")
 		err := MakeDir(path)
 		if err != nil {
-			errorResponse(response, err.Error())
+			httpError(response, err.Error(), http.StatusUnauthorized)
 		} else {
 			data := map[string]interface{}{
 				"path":  path,
@@ -99,7 +99,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 	case "tv_rename":
 		newPath, err := RenameTVEpisode(request.FormValue("path"))
 		if err != nil {
-			errorResponse(response, err.Error())
+			httpError(response, err.Error(), http.StatusBadRequest)
 		} else {
 			data := map[string]interface{}{
 				"path":  *newPath,
@@ -108,8 +108,8 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 			okResponse(response, data)
 		}
 	default:
-		fmt.Printf("Invalid action: '%s'\n", request.FormValue("action"))
-		errorResponse(response, "Unhandled action")
+		httpError(response, fmt.Sprintf("Invalid action: '%s'", request.FormValue("action")),
+			http.StatusBadRequest)
 	}
 }
 
@@ -127,26 +127,20 @@ func downloadHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func errorResponse(rw http.ResponseWriter, msg string) {
-	// TODO: Replace errorResponse with httpError.
-	httpError(rw, msg, 400)
-}
-
 func httpError(rw http.ResponseWriter, message string, code int) {
 	message = strings.Replace(message, gConfig.JailRoot, "/", -1)
-
 	rw.WriteHeader(code)
 	rw.Header().Set("Content-Type", "text/plain")
 	fmt.Fprint(rw, message)
 }
 
-func okResponse(response http.ResponseWriter, data interface{}) {
-	response.Header().Set("Content-Type", "application/json")
-	json_data, err := json.Marshal(data)
+func okResponse(rw http.ResponseWriter, data interface{}) {
+	rw.Header().Set("Content-Type", "application/json")
+	jsonData, err := json.Marshal(data)
 	if err != nil {
-		errorResponse(response, "Internal encoding error")
+		httpError(rw, "Internal error: " + err.Error(), 500)
 	} else {
-		response.Write(json_data)
+		rw.Write(jsonData)
 	}
 }
 
