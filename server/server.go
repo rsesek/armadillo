@@ -35,7 +35,7 @@ func init() {
 	kFrontEndFiles = path.Join(path.Dir(path.Dir(thisFile)), "frontend")
 }
 
-func indexHandler(response http.ResponseWriter, request *http.Request) {
+func indexHandler(rw http.ResponseWriter, request *http.Request) {
 	fd, err := os.Open(path.Join(kFrontEndFiles, "index.html"))
 	if err != nil {
 		fmt.Print("Error opening file ", err.Error(), "\n")
@@ -43,73 +43,90 @@ func indexHandler(response http.ResponseWriter, request *http.Request) {
 	}
 	defer fd.Close()
 
-	response.Header().Set("Content-Type", "text/html")
-	io.Copy(response, fd)
+	rw.Header().Set("Content-Type", "text/html")
+	io.Copy(rw, fd)
 }
 
-func serviceHandler(response http.ResponseWriter, request *http.Request) {
-	if request.Method != "POST" {
-		io.WriteString(response, "Error: Not a POST request")
+func listService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
 		return
 	}
 
-	switch request.FormValue("action") {
-	case "list":
-		files, err := ListPath(request.FormValue("path"))
-		if err != nil {
-			errorResponse(response, err.Error())
-		} else {
-			okResponse(response, files)
+	files, err := ListPath(req.FormValue("path"))
+	if err != nil {
+		httpError(rw, err.Error(), http.StatusNotFound)
+	} else {
+		okResponse(rw, files)
+	}
+}
+
+func removeService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
+	err := RemovePath(req.FormValue("path"))
+	if err != nil {
+		httpError(rw, err.Error(), http.StatusNotFound)
+	} else {
+		data := map[string]int{
+			"error": 0,
 		}
-	case "remove":
-		err := RemovePath(request.FormValue("path"))
-		if err != nil {
-			errorResponse(response, err.Error())
-		} else {
-			data := map[string]int{
-				"error": 0,
-			}
-			okResponse(response, data)
+		okResponse(rw, data)
+	}
+}
+
+func moveService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
+	source := req.FormValue("source")
+	target := req.FormValue("target")
+	err := MovePath(source, target)
+	if err != nil {
+		httpError(rw, err.Error(), http.StatusNotFound)
+	} else {
+		data := map[string]interface{}{
+			"path":  target,
+			"error": 0,
 		}
-	case "move":
-		source := request.FormValue("source")
-		target := request.FormValue("target")
-		err := MovePath(source, target)
-		if err != nil {
-			errorResponse(response, err.Error())
-		} else {
-			data := map[string]interface{}{
-				"path":  target,
-				"error": 0,
-			}
-			okResponse(response, data)
+		okResponse(rw, data)
+	}
+}
+
+func mkdirService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
+	path := req.FormValue("path")
+	err := MakeDir(path)
+	if err != nil {
+		httpError(rw, err.Error(), http.StatusUnauthorized)
+	} else {
+		data := map[string]interface{}{
+			"path":  path,
+			"error": 0,
 		}
-	case "mkdir":
-		path := request.FormValue("path")
-		err := MakeDir(path)
-		if err != nil {
-			errorResponse(response, err.Error())
-		} else {
-			data := map[string]interface{}{
-				"path":  path,
-				"error": 0,
-			}
-			okResponse(response, data)
+		okResponse(rw, data)
+	}
+}
+
+func tvRenameService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
+	newPath, err := RenameTVEpisode(req.FormValue("path"))
+	if err != nil {
+		httpError(rw, err.Error(), http.StatusBadRequest)
+	} else {
+		data := map[string]interface{}{
+			"path":  newPath,
+			"error": 0,
 		}
-	case "tv_rename":
-		newPath, err := RenameTVEpisode(request.FormValue("path"))
-		if err != nil {
-			errorResponse(response, err.Error())
-		} else {
-			data := map[string]interface{}{
-				"path":  newPath,
-				"error": 0,
-			}
-			okResponse(response, data)
-		}
-	default:
-		fmt.Printf("Invalid action: '%s'\n", request.FormValue("action"))
-		errorResponse(response, "Unhandled action")
+		okResponse(rw, data)
 	}
 }
 
@@ -127,30 +144,29 @@ func downloadHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func errorResponse(response http.ResponseWriter, message string) {
+func httpError(rw http.ResponseWriter, message string, code int) {
 	message = strings.Replace(message, gConfig.JailRoot, "/", -1)
-	data := map[string]interface{}{
-		"error":   -1,
-		"message": message,
-	}
-	json_data, err := json.Marshal(data)
+	rw.WriteHeader(code)
+	rw.Header().Set("Content-Type", "text/plain")
+	fmt.Fprint(rw, message)
+}
 
-	response.Header().Set("Content-Type", "text/json")
+func okResponse(rw http.ResponseWriter, data interface{}) {
+	rw.Header().Set("Content-Type", "application/json")
+	jsonData, err := json.Marshal(data)
 	if err != nil {
-		io.WriteString(response, "{\"error\":\"-9\",\"message\":\"Internal encoding error\"}")
+		httpError(rw, "Internal error: " + err.Error(), 500)
 	} else {
-		response.Write(json_data)
+		rw.Write(jsonData)
 	}
 }
 
-func okResponse(response http.ResponseWriter, data interface{}) {
-	response.Header().Set("Content-Type", "text/json")
-	json_data, err := json.Marshal(data)
-	if err != nil {
-		errorResponse(response, "Internal encoding error")
-	} else {
-		response.Write(json_data)
+func requestIsPOST(rw http.ResponseWriter, req *http.Request) bool {
+	if req.Method != "POST" {
+		httpError(rw, "Service requests must be sent via POST", http.StatusMethodNotAllowed)
+		return false
 	}
+	return true
 }
 
 func RunBackEnd(c *config.Configuration) {
@@ -159,7 +175,11 @@ func RunBackEnd(c *config.Configuration) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", indexHandler)
 	mux.Handle("/fe/", http.StripPrefix("/fe/", http.FileServer(http.Dir(kFrontEndFiles))))
-	mux.HandleFunc("/service", serviceHandler)
+	mux.HandleFunc("/service/list", listService)
+	mux.HandleFunc("/service/move", moveService)
+	mux.HandleFunc("/service/remove", removeService)
+	mux.HandleFunc("/service/mkdir", mkdirService)
+	mux.HandleFunc("/service/tv_rename", tvRenameService)
 	mux.HandleFunc("/download", downloadHandler)
 
 	error := http.ListenAndServe(fmt.Sprintf(":%d", gConfig.Port), mux)
