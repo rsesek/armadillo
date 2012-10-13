@@ -135,7 +135,7 @@ func errorResponse(response http.ResponseWriter, message string) {
 	}
 	json_data, err := json.Marshal(data)
 
-	response.Header().Set("Content-Type", "text/json")
+	response.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		io.WriteString(response, "{\"error\":\"-9\",\"message\":\"Internal encoding error\"}")
 	} else {
@@ -144,7 +144,7 @@ func errorResponse(response http.ResponseWriter, message string) {
 }
 
 func okResponse(response http.ResponseWriter, data interface{}) {
-	response.Header().Set("Content-Type", "text/json")
+	response.Header().Set("Content-Type", "application/json")
 	json_data, err := json.Marshal(data)
 	if err != nil {
 		errorResponse(response, "Internal encoding error")
