@@ -48,6 +48,10 @@ func indexHandler(rw http.ResponseWriter, request *http.Request) {
 }
 
 func listService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
 	files, err := ListPath(req.FormValue("path"))
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusNotFound)
@@ -57,6 +61,10 @@ func listService(rw http.ResponseWriter, req *http.Request) {
 }
 
 func removeService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
 	err := RemovePath(req.FormValue("path"))
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusNotFound)
@@ -69,6 +77,10 @@ func removeService(rw http.ResponseWriter, req *http.Request) {
 }
 
 func moveService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
 	source := req.FormValue("source")
 	target := req.FormValue("target")
 	err := MovePath(source, target)
@@ -84,6 +96,10 @@ func moveService(rw http.ResponseWriter, req *http.Request) {
 }
 
 func mkdirService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
 	path := req.FormValue("path")
 	err := MakeDir(path)
 	if err != nil {
@@ -98,6 +114,10 @@ func mkdirService(rw http.ResponseWriter, req *http.Request) {
 }
 
 func tvRenameService(rw http.ResponseWriter, req *http.Request) {
+	if !requestIsPOST(rw, req) {
+		return
+	}
+
 	newPath, err := RenameTVEpisode(req.FormValue("path"))
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusBadRequest)
@@ -139,6 +159,14 @@ func okResponse(rw http.ResponseWriter, data interface{}) {
 	} else {
 		rw.Write(jsonData)
 	}
+}
+
+func requestIsPOST(rw http.ResponseWriter, req *http.Request) bool {
+	if req.Method != "POST" {
+		httpError(rw, "Service requests must be sent via POST", http.StatusMethodNotAllowed)
+		return false
+	}
+	return true
 }
 
 func RunBackEnd(c *config.Configuration) {
