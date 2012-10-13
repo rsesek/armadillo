@@ -44,7 +44,13 @@ armadillo.App.prototype.sendRequest = function(action, data, callback) {
       url: 'service',
       type: 'POST',
       data: data,
-      success: callback
+      success: callback,
+      error: function(xhr, status, error) {
+        app.showError(xhr.responseText);
+        console.log(xhr);
+        console.log(status);
+        console.log(error);
+      }
   });
 };
 

@@ -127,20 +127,17 @@ func downloadHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func errorResponse(response http.ResponseWriter, message string) {
-	message = strings.Replace(message, gConfig.JailRoot, "/", -1)
-	data := map[string]interface{}{
-		"error":   -1,
-		"message": message,
-	}
-	json_data, err := json.Marshal(data)
+func errorResponse(rw http.ResponseWriter, msg string) {
+	// TODO: Replace errorResponse with httpError.
+	httpError(rw, msg, 400)
+}
 
-	response.Header().Set("Content-Type", "application/json")
-	if err != nil {
-		io.WriteString(response, "{\"error\":\"-9\",\"message\":\"Internal encoding error\"}")
-	} else {
-		response.Write(json_data)
-	}
+func httpError(rw http.ResponseWriter, message string, code int) {
+	message = strings.Replace(message, gConfig.JailRoot, "/", -1)
+
+	rw.WriteHeader(code)
+	rw.Header().Set("Content-Type", "text/plain")
+	fmt.Fprint(rw, message)
 }
 
 func okResponse(response http.ResponseWriter, data interface{}) {
