@@ -102,7 +102,7 @@ func serviceHandler(response http.ResponseWriter, request *http.Request) {
 			errorResponse(response, err.Error())
 		} else {
 			data := map[string]interface{}{
-				"path":  *newPath,
+				"path":  newPath,
 				"error": 0,
 			}
 			okResponse(response, data)

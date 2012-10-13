@@ -26,32 +26,33 @@ import (
 
 // Takes a full file path and renames the last path component as if it were a
 // TV episode. This performs the actual rename as well.
-func RenameTVEpisode(inPath string) (*string, error) {
+func RenameTVEpisode(inPath string) (string, error) {
 	// Parse the filename into its components.
 	dirName, fileName := path.Split(inPath)
 	info := parseEpisodeName(fileName)
 	if info == nil {
-		return nil, errors.New("Could not parse file name")
+		return "", errors.New("Could not parse file name")
 	}
 
 	// Create the URL and perform the lookup.
 	queryURL := buildURL(info)
 	response, err := performLookup(queryURL)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Parse the response into the fullEpisodeInfo struct.
 	fullInfo := parseResponse(response)
+	if fullInfo == nil {
+		return "", errors.New("Error parsing response from TV database service")
+	}
 
 	// Create the new path.
 	newName := fmt.Sprintf("%s - %dx%02d - %s", fullInfo.episode.showName,
 		fullInfo.episode.season, fullInfo.episode.episode, fullInfo.episodeName)
 	newName = strings.Replace(newName, "/", "_", -1)
 	newName += path.Ext(fileName)
-	newPath := path.Join(dirName, newName)
-
-	return &newPath, nil
+	return path.Join(dirName, newName), nil
 }
 
 type episodeInfo struct {
