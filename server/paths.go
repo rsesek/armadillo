@@ -16,45 +16,44 @@ import (
 	"strings"
 )
 
-func canonicalizePath(raw_path string) string {
-	raw_path = path.Join(gConfig.JailRoot, raw_path)
-	return path.Clean(raw_path)
+func canonicalizePath(raw string) string {
+	return path.Clean(path.Join(gConfig.JailRoot, raw))
 }
 
-func checkInJail(the_path string) bool {
-	if len(the_path) < len(gConfig.JailRoot) {
+func checkInJail(p string) bool {
+	if len(p) < len(gConfig.JailRoot) {
 		return false
 	}
-	if the_path[0:len(gConfig.JailRoot)] != gConfig.JailRoot {
+	if p[0:len(gConfig.JailRoot)] != gConfig.JailRoot {
 		return false
 	}
-	if strings.Index(the_path, "../") != -1 {
+	if strings.Index(p, "../") != -1 {
 		return false
 	}
 	return true
 }
 
-func IsValidPath(path string) (bool, string) {
-	path = canonicalizePath(path)
-	_, err := os.Lstat(path)
-	return err == nil && checkInJail(path), path
+func IsValidPath(p string) (bool, string) {
+	p = canonicalizePath(p)
+	_, err := os.Lstat(p)
+	return err == nil && checkInJail(p), p
 }
 
-func ListPath(the_path string) (files []string, err error) {
-	full_path := canonicalizePath(the_path)
-	if !checkInJail(full_path) {
+func ListPath(p string) (files []string, err error) {
+	p = canonicalizePath(p)
+	if !checkInJail(p) {
 		return nil, errors.New("Path outside of jail")
 	}
 
-	fd, file_error := os.Open(full_path)
-	if file_error != nil {
-		return nil, file_error
+	f, err := os.Open(p)
+	if err != nil {
+		return
 	}
-	defer fd.Close()
+	defer f.Close()
 
-	fileinfos, read_err := fd.Readdir(-1)
-	if read_err != nil {
-		return nil, read_err
+	fileinfos, err := f.Readdir(-1)
+	if err != nil {
+		return
 	}
 
 	files = make([]string, 0)
@@ -71,12 +70,12 @@ func ListPath(the_path string) (files []string, err error) {
 	return files, nil
 }
 
-func RemovePath(the_path string) error {
-	full_path := canonicalizePath(the_path)
-	if !checkInJail(full_path) {
+func RemovePath(p string) error {
+	p = canonicalizePath(p)
+	if !checkInJail(p) {
 		return errors.New("Path outside of jail")
 	}
-	return os.RemoveAll(full_path)
+	return os.RemoveAll(p)
 }
 
 func MovePath(source string, target string) error {
