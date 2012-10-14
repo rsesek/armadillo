@@ -123,12 +123,7 @@ armadillo.File.prototype.createDom = function() {
 armadillo.File.prototype.remove = function() {
   var file = this;
   var callback = function(data, status, xhr) {
-    if (data['error']) {
-      app.showError(data['message']);
-      return;
-    } else {
-      app.clearError();
-    }
+    app.clearError();
     app.list(file.path_);
   };
   app.sendRequest('remove', {'path':this.path_ + this.name_}, callback);

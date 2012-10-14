@@ -47,6 +47,10 @@ func indexHandler(rw http.ResponseWriter, request *http.Request) {
 	io.Copy(rw, fd)
 }
 
+type pathReseponse struct {
+	Path string `json:"path"`
+}
+
 func listService(rw http.ResponseWriter, req *http.Request) {
 	if !requestIsPOST(rw, req) {
 		return
@@ -69,10 +73,7 @@ func removeService(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusNotFound)
 	} else {
-		data := map[string]int{
-			"error": 0,
-		}
-		okResponse(rw, data)
+		okResponse(rw, nil)
 	}
 }
 
@@ -87,11 +88,7 @@ func moveService(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusNotFound)
 	} else {
-		data := map[string]interface{}{
-			"path":  target,
-			"error": 0,
-		}
-		okResponse(rw, data)
+		okResponse(rw, pathReseponse{target})
 	}
 }
 
@@ -105,11 +102,7 @@ func mkdirService(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusUnauthorized)
 	} else {
-		data := map[string]interface{}{
-			"path":  path,
-			"error": 0,
-		}
-		okResponse(rw, data)
+		okResponse(rw, pathReseponse{path})
 	}
 }
 
@@ -122,11 +115,7 @@ func tvRenameService(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		httpError(rw, err.Error(), http.StatusBadRequest)
 	} else {
-		data := map[string]interface{}{
-			"path":  newPath,
-			"error": 0,
-		}
-		okResponse(rw, data)
+		okResponse(rw, pathReseponse{newPath})
 	}
 }
 
