@@ -10,7 +10,7 @@
 package server
 
 import (
-	"errors"
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -39,10 +39,10 @@ func IsValidPath(p string) (bool, string) {
 	return err == nil && checkInJail(p), p
 }
 
-func ListPath(p string) (files []string, err error) {
-	p = canonicalizePath(p)
+func ListPath(op string) (files []string, err error) {
+	p := canonicalizePath(op)
 	if !checkInJail(p) {
-		return nil, errors.New("Path outside of jail")
+		return nil, fmt.Errorf("Path outside of jail: %q", op)
 	}
 
 	f, err := os.Open(p)
@@ -70,30 +70,30 @@ func ListPath(p string) (files []string, err error) {
 	return files, nil
 }
 
-func RemovePath(p string) error {
-	p = canonicalizePath(p)
+func RemovePath(op string) error {
+	p := canonicalizePath(op)
 	if !checkInJail(p) {
-		return errors.New("Path outside of jail")
+		return fmt.Errorf("Path outside of jail: %q", op)
 	}
 	return os.RemoveAll(p)
 }
 
-func MovePath(source string, target string) error {
-	source = canonicalizePath(source)
-	target = canonicalizePath(target)
+func MovePath(oSource string, oTarget string) error {
+	source := canonicalizePath(oSource)
+	target := canonicalizePath(oTarget)
 	if !checkInJail(source) {
-		return errors.New("Source outside of jail")
+		return fmt.Errorf("Source outside of jail: %q", oSource)
 	}
 	if !checkInJail(target) {
-		return errors.New("Target outside of jail")
+		return fmt.Errorf("Target outside of jail: %q", oTarget)
 	}
 	return os.Rename(source, target)
 }
 
-func MakeDir(target string) error {
-	target = canonicalizePath(target)
+func MakeDir(oTarget string) error {
+	target := canonicalizePath(oTarget)
 	if !checkInJail(target) {
-		return errors.New("Path outside of jail")
+		return fmt.Errorf("Path outside of jail: %q", oTarget)
 	}
 	return os.Mkdir(target, 0755)
 }
