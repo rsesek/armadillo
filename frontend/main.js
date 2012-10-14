@@ -59,12 +59,7 @@ armadillo.App.prototype.sendRequest = function(action, data, callback) {
  */
 armadillo.App.prototype.list = function(path) {
   var callback = function(data, status, xhr) {
-    if (data['error']) {
-      app.showError(data['message']);
-      return;  // Error.
-    } else {
-      app.clearError(true);
-    }
+    app.clearError(true);
 
     // Update the listing.
     $('#pwd').text(path);
@@ -192,12 +187,8 @@ armadillo.App.prototype.mkdirHandler_ = function() {
   if (name != null && name != '') {
     var path = this.joinPath(this.getCurrentPath(), name);
     this.sendRequest('mkdir', {'path':path}, function(data, status, xhr) {
-      if (data['error']) {
-        app.showError(data['message']);
-      } else {
-        app.clearError();
-        app.list(app.getCurrentPath());
-      }
+      app.clearError(true);
+      app.list(app.getCurrentPath());
     });
   }
 };

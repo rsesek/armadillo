@@ -137,12 +137,8 @@ armadillo.File.prototype.remove = function() {
 armadillo.File.prototype.move = function(dest) {
   var file = this;
   var callback = function(data, status, xhr) {
-    if (data['error']) {
-      app.showError(data['message']);
-    } else {
-      app.clearError();
-      app.list(app.stripLastPathComponent(dest));
-    }
+    app.clearError(true);
+    app.list(app.stripLastPathComponent(dest));
   };
   app.sendRequest('move', {'source':this.getFullPath(), 'target':dest}, callback);
 };

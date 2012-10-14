@@ -28,12 +28,8 @@ armadillo.TVRenamer = function(file) {
 armadillo.TVRenamer.prototype.run = function() {
   var file = this.file_;
   var callback = function(data, stauts, xhr) {
-    if (data['error']) {
-      app.showError(data['message']);
-    } else {
-      app.clearError();
-      file.move(data['path']);
-    }
+    app.clearError(true);
+    file.move(data['path']);
   };
   app.sendRequest('tv_rename', {'path':this.file_.getFullPath()},
       callback);

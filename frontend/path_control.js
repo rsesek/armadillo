@@ -152,11 +152,6 @@ armadillo.PathControl.prototype.createComponentNode_ = function(path, name) {
 armadillo.PathControl.prototype.fetchMenuContents_ = function(path, name, menu) {
   var fullPath = this.path_;
   var callback = function(data, status, xhr) {
-    if (data['error']) {
-      app.showError(data['message']);
-      return;
-    }
-
     // Create an empty node for the current directory.
     data.unshift('/');
 
